@@ -1,4 +1,3 @@
-import { getApiUser } from "@/app/lib/api-auth";
 import { fail, ok } from "@/app/lib/api-response";
-import { markProviderEmailVerified } from "@/db/auth";
-export async function POST() { const auth = await getApiUser(); if (!auth) return fail("AUTH_REQUIRED", "Authentication required", 401); const result = await markProviderEmailVerified(auth.user.id); return ok({ verified: true, verifiedAt: result?.verifiedAt?.toISOString() ?? null, provider: "chatgpt" }); }
+import { createSupabaseServerClient } from "@/app/lib/supabase/server";
+export async function POST(request: Request) { const body = await request.json().catch(() => ({})) as { email?: string }; if (!body.email) return fail("EMAIL_REQUIRED", "Email is required", 400); const supabase = await createSupabaseServerClient(); const { error } = await supabase.auth.resend({ type: "signup", email: body.email, options: { emailRedirectTo: `${new URL(request.url).origin}/auth/callback?next=/app` } }); return error ? fail("VERIFICATION_RESEND_FAILED", error.message, 400) : ok({ accepted: true }); }

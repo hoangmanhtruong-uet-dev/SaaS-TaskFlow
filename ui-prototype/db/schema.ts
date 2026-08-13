@@ -28,7 +28,7 @@ export const users = pgTable("profiles", {
   id: uuid("id").primaryKey(),
   providerUserId: text("provider_user_id").notNull(),
   email: text("email").notNull(),
-  emailNormalized: text("email_normalized").notNull(),
+  emailNormalized: text("email_normalized").generatedAlwaysAs(sql`lower(trim(email))`),
   name: text("name").notNull().default(""),
   avatarUrl: text("avatar_url"),
   emailVerifiedAt: timestamp("email_verified_at", { withTimezone: true, mode: "date" }),

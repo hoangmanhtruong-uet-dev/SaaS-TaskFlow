@@ -1,10 +1,10 @@
-import { getChatGPTUser } from "@/app/chatgpt-auth";
+import { getAuthenticatedIdentity } from "@/app/lib/auth";
 import { fail, ok } from "@/app/lib/api-response";
 import { ensureCurrentUser, listUserWorkspaces } from "@/db/users";
 export async function GET() {
-  const identity = await getChatGPTUser();
-  if (!identity) return fail("AUTH_REQUIRED", "Authentication required", 401);
-  const user = await ensureCurrentUser(identity);
+  const authenticated = await getAuthenticatedIdentity();
+  if (!authenticated) return fail("AUTH_REQUIRED", "Authentication required", 401);
+  const user = await ensureCurrentUser(authenticated.authUser);
   if (!user) return fail("USER_PROVISION_FAILED", "Could not provision user", 500);
   const workspaceRows = await listUserWorkspaces(user.id);
   const workspaces = workspaceRows.map((workspace: Awaited<ReturnType<typeof listUserWorkspaces>>[number]) => ({ ...workspace, archivedAt: workspace.archivedAt?.toISOString() ?? null }));

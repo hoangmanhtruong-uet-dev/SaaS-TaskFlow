@@ -16,7 +16,7 @@ export interface CursorPage<T> {
 export interface AuthSessionDto {
   id: string;
   current: boolean;
-  provider: "chatgpt";
+  provider: "email" | "google";
   createdAt: string | null;
 }
 

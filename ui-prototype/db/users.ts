@@ -1,20 +1,15 @@
 import { and, eq } from "drizzle-orm";
-import type { ChatGPTUser } from "@/app/chatgpt-auth";
+import type { User } from "@supabase/supabase-js";
+import { identityFromUser } from "@/app/lib/auth";
 import { getDb } from "./index";
 import { memberships, users, workspaces } from "./schema";
 
-export async function ensureCurrentUser(identity: ChatGPTUser) {
+export async function ensureCurrentUser(authUser: User) {
   const db = getDb();
-  const emailNormalized = identity.email.trim().toLowerCase();
-  const id = `usr_${identity.userId}`;
-  await db.insert(users).values({ id, providerUserId: identity.userId, email: identity.email, emailNormalized, name: identity.displayName, emailVerifiedAt: new Date() })
-    .onConflictDoUpdate({ target: users.providerUserId, set: { email: identity.email, emailNormalized, name: identity.displayName, updatedAt: new Date() } });
-  const user = await db.select().from(users).where(eq(users.providerUserId, identity.userId)).get();
-  if (!user) return undefined;
-  const workspaceId = `ws_${identity.userId}`;
-  await db.insert(workspaces).values({ id: workspaceId, name: `Không gian của ${identity.displayName}`, slug: `workspace-${identity.userId.toLowerCase().replace(/[^a-z0-9]/g, "").slice(0, 24)}` }).onConflictDoNothing();
-  await db.insert(memberships).values({ id: `mem_${identity.userId}`, workspaceId, userId: user.id, role: "OWNER" }).onConflictDoNothing();
-  return user;
+  const identity = identityFromUser(authUser);
+  await db.insert(users).values({ id: authUser.id, providerUserId: authUser.id, email: identity.email, name: identity.displayName, avatarUrl: identity.avatarUrl, emailVerifiedAt: authUser.email_confirmed_at ? new Date(authUser.email_confirmed_at) : null })
+    .onConflictDoUpdate({ target: users.id, set: { email: identity.email, name: identity.displayName, avatarUrl: identity.avatarUrl, emailVerifiedAt: authUser.email_confirmed_at ? new Date(authUser.email_confirmed_at) : null, updatedAt: new Date() } });
+  return db.select().from(users).where(eq(users.id, authUser.id)).get();
 }
 
 export async function listUserWorkspaces(userId: string) {

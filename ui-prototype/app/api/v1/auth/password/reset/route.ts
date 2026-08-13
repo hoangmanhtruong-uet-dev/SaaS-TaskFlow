@@ -1,2 +1,3 @@
-import { fail } from "@/app/lib/api-response";
-export async function POST() { return fail("AUTH_PROVIDER_MANAGED", "Password recovery is managed by the ChatGPT identity provider", 409, { provider: "chatgpt" }); }
+import { fail, ok } from "@/app/lib/api-response";
+import { createSupabaseServerClient } from "@/app/lib/supabase/server";
+export async function POST(request: Request) { const body = await request.json().catch(() => ({})) as { password?: string }; if (!body.password || body.password.length < 8) return fail("PASSWORD_INVALID", "Password must contain at least 8 characters", 400); const supabase = await createSupabaseServerClient(); const { data: { user } } = await supabase.auth.getUser(); if (!user) return fail("AUTH_REQUIRED", "Authentication required", 401); const { error } = await supabase.auth.updateUser({ password: body.password }); return error ? fail("PASSWORD_RESET_FAILED", error.message, 400) : ok({ updated: true }); }

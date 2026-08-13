@@ -11,7 +11,7 @@ let server;
 before(async () => {
   server = spawn(process.execPath, ["node_modules/next/dist/bin/next", "start", "-p", String(port)], {
     cwd: root,
-    env: { ...process.env, NODE_ENV: "production" },
+    env: { ...process.env, NODE_ENV: "production", NEXT_PUBLIC_SUPABASE_URL: "https://example.supabase.co", NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY: "sb_publishable_test" },
     stdio: ["ignore", "pipe", "pipe"],
   });
   let output = "";

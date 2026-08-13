@@ -1,16 +1,22 @@
 import assert from "node:assert/strict";
 import { readFile } from "node:fs/promises";
 import test from "node:test";
+import { safeReturnPath } from "../../app/lib/auth-redirect";
 
-test("OAuth authentication lifecycle covers verification, rotation, revoke, and recovery contract", async () => {
-  const auth = await readFile(new URL("../../db/auth.ts", import.meta.url), "utf8");
+test("authentication return paths reject external and protocol-relative redirects", () => {
+  assert.equal(safeReturnPath("/invite/abc?source=email"), "/invite/abc?source=email");
+  assert.equal(safeReturnPath("https://evil.example/steal"), "/app");
+  assert.equal(safeReturnPath("//evil.example/steal"), "/app");
+  assert.equal(safeReturnPath("/auth/callback?code=stolen"), "/app");
+});
+
+test("Supabase authentication covers SSR verification, revoke, and recovery contract", async () => {
   const apiAuth = await readFile(new URL("../../app/lib/api-auth.ts", import.meta.url), "utf8");
-  assert.match(auth, /SESSION_ROTATION_MS/);
-  assert.match(auth, /latest\.revokedAt/);
-  assert.match(auth, /rotatedFromSessionId/);
-  assert.match(auth, /revokeProviderSession/);
-  assert.match(auth, /consumeRateLimit/);
-  assert.match(apiAuth, /resolveProviderSession/);
+  const proxy = await readFile(new URL("../../app/lib/supabase/proxy.ts", import.meta.url), "utf8");
+  const callback = await readFile(new URL("../../app/auth/callback/route.ts", import.meta.url), "utf8");
+  assert.match(apiAuth, /getAuthenticatedIdentity/);
+  assert.match(proxy, /getClaims/);
+  assert.match(callback, /exchangeCodeForSession/);
   for (const route of [
     "../../app/api/v1/auth/provider/route.ts",
     "../../app/api/v1/auth/session/route.ts",
@@ -24,8 +30,8 @@ test("OAuth authentication lifecycle covers verification, rotation, revoke, and 
 test("invitation authentication resumes at the pending invitation", async () => {
   const view = await readFile(new URL("../../app/components/collaboration-views.tsx", import.meta.url), "utf8");
   const complete = await readFile(new URL("../../app/auth/complete/page.tsx", import.meta.url), "utf8");
-  assert.match(view, /returnTo=.*invite/);
+  assert.match(view, /next=.*invite/);
   assert.match(view, /Đăng nhập rồi quay lại lời mời/);
-  assert.match(complete, /startsWith\("\/invite\/"\)/);
-  assert.match(complete, /establishProviderSession/);
+  assert.match(complete, /safeReturnPath/);
+  assert.match(complete, /requireAuthenticatedIdentity/);
 });

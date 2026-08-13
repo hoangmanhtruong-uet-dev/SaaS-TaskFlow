@@ -1,12 +1,10 @@
-import { getChatGPTUser } from "@/app/chatgpt-auth";
+import { getAuthenticatedIdentity } from "@/app/lib/auth";
 import { ensureCurrentUser } from "@/db/users";
-import { resolveProviderSession } from "@/db/auth";
 
 export async function getApiUser() {
-  const identity = await getChatGPTUser();
-  if (!identity) return null;
-  const user = await ensureCurrentUser(identity);
+  const authenticated = await getAuthenticatedIdentity();
+  if (!authenticated) return null;
+  const user = await ensureCurrentUser(authenticated.authUser);
   if (!user) return null;
-  const session = await resolveProviderSession(user.id);
-  return session.kind === "ok" ? { identity, user, session: session.session } : null;
+  return { identity: authenticated.identity, user, session: null };
 }
