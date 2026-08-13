@@ -1,0 +1,2 @@
+import { getApiUser } from "@/app/lib/api-auth"; import { fail, ok } from "@/app/lib/api-response"; import { listActivity } from "@/db/audit";
+export async function GET(_: Request, { params }: { params: Promise<{ workspaceId: string }> }) { const auth = await getApiUser(); if (!auth) return fail("AUTH_REQUIRED", "Authentication required", 401); const { workspaceId } = await params; const data = await listActivity(workspaceId, auth.user.id); return data ? ok({ items: data, nextCursor: null }) : fail("PERMISSION_DENIED", "Chỉ Owner/Admin có thể xem audit", 403); }

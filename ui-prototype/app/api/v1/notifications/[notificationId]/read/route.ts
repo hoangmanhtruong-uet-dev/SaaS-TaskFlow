@@ -1,0 +1,2 @@
+import { getApiUser } from "@/app/lib/api-auth"; import { fail, ok } from "@/app/lib/api-response"; import { markNotificationRead } from "@/db/notifications";
+export async function POST(_: Request, { params }: { params: Promise<{ notificationId: string }> }) { const auth = await getApiUser(); if (!auth) return fail("AUTH_REQUIRED", "Authentication required", 401); const { notificationId } = await params; const row = await markNotificationRead(auth.user.id, notificationId); return row ? ok({ read: true }) : fail("NOT_FOUND", "Notification not found", 404); }

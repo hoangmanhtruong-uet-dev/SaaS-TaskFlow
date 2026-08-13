@@ -1,0 +1,27 @@
+{
+  "version": "7",
+  "dialect": "sqlite",
+  "entries": [
+    {
+      "idx": 0,
+      "version": "6",
+      "when": 1786620961738,
+      "tag": "0000_outgoing_spot",
+      "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "6",
+      "when": 1786621026059,
+      "tag": "0001_known_kang",
+      "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "6",
+      "when": 1786625548956,
+      "tag": "0002_tiny_falcon",
+      "breakpoints": true
+    }
+  ]
+}

@@ -1,0 +1,6 @@
+{
+  "migration": "0002_tiny_falcon.sql",
+  "strategy": "restore_pre_migration_backup",
+  "requiresBackup": true,
+  "reason": "D1 migrations are forward-only; restoring the verified pre-migration export is safer than destructive down-SQL for rebuilt tables."
+}

@@ -1,0 +1,110 @@
+export type Device = "MOBILE" | "DESKTOP";
+
+export type ScreenDefinition = {
+  id: string;
+  title: string;
+  device: Device;
+};
+
+export const screens: ScreenDefinition[] = [
+  { id: "11697e59ab5d4fe8b424fc27e5fa810c", title: "Chính sách bảo mật - TaskFlow (Mobile)", device: "MOBILE" },
+  { id: "13deb9342ee04c69bd973f9ea0075ece", title: "Bảng giá - TaskFlow (Mobile)", device: "MOBILE" },
+  { id: "17537ccb3e7e4a09bbab6d365cc1f0ca", title: "Bảng giá - TaskFlow (Desktop)", device: "DESKTOP" },
+  { id: "1be37174e33a431c9d1fda8fc79c1607", title: "Dự án - TaskFlow (Desktop)", device: "DESKTOP" },
+  { id: "212bc48f1c2540df8917066ab75cb01b", title: "Cài đặt không gian làm việc - TaskFlow (Mobile)", device: "MOBILE" },
+  { id: "291b595fa1f24efab465f8f85cf721d1", title: "Trang chủ - TaskFlow (Mobile)", device: "MOBILE" },
+  { id: "2c2bc5d854ab468bb6b6b20de16fe178", title: "Trạng thái lỗi - TaskFlow (Mobile)", device: "MOBILE" },
+  { id: "42933b81e879415db98ae61a9c7c80fc", title: "Bảng công việc - TaskFlow (Desktop)", device: "DESKTOP" },
+  { id: "44edba5c30b1490280d502699a3c1587", title: "Members & Roles", device: "MOBILE" },
+  { id: "44f864596d354d68a78710cbb28dfb78", title: "Xác minh email - TaskFlow (Mobile)", device: "MOBILE" },
+  { id: "4ad554861144489cbad4fdb9334eb2e3", title: "Task Details", device: "MOBILE" },
+  { id: "4edc19aad8cc4956b57573707144ad31", title: "Tìm kiếm - TaskFlow (Mobile)", device: "MOBILE" },
+  { id: "538322e6cc8e4d3190f49e36dcfb40a1", title: "Trang chủ - TaskFlow (Desktop)", device: "DESKTOP" },
+  { id: "54f492c813784ce6a5c5a76a7b602e93", title: "Create Workspace", device: "MOBILE" },
+  { id: "56b5a64ca3914840804df57961f9fa8f", title: "Tạo & Sửa dự án - TaskFlow (Mobile)", device: "MOBILE" },
+  { id: "6251244acfc74630b5ed2a1dd703994a", title: "Login / Sign Up", device: "MOBILE" },
+  { id: "6430e74812824249bed23bba3c033cea", title: "Giới hạn gói Free - TaskFlow (Mobile)", device: "MOBILE" },
+  { id: "6bf4e48799f9486c95b9a059331a3acd", title: "Điều khoản dịch vụ - TaskFlow (Desktop)", device: "DESKTOP" },
+  { id: "6dcec5f6e8ec4191b1b1cbb9fc29840f", title: "Đặt lại mật khẩu - TaskFlow (Mobile)", device: "MOBILE" },
+  { id: "7159c9552a5a437893ee310d7dcdb034", title: "Cài đặt cá nhân - TaskFlow (Mobile)", device: "MOBILE" },
+  { id: "7523cf1d4a1b47549efe31963488f5f7", title: "Hỗ trợ - TaskFlow (Desktop)", device: "DESKTOP" },
+  { id: "7acaca661be64b4286755b60c9e9c700", title: "Tổng quan - TaskFlow (Desktop)", device: "DESKTOP" },
+  { id: "8c03da08abdf4bb8adf3a1c22e35e677", title: "Onboarding Checklist - TaskFlow (Mobile)", device: "MOBILE" },
+  { id: "8d8a3f7df4e54857b937ff5946ca4c46", title: "Bình luận công việc - TaskFlow (Mobile)", device: "MOBILE" },
+  { id: "a2b1eea9fc854c6d939789712c138f01", title: "Notifications", device: "MOBILE" },
+  { id: "b64ed7108e174334ae0b81dab2a0384e", title: "Project Board", device: "MOBILE" },
+  { id: "d291afda03c443f3a38633cef600e042", title: "Liên kết hết hạn - TaskFlow (Mobile)", device: "MOBILE" },
+  { id: "d2bc0a396d0f447eab4c38d4f3be7295", title: "Dashboard", device: "MOBILE" },
+  { id: "dc6c7024890f49d1b50c2fc885e6aee4", title: "My Tasks", device: "MOBILE" },
+  { id: "eaf65b2376da465992e02dfac3f0c48a", title: "Đăng ký tài khoản - TaskFlow (Mobile)", device: "MOBILE" },
+  { id: "eb3cce758cae4c9488d346951195c0e4", title: "Quên mật khẩu - TaskFlow (Mobile)", device: "MOBILE" },
+  { id: "eda4c56916584c92b7dd53117187bd11", title: "Mời thành viên - TaskFlow (Mobile)", device: "MOBILE" },
+  { id: "ee90a8640f934d01be39b4fe431f20cf", title: "Tính năng - TaskFlow (Desktop)", device: "DESKTOP" },
+  { id: "f3c22ace31d741e782d566f0ec4050b9", title: "Chuyển không gian làm việc - TaskFlow (Mobile)", device: "MOBILE" },
+  { id: "f469e332366447c09510967059f2dc6d", title: "Projects", device: "MOBILE" },
+  { id: "f8572997b03241ed861b26bb5e23dc15", title: "Quản lý thanh toán - TaskFlow (Mobile)", device: "MOBILE" },
+  { id: "f94d8f88564a401c86b79589c4c6e618", title: "404 - TaskFlow (Mobile)", device: "MOBILE" },
+  { id: "cea05616a89d4c938d7038e6921fe7dc", title: "404 - TaskFlow (Desktop)", device: "DESKTOP" },
+  { id: "edfdc7348ccf4fadab694c83b1a2e965", title: "Bảo mật - TaskFlow (Desktop)", device: "DESKTOP" },
+  { id: "9a5c07d21d40451caf3a5bc71b4a76f0", title: "Bảo mật - TaskFlow (Mobile)", device: "MOBILE" },
+  { id: "477bd865f7254d3a83392def97805e83", title: "Bắt đầu - TaskFlow (Mobile)", device: "MOBILE" },
+  { id: "e8e8f778ced447d9a392891418014859", title: "Bắt đầu - TaskFlow (Mobile)", device: "MOBILE" },
+  { id: "bed067845c704d8f9346af1f1e8c90d9", title: "Cài đặt không gian làm việc - TaskFlow (Mobile)", device: "MOBILE" },
+  { id: "e3d7227a6833424488747fe6114c1bd9", title: "Chính sách bảo mật - TaskFlow (Desktop)", device: "DESKTOP" },
+  { id: "958a52ae0d2f472eba71079caa39d177", title: "Chỉnh sửa & Xung đột dữ liệu - TaskFlow (Mobile)", device: "MOBILE" },
+  { id: "e01abc69daf1450a983dbd13fbee80df", title: "Chỉnh sửa & Xung đột dữ liệu - TaskFlow (Mobile)", device: "MOBILE" },
+  { id: "1a9270c6d46449fb81248e6739cace2e", title: "Chuyển quyền sở hữu - TaskFlow (Mobile)", device: "MOBILE" },
+  { id: "6f5005cdb5724234a9cff8205d764001", title: "Công việc đã lưu trữ - TaskFlow (Mobile)", device: "MOBILE" },
+  { id: "254474b5b4a842dda06fe37855527455", title: "Dashboard", device: "MOBILE" },
+  { id: "c986637266764029b0fde4284a9e1c5d", title: "Dự án đã lưu trữ - TaskFlow (Mobile)", device: "MOBILE" },
+  { id: "7fae3450223b4902bb645f0475f92534", title: "Đăng ký - TaskFlow (Mobile)", device: "MOBILE" },
+  { id: "0e03105a18c24032bd8b7a6ef96f7b9c", title: "Đăng nhập - TaskFlow (Mobile)", device: "MOBILE" },
+  { id: "389e6377450c4d9a890d11ecece5bb70", title: "Đặt lại mật khẩu - TaskFlow (Mobile)", device: "MOBILE" },
+  { id: "ed796724510247d89d3c4be7aca7474e", title: "Điều khoản dịch vụ - TaskFlow (Mobile)", device: "MOBILE" },
+  { id: "7639d87e7fac4c5eb2e1f18e705d5d7e", title: "Giải pháp - TaskFlow (Desktop)", device: "DESKTOP" },
+  { id: "5c2dee5dd3224f9c8b0fdda5f5a770b4", title: "Giải pháp - TaskFlow (Mobile)", device: "MOBILE" },
+  { id: "9a29f1295faa439cbac8b6e6c806c9a1", title: "Hành động thành viên - TaskFlow (Mobile)", device: "MOBILE" },
+  { id: "e58895deeb7c42c9a5df0a14a2905d64", title: "Hỗ trợ - TaskFlow (Mobile)", device: "MOBILE" },
+  { id: "d1c8987d74a84f2a8ffc57e65d8f1afa", title: "Lịch sử hoạt động Workspace - TaskFlow (Mobile)", device: "MOBILE" },
+  { id: "1a1fc2cb5489401ab5b34b2c982501c9", title: "Lời mời tham gia Workspace - TaskFlow (Mobile)", device: "MOBILE" },
+  { id: "dc52fb96d8764eabaf49697827ddecec", title: "Lời mời tham gia Workspace - TaskFlow (Mobile)", device: "MOBILE" },
+  { id: "0071b04059a54aa58b55204ab24526f9", title: "Ma trận UI theo quyền - TaskFlow (Mobile)", device: "MOBILE" },
+  { id: "0fcf03bfe8b84bc6b0b0427f09a3a88a", title: "Members & Roles", device: "MOBILE" },
+  { id: "4adbc8d015c449519f5220c58c3af8a6", title: "Mobile Menu Open - TaskFlow", device: "MOBILE" },
+  { id: "c6c26fff7eaa40fc88667277cb02116a", title: "My Tasks", device: "MOBILE" },
+  { id: "cf281652c3d64b5682ce2f9abffd04d7", title: "Project Board", device: "MOBILE" },
+  { id: "cf20091e6faf451f88b41db5d4cc905c", title: "Projects", device: "MOBILE" },
+  { id: "ddf5c0758ca04687afad609f7473dee0", title: "Quản lý Board - TaskFlow (Mobile)", device: "MOBILE" },
+  { id: "12d9615fc76d4ab7a5f481b08f51e4d4", title: "Quên mật khẩu - TaskFlow (Mobile)", device: "MOBILE" },
+  { id: "653dd71c587b4f3cb0922f9f080f1a2e", title: "Tài nguyên - TaskFlow (Desktop)", device: "DESKTOP" },
+  { id: "151bb591471d42d19621f6cf8837cefb", title: "Tài nguyên - TaskFlow (Mobile)", device: "MOBILE" },
+  { id: "8e44fa16138942dba5f644e30c9a5c00", title: "Tạo & Sửa dự án - TaskFlow (Mobile)", device: "MOBILE" },
+  { id: "9ae471dfbf224a7da3b22219f0a2240e", title: "Tạo công việc mới - TaskFlow (Mobile)", device: "MOBILE" },
+  { id: "6811e407efe94f538c8f098ba0c0d322", title: "Tạo công việc mới - TaskFlow (Mobile)", device: "MOBILE" },
+  { id: "979a19401c7f42ad85c48fe560a5dbdc", title: "Tạo công việc nhanh - TaskFlow (Mobile)", device: "MOBILE" },
+  { id: "32462877c97f464490646f7d6f859c64", title: "Tạo công việc nhanh - TaskFlow (Mobile)", device: "MOBILE" },
+  { id: "1b484b26e17d42fb954031c362f4dd63", title: "Task Details", device: "MOBILE" },
+  { id: "1fa82a178f6645cdaaa94e675bc5b98e", title: "Thành viên dự án riêng tư - TaskFlow (Mobile)", device: "MOBILE" },
+  { id: "f7e08b696bad44ca8a9ccf208825a75e", title: "Tìm kiếm - TaskFlow (Mobile)", device: "MOBILE" },
+  { id: "36d00f27de814b3c87a87c917d84a8aa", title: "Tính năng - TaskFlow (Desktop)", device: "DESKTOP" },
+  { id: "9148229d093d498cbdaf50bb14097195", title: "Tính năng - TaskFlow (Mobile)", device: "MOBILE" },
+  { id: "1184aabc7f804e0bb2ea069a9e3efcbc", title: "Trang chủ với Cookie Consent - TaskFlow (Desktop)", device: "DESKTOP" },
+  { id: "f99d35b21d3a47fc8afb9992ffee3000", title: "Trang chủ với Cookie Consent - TaskFlow (Mobile)", device: "MOBILE" },
+  { id: "1d3fb767ac524b6eb3942c76947b615e", title: "Trạng thái lời mời - TaskFlow (Mobile)", device: "MOBILE" },
+  { id: "00e58c6de5da4abfa1bb1ab2445a828c", title: "Trạng thái lời mời - TaskFlow (Mobile)", device: "MOBILE" },
+  { id: "4c6b75e21263418cbd91cc2d431e3336", title: "Trạng thái truy cập đặc biệt - TaskFlow (Mobile)", device: "MOBILE" },
+  { id: "e813935ba5234e309f246424caed6e83", title: "Vòng đời Workspace - TaskFlow (Mobile)", device: "MOBILE" },
+  { id: "c17a9bb6f0a8492481b4c388721c2fc5", title: "Xác minh email - TaskFlow (Mobile)", device: "MOBILE" },
+  { id: "2ab85736cd024c858ce10e18f4860266", title: "Xóa cột có công việc - TaskFlow (Mobile)", device: "MOBILE" },
+];
+
+export const screenById = new Map(screens.map((screen) => [screen.id, screen]));
+
+export function screenGroup(title: string) {
+  const value = title.toLowerCase();
+  if (/trang chủ|tính năng|bảo mật|giải pháp|tài nguyên|bảng giá|chính sách|điều khoản|hỗ trợ|404|mobile menu/.test(value)) return "Marketing";
+  if (/đăng nhập|đăng ký|mật khẩu|xác minh|liên kết|lời mời|bắt đầu|create workspace/.test(value)) return "Xác thực & onboarding";
+  if (/board|công việc|task|dự án|project|dashboard|my tasks|tổng quan|tìm kiếm|notification|bình luận/.test(value)) return "Ứng dụng";
+  return "Quản trị & trạng thái";
+}
+
