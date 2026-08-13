@@ -1,6 +1,6 @@
 import { drizzle } from "drizzle-orm/postgres-js";
 import postgres from "postgres";
-import { parseServerEnv } from "@/app/lib/env";
+import { databaseEnv } from "@/app/lib/env";
 import * as schema from "./schema";
 
 let client: ReturnType<typeof postgres> | undefined;
@@ -41,7 +41,7 @@ function wrapQuery<T extends object>(value: T): T {
 export function getDb(): any {
   if (database) return database;
   if (!client) {
-    const { SUPABASE_DB_URL } = parseServerEnv();
+    const { SUPABASE_DB_URL } = databaseEnv();
     client = postgres(SUPABASE_DB_URL, {
       max: 5,
       prepare: false,

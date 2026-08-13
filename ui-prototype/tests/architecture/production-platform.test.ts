@@ -27,11 +27,13 @@ test("Supabase migration enables RLS and tenant-scoped project access", async ()
 
 test("provider adapters keep server secrets out of browser modules", async () => {
   const browser = await readFile(new URL("../../app/lib/supabase/browser.ts", import.meta.url), "utf8");
+  const env = await readFile(new URL("../../app/lib/env.ts", import.meta.url), "utf8");
   const databaseTypes = await readFile(new URL("../../app/lib/supabase/database.types.ts", import.meta.url), "utf8");
   const email = await readFile(new URL("../../app/lib/email.ts", import.meta.url), "utf8");
   const stripe = await readFile(new URL("../../app/lib/stripe.ts", import.meta.url), "utf8");
   assert.doesNotMatch(browser, /SERVICE_ROLE|STRIPE_SECRET|RESEND_API_KEY/);
   assert.match(browser, /createBrowserClient<Database>/);
+  assert.match(env, /NEXT_PUBLIC_SUPABASE_URL: process\.env\.NEXT_PUBLIC_SUPABASE_URL/);
   assert.match(databaseTypes, /PostgrestVersion: "14\.15"/);
   assert.match(email, /RESEND_API_KEY/);
   assert.match(stripe, /STRIPE_SECRET_KEY/);
