@@ -1,0 +1,7 @@
+import { getApiUser } from "@/app/lib/api-auth";
+import { fail, ok } from "@/app/lib/api-response";
+import { routeError } from "@/app/lib/route-handler";
+import { enumValue, optionalString, parseJson, requiredString } from "@/app/lib/validation";
+import { createProject, listProjects } from "@/db/projects";
+export async function GET(request: Request, { params }: { params: Promise<{ workspaceId: string }> }) { const auth = await getApiUser(); if (!auth) return fail("AUTH_REQUIRED", "Authentication required", 401); const { workspaceId } = await params; const includeArchived = new URL(request.url).searchParams.get("archived") === "true"; const data = await listProjects(workspaceId, auth.user.id, includeArchived); return data ? ok({ items: data, nextCursor: null }) : fail("NOT_FOUND", "Workspace not found", 404); }
+export async function POST(request: Request, { params }: { params: Promise<{ workspaceId: string }> }) { try { const auth = await getApiUser(); if (!auth) return fail("AUTH_REQUIRED", "Authentication required", 401); const { workspaceId } = await params; const body = await parseJson(request); const data = await createProject(workspaceId, auth.user.id, { name: requiredString(body, "name", 120), description: optionalString(body, "description", 1000) ?? "", visibility: enumValue(body, "visibility", ["WORKSPACE", "PRIVATE"] as const, "WORKSPACE") }); return data ? ok(data, 201) : fail("PERMISSION_DENIED", "Bạn không có quyền tạo dự án", 403); } catch (error) { return routeError(error); } }

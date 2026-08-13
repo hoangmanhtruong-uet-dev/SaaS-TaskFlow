@@ -1,0 +1,2 @@
+import { getApiUser } from "@/app/lib/api-auth"; import { fail, ok } from "@/app/lib/api-response"; import { listBoardColumns } from "@/db/projects";
+export async function GET(_: Request, { params }: { params: Promise<{ workspaceId: string; boardId: string }> }) { const auth = await getApiUser(); if (!auth) return fail("AUTH_REQUIRED", "Authentication required", 401); const { workspaceId, boardId } = await params; const data = await listBoardColumns(workspaceId, boardId, auth.user.id); return data ? ok(data) : fail("NOT_FOUND", "Board not found", 404); }

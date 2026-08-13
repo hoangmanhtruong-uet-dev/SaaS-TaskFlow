@@ -1,0 +1,46 @@
+"use client";
+import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
+import { PageHeading, ProjectGrid, TaskList, NewTaskAction } from "./product-views";
+import { Button, ButtonLink, EmptyState, ErrorState, Field, ListSkeleton } from "./ui";
+import { useWorkspace } from "./providers/workspace-provider";
+import { useApiResource } from "@/app/hooks/use-api-resource";
+import { projectService, type BoardDto } from "@/app/services/project-service";
+import { taskService } from "@/app/services/task-service";
+import type { BoardColumn, Project } from "@/app/types/domain";
+import { InteractiveBoard, TaskEditor } from "./task-interactions";
+
+export function LiveDashboard() {
+  const workspace = useWorkspace(); const resource = useApiResource(async () => { const [projects, tasks] = await Promise.all([projectService.list(workspace.id), taskService.list(workspace.id)]); return { projects, tasks }; }, `dashboard:${workspace.id}`);
+  if (resource.loading) return <ListSkeleton rows={4} />; if (resource.error || !resource.data) return <ErrorState retry={resource.reload} />;
+  const { projects, tasks } = resource.data;
+  return <><PageHeading eyebrow={workspace.name} title="Tổng quan" action={<NewTaskAction />} /><div className="metric-grid"><article><strong>{tasks.length}</strong><span>Việc đang mở</span></article><article><strong>{projects.length}</strong><span>Dự án hoạt động</span></article><article><strong>{tasks.filter((task) => task.dueAt).length}</strong><span>Có deadline</span></article><article><strong>{projects.length ? Math.round(projects.reduce((sum, project) => sum + project.progress, 0) / projects.length) : 0}%</strong><span>Tiến độ trung bình</span></article></div><div className="dashboard-grid"><section><div className="section-title"><h2>Việc cần chú ý</h2></div><TaskList tasks={tasks.slice(0, 5)} /></section><section><div className="section-title"><h2>Dự án gần đây</h2></div><ProjectGrid projects={projects.slice(0, 2)} /></section></div></>;
+}
+
+export function LiveProjects() { const workspace = useWorkspace(); const resource = useApiResource(() => projectService.list(workspace.id), `projects:${workspace.id}`); return <><PageHeading eyebrow={workspace.name} title="Dự án" action={<ButtonLink href="/app/projects/new">Dự án mới</ButtonLink>} />{resource.loading ? <ListSkeleton /> : resource.error ? <ErrorState retry={resource.reload} /> : <ProjectGrid projects={resource.data ?? []} />}</>; }
+export function LiveTasks() { const workspace = useWorkspace(); const resource = useApiResource(() => taskService.list(workspace.id), `tasks:${workspace.id}`); return <><PageHeading eyebrow={workspace.name} title="Việc của tôi" action={<NewTaskAction />} />{resource.loading ? <ListSkeleton /> : resource.error ? <ErrorState retry={resource.reload} /> : <TaskList tasks={resource.data ?? []} />}</>; }
+
+export function LiveBoard({ projectId }: { projectId: string }) {
+  const workspace = useWorkspace(); const resource = useApiResource(async () => { const [project, tasks, boards] = await Promise.all([projectService.get(workspace.id, projectId), taskService.list(workspace.id, projectId), projectService.listBoards(workspace.id, projectId)]); const board = boards[0]; const columns = board ? await projectService.listColumns(workspace.id, board.id) : []; return { project, tasks, board, columns }; }, `board:${workspace.id}:${projectId}`);
+  if (resource.loading) return <ListSkeleton rows={4} />; if (resource.error || !resource.data) return <ErrorState retry={resource.reload} />;
+  const { project, tasks, columns } = resource.data;
+  return <><PageHeading eyebrow="Dự án / Board" title={project.name} action={<NewTaskAction />} />{columns.length ? <InteractiveBoard key={tasks.map((task) => `${task.id}:${task.version}:${task.columnId}`).join("|")} workspaceId={workspace.id} columns={columns} initialTasks={tasks} refetch={resource.reload} /> : <EmptyState title="Board chưa có column" body="Tạo column để bắt đầu tổ chức công việc." />}</>;
+}
+
+export function NewProjectForm() {
+  const workspace = useWorkspace(); const router = useRouter(); const [saving, setSaving] = useState(false); const [error, setError] = useState("");
+  async function submit(event: React.FormEvent<HTMLFormElement>) { event.preventDefault(); setSaving(true); setError(""); const form = new FormData(event.currentTarget); try { const project = await projectService.create(workspace.id, { name: String(form.get("name")), description: String(form.get("description")), visibility: form.get("private") ? "PRIVATE" : "WORKSPACE" }); router.push(`/app/projects/${project.id}/board`); } catch (value) { setError(value instanceof Error ? value.message : "Không thể tạo dự án"); setSaving(false); } }
+  return <form className="production-form" onSubmit={submit}><Field name="name" label="Tên dự án *" required /><label className="field"><span>Mô tả</span><textarea name="description" /></label><label className="check-line"><input name="private" type="checkbox" />Dự án riêng tư</label>{error && <p className="form-error">{error}</p>}<Button type="submit" disabled={saving}>{saving ? "Đang tạo..." : "Tạo dự án"}</Button></form>;
+}
+
+export function NewTaskForm() {
+  const workspace = useWorkspace(); const router = useRouter(); const [projects, setProjects] = useState<Project[]>([]); const [boards, setBoards] = useState<BoardDto[]>([]); const [columns, setColumns] = useState<BoardColumn[]>([]); const [projectId, setProjectId] = useState(""); const [boardId, setBoardId] = useState(""); const [saving, setSaving] = useState(false); const [error, setError] = useState("");
+  useEffect(() => { projectService.list(workspace.id).then((items) => { setProjects(items); setProjectId(items[0]?.id ?? ""); }).catch((value) => setError(value instanceof Error ? value.message : "Không tải được dự án")); }, [workspace.id]);
+  useEffect(() => { if (!projectId) return; projectService.listBoards(workspace.id, projectId).then((items) => { setBoards(items); setBoardId(items[0]?.id ?? ""); }).catch(() => setBoards([])); }, [workspace.id, projectId]);
+  useEffect(() => { if (!boardId) return; projectService.listColumns(workspace.id, boardId).then(setColumns).catch(() => setColumns([])); }, [workspace.id, boardId]);
+  async function submit(event: React.FormEvent<HTMLFormElement>) { event.preventDefault(); setSaving(true); setError(""); const form = new FormData(event.currentTarget); try { const task = await taskService.create(workspace.id, { projectId, boardId, columnId: String(form.get("columnId")), title: String(form.get("title")), description: String(form.get("description")), priority: String(form.get("priority")) as "LOW" | "MEDIUM" | "HIGH" | "URGENT", dueAt: String(form.get("dueAt")) || null, assigneeIds: [] }); router.push(`/app/tasks/${task.id}`); } catch (value) { setError(value instanceof Error ? value.message : "Không thể tạo công việc"); setSaving(false); } }
+  if (!projects.length && !error) return <ListSkeleton />;
+  return <form className="production-form" onSubmit={submit}><Field name="title" label="Tiêu đề *" required /><label className="field"><span>Mô tả</span><textarea name="description" /></label><label className="field"><span>Dự án</span><select value={projectId} onChange={(event) => setProjectId(event.target.value)}>{projects.map((project) => <option value={project.id} key={project.id}>{project.name}</option>)}</select></label><label className="field"><span>Board</span><select value={boardId} onChange={(event) => setBoardId(event.target.value)}>{boards.map((board) => <option value={board.id} key={board.id}>{board.name}</option>)}</select></label><label className="field"><span>Column</span><select name="columnId" required>{columns.map((column) => <option value={column.id} key={column.id}>{column.name}</option>)}</select></label><label className="field"><span>Ưu tiên</span><select name="priority" defaultValue="MEDIUM"><option value="LOW">Thấp</option><option value="MEDIUM">Trung bình</option><option value="HIGH">Cao</option><option value="URGENT">Khẩn cấp</option></select></label><Field name="dueAt" label="Hạn hoàn thành" type="date" />{error && <p className="form-error">{error}</p>}<Button type="submit" disabled={saving || !columns.length}>{saving ? "Đang lưu..." : "Lưu công việc"}</Button></form>;
+}
+
+export function LiveTaskDetail({ taskId }: { taskId: string }) { const workspace = useWorkspace(); const resource = useApiResource(async () => { const [task, comments] = await Promise.all([taskService.get(workspace.id, taskId), taskService.comments(workspace.id, taskId)]); return { task, comments }; }, `task:${workspace.id}:${taskId}`); if (resource.loading) return <ListSkeleton />; if (resource.error || !resource.data) return <ErrorState retry={resource.reload} />; const { task, comments } = resource.data; return <><PageHeading eyebrow={`${task.projectName} / ${task.columnName}`} title={task.title} /><TaskEditor key={`${task.version}:${comments.length}`} workspaceId={workspace.id} workspaceRole={workspace.role} initialTask={task} initialComments={comments} refetch={resource.reload} /></>; }

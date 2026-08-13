@@ -1,0 +1,2 @@
+import { getApiUser } from "@/app/lib/api-auth"; import { fail, ok } from "@/app/lib/api-response"; import { listNotifications } from "@/db/notifications";
+export async function GET(request: Request) { const auth = await getApiUser(); if (!auth) return fail("AUTH_REQUIRED", "Authentication required", 401); return ok({ items: await listNotifications(auth.user.id, new URL(request.url).searchParams.get("unread") === "true"), nextCursor: null }); }
