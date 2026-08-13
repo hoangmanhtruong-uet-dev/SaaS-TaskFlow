@@ -429,9 +429,15 @@ export type Database = {
           created_at: string
           current_period_end: string | null
           id: string
+          last_invoice_status: string | null
+          provider_updated_at: string
+          quantity: number
           status: string
           stripe_customer_id: string | null
+          stripe_price_id: string | null
+          stripe_product_id: string | null
           stripe_subscription_id: string | null
+          stripe_subscription_item_id: string | null
           updated_at: string
           workspace_id: string
         }
@@ -440,9 +446,15 @@ export type Database = {
           created_at?: string
           current_period_end?: string | null
           id?: string
+          last_invoice_status?: string | null
+          provider_updated_at?: string
+          quantity?: number
           status: string
           stripe_customer_id?: string | null
+          stripe_price_id?: string | null
+          stripe_product_id?: string | null
           stripe_subscription_id?: string | null
+          stripe_subscription_item_id?: string | null
           updated_at?: string
           workspace_id: string
         }
@@ -451,9 +463,15 @@ export type Database = {
           created_at?: string
           current_period_end?: string | null
           id?: string
+          last_invoice_status?: string | null
+          provider_updated_at?: string
+          quantity?: number
           status?: string
           stripe_customer_id?: string | null
+          stripe_price_id?: string | null
+          stripe_product_id?: string | null
           stripe_subscription_id?: string | null
+          stripe_subscription_item_id?: string | null
           updated_at?: string
           workspace_id?: string
         }
@@ -747,4 +765,3 @@ export const Constants = {
     },
   },
 } as const
-

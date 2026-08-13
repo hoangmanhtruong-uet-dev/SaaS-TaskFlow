@@ -20,6 +20,7 @@
     "db:restore": "node scripts/db-maintenance.mjs restore",
     "db:rollback": "node scripts/db-maintenance.mjs rollback",
     "db:seed": "node scripts/db-maintenance.mjs seed",
+    "stripe:configure": "node scripts/configure-stripe.mjs",
     "supabase:start": "supabase start",
     "supabase:stop": "supabase stop",
     "supabase:reset": "supabase db reset"

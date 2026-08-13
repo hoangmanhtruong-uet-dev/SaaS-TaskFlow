@@ -34,3 +34,22 @@ export interface MoveTaskRequest {
   afterTaskId: string | null;
   expectedVersion: number;
 }
+
+export interface BillingSummaryDto {
+  plan: "FREE" | "PRO";
+  status: string | null;
+  projectLimit: number | null;
+  memberLimit: number;
+  canUseAdvancedPermissions: boolean;
+  canReadFullActivity: boolean;
+  activeProjects: number;
+  activeMembers: number;
+  pendingInvitations: number;
+  customerId: string | null;
+  subscriptionId: string | null;
+  priceId: string | null;
+  quantity: number | null;
+  cancelAtPeriodEnd: boolean;
+  currentPeriodEnd: string | null;
+  lastInvoiceStatus: string | null;
+}

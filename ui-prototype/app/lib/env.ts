@@ -38,6 +38,19 @@ const emailSchema = z.object({
   EMAIL_REPLY_TO: z.string().email(),
 });
 
+const stripeSchema = z.object({
+  APP_ENV: z.enum(["local", "test", "staging", "production"]),
+  NEXT_PUBLIC_SITE_URL: z.string().url(),
+  STRIPE_SECRET_KEY: z.string().startsWith("sk_"),
+  STRIPE_WEBHOOK_SECRET: z.string().startsWith("whsec_"),
+  NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY: z.string().startsWith("pk_"),
+  STRIPE_PRICE_PRO_MONTHLY: z.string().startsWith("price_"),
+}).superRefine((value, context) => {
+  const testMode = value.STRIPE_SECRET_KEY.startsWith("sk_test_") && value.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY.startsWith("pk_test_");
+  if (value.APP_ENV !== "production" && !testMode) context.addIssue({ code: "custom", message: "Non-production environments must use Stripe test mode keys" });
+  if (value.APP_ENV === "production" && testMode) context.addIssue({ code: "custom", message: "Production must use Stripe live mode keys" });
+});
+
 export function parseServerEnv(source: Record<string, string | undefined> = process.env): ServerEnv {
   return serverSchema.parse(source);
 }
@@ -56,6 +69,10 @@ export function databaseEnv(source: Record<string, string | undefined> = process
 
 export function emailEnv(source: Record<string, string | undefined> = process.env) {
   return emailSchema.parse(source);
+}
+
+export function stripeEnv(source: Record<string, string | undefined> = process.env) {
+  return stripeSchema.parse(source);
 }
 
 export function publicEnv(source: Record<string, string | undefined> = process.env) {

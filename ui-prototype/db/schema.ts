@@ -277,12 +277,24 @@ export const subscriptions = pgTable("subscriptions", {
   workspaceId: uuid("workspace_id").notNull().references(() => workspaces.id, { onDelete: "cascade" }),
   providerCustomerId: text("stripe_customer_id"),
   stripeSubscriptionId: text("stripe_subscription_id"),
+  stripeSubscriptionItemId: text("stripe_subscription_item_id"),
+  stripePriceId: text("stripe_price_id"),
+  stripeProductId: text("stripe_product_id"),
   status: text("status").notNull(),
+  quantity: integer("quantity").notNull().default(1),
   currentPeriodEnd: timestamp("current_period_end", { withTimezone: true, mode: "date" }),
   cancelAtPeriodEnd: boolean("cancel_at_period_end").notNull().default(false),
+  lastInvoiceStatus: text("last_invoice_status"),
+  providerUpdatedAt: timestamp("provider_updated_at", { withTimezone: true, mode: "date" }).notNull().defaultNow(),
   createdAt: createdAt(),
   updatedAt: updatedAt(),
-}, (table) => [uniqueIndex("subscriptions_workspace_uidx").on(table.workspaceId)]);
+}, (table) => [
+  uniqueIndex("subscriptions_workspace_uidx").on(table.workspaceId),
+  uniqueIndex("subscriptions_customer_uidx").on(table.providerCustomerId),
+  uniqueIndex("subscriptions_stripe_subscription_uidx").on(table.stripeSubscriptionId),
+  uniqueIndex("subscriptions_stripe_item_uidx").on(table.stripeSubscriptionItemId),
+  check("subscriptions_quantity_check", sql`${table.quantity} >= 1`),
+]);
 
 export const idempotencyRecords = pgTable("idempotency_records", {
   workspaceId: uuid("workspace_id").notNull().references(() => workspaces.id, { onDelete: "cascade" }),

@@ -22,6 +22,7 @@ export async function POST(request: Request, { params }: { params: Promise<{ wor
     if (result.kind === "denied") return fail("PERMISSION_DENIED", "Bạn không có quyền mời role này", 403);
     if (result.kind === "rate_limited") return fail("RATE_LIMITED", "Bạn đã gửi quá nhiều lời mời", 429, { retryAfterSeconds: result.retryAfterSeconds });
     if (result.kind === "duplicate") return fail("INVITATION_ALREADY_PENDING", "Email này đã có lời mời đang chờ", 409);
+    if (result.kind === "seat_limit") return fail("SEAT_LIMIT_REACHED", "Workspace đã dùng hết số seat của gói hiện tại.", 402);
     const inviteUrl = `${new URL(request.url).origin}/invite/${result.token}`;
     const message = invitationEmail({ inviterName: result.inviterName, workspaceName: result.workspaceName, role, inviteUrl, expiresAt: result.expiresAt });
     let emailDelivery: "sent" | "failed" = "sent";
