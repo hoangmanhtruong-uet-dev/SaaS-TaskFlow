@@ -38,3 +38,16 @@ test("provider adapters keep server secrets out of browser modules", async () =>
   assert.match(email, /RESEND_API_KEY/);
   assert.match(stripe, /STRIPE_SECRET_KEY/);
 });
+
+test("browser API reads recover once from an SSR session refresh race", async () => {
+  const browser = await readFile(new URL("../../app/lib/supabase/browser.ts", import.meta.url), "utf8");
+  const httpClient = await readFile(new URL("../../app/services/http-client.ts", import.meta.url), "utf8");
+
+  assert.match(browser, /let browserClient:/);
+  assert.match(browser, /if \(browserClient\) return browserClient/);
+  assert.match(httpClient, /let sessionRefresh:/);
+  assert.match(httpClient, /auth\.refreshSession\(\)/);
+  assert.match(httpClient, /error\.status !== 401/);
+  assert.match(httpClient, /isSafeRequest\(init\)/);
+  assert.equal(httpClient.match(/refreshSessionOnce\(\)/g)?.length, 2);
+});
