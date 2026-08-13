@@ -31,8 +31,10 @@ dev-server.log
 dev-server.err.log
 .pnpm-debug.log*
 
-# env files (can opt-in for committing if needed)
+# environment files; commit only documented templates
 .env*
+!.env.example
+!.env.test
 
 # vercel
 .vercel
@@ -43,3 +45,4 @@ dev-server.err.log
 /work/
 /backups/
 tsconfig.tsbuildinfo
+.supabase/

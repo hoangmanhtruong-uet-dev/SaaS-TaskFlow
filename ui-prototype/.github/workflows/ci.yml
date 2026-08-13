@@ -46,3 +46,6 @@ jobs:
 
       - name: Verify tenant isolation and role matrix
         run: npm run test:security
+
+      - name: Verify production architecture and environment contract
+        run: npm run env:check && npm run test:architecture

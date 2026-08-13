@@ -12,18 +12,28 @@
     "test": "npm run build && node --test tests/rendered-html.test.mjs",
     "test:db": "node scripts/verify-database.mjs",
     "test:security": "tsx --test tests/security/*.test.ts",
+    "test:architecture": "tsx --test tests/architecture/*.test.ts",
+    "env:check": "node scripts/validate-environment.mjs",
     "lint": "eslint . --ignore-pattern dist --ignore-pattern .next",
     "db:generate": "drizzle-kit generate",
     "db:backup": "node scripts/db-maintenance.mjs backup",
     "db:restore": "node scripts/db-maintenance.mjs restore",
     "db:rollback": "node scripts/db-maintenance.mjs rollback",
-    "db:seed": "node scripts/db-maintenance.mjs seed"
+    "db:seed": "node scripts/db-maintenance.mjs seed",
+    "supabase:start": "supabase start",
+    "supabase:stop": "supabase stop",
+    "supabase:reset": "supabase db reset"
   },
   "dependencies": {
+    "@supabase/ssr": "^0.12.4",
+    "@supabase/supabase-js": "^2.112.3",
     "drizzle-orm": "0.45.2",
     "lucide-react": "^1.31.0",
     "react": "19.2.6",
-    "react-dom": "19.2.6"
+    "react-dom": "19.2.6",
+    "resend": "^6.19.0",
+    "stripe": "^22.5.0",
+    "zod": "^4.4.3"
   },
   "devDependencies": {
     "@cloudflare/vite-plugin": "1.37.1",
