@@ -24,7 +24,7 @@ export async function requestWorkspaceDeletion(workspaceId: string, userId: stri
   const requestedAt = new Date(); const scheduledFor = new Date(requestedAt.getTime() + 30 * 86400000);
   await getDb().batch([
     getDb().update(workspaces).set({ deletionRequestedAt: requestedAt, deletionScheduledFor: scheduledFor, archivedAt: workspace.archivedAt ?? requestedAt, updatedAt: requestedAt }).where(eq(workspaces.id, workspaceId)),
-    getDb().insert(outboxEvents).values({ id: `evt_${crypto.randomUUID()}`, workspaceId, type: "WORKSPACE_DELETE_SCHEDULED", payload: { workspaceId, requestedByUserId: userId }, availableAt: scheduledFor }),
+    getDb().insert(outboxEvents).values({ id: crypto.randomUUID(), workspaceId, type: "WORKSPACE_DELETE_SCHEDULED", payload: { workspaceId, requestedByUserId: userId }, availableAt: scheduledFor }),
   ]);
   await recordActivity(workspaceId, userId, "workspace.deletion.requested", "workspace", workspaceId, { scheduledFor: scheduledFor.toISOString() });
   return { kind: "ok" as const, requestedAt, scheduledFor };

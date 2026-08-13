@@ -5,6 +5,7 @@ import "./globals.css";
 const geist = Geist({ variable: "--font-geist", subsets: ["latin", "latin-ext"] });
 
 export const metadata: Metadata = {
+  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000"),
   title: { default: "TaskFlow UI", template: "%s · TaskFlow" },
   description: "TaskFlow — quản lý công việc rõ ràng cho mọi đội nhóm.",
   openGraph: {

@@ -7,6 +7,6 @@ export async function GET() {
   const user = await ensureCurrentUser(identity);
   if (!user) return fail("USER_PROVISION_FAILED", "Could not provision user", 500);
   const workspaceRows = await listUserWorkspaces(user.id);
-  const workspaces = workspaceRows.map((workspace) => ({ ...workspace, archivedAt: workspace.archivedAt?.toISOString() ?? null }));
+  const workspaces = workspaceRows.map((workspace: Awaited<ReturnType<typeof listUserWorkspaces>>[number]) => ({ ...workspace, archivedAt: workspace.archivedAt?.toISOString() ?? null }));
   return ok({ id: user.id, email: user.email, name: user.name, avatarUrl: user.avatarUrl, emailVerifiedAt: user.emailVerifiedAt?.toISOString() ?? null, timezone: user.timezone, workspaces });
 }
