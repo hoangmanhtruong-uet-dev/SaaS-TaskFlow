@@ -46,7 +46,14 @@ export async function createInvitation(workspaceId: string, actorUserId: string,
   if (role === "ADMIN" && actor.role !== "OWNER") return { kind: "denied" as const };
   const normalized = email.trim().toLowerCase(); const existing = await getDb().select().from(invitations).where(and(eq(invitations.workspaceId, workspaceId), eq(invitations.emailNormalized, normalized), eq(invitations.status, "PENDING"))).get(); if (existing && existing.expiresAt > new Date()) return { kind: "duplicate" as const }; if (existing) await getDb().update(invitations).set({ status: "EXPIRED" }).where(eq(invitations.id, existing.id)).run();
   const token = crypto.randomUUID().replaceAll("-", "") + crypto.randomUUID().replaceAll("-", ""); const tokenHash = await hashToken(token); const id = crypto.randomUUID(); const expiresAt = new Date(Date.now() + 7 * 86400000);
-  await getDb().insert(invitations).values({ id, workspaceId, emailNormalized: normalized, role, tokenHash, expiresAt, createdByUserId: actorUserId }); await recordActivity(workspaceId, actorUserId, "invitation.created", "invitation", id, { email: normalized, role }); return { kind: "ok" as const, token, id, expiresAt };
+  await getDb().insert(invitations).values({ id, workspaceId, emailNormalized: normalized, role, tokenHash, expiresAt, createdByUserId: actorUserId });
+  await recordActivity(workspaceId, actorUserId, "invitation.created", "invitation", id, { email: normalized, role });
+  const context = await getDb().select({ workspaceName: workspaces.name, inviterName: users.name }).from(workspaces).innerJoin(users, eq(users.id, actorUserId)).where(eq(workspaces.id, workspaceId)).get();
+  return { kind: "ok" as const, token, id, expiresAt, workspaceName: context?.workspaceName ?? "TaskFlow", inviterName: context?.inviterName ?? "Quản trị viên" };
+}
+
+export async function getMembershipEmailContext(workspaceId: string, membershipId: string) {
+  return getDb().select({ email: users.email, name: users.name, workspaceName: workspaces.name }).from(memberships).innerJoin(users, eq(users.id, memberships.userId)).innerJoin(workspaces, eq(workspaces.id, memberships.workspaceId)).where(and(eq(memberships.id, membershipId), eq(memberships.workspaceId, workspaceId))).get();
 }
 
 export async function listInvitations(workspaceId: string, userId: string) {

@@ -32,6 +32,12 @@ const databaseSchema = z.object({
   SUPABASE_DB_URL: z.string().startsWith("postgresql://"),
 });
 
+const emailSchema = z.object({
+  RESEND_API_KEY: z.string().startsWith("re_"),
+  EMAIL_FROM: z.string().min(3),
+  EMAIL_REPLY_TO: z.string().email(),
+});
+
 export function parseServerEnv(source: Record<string, string | undefined> = process.env): ServerEnv {
   return serverSchema.parse(source);
 }
@@ -46,6 +52,10 @@ export function supabasePublicEnv(source: Record<string, string | undefined> = p
 
 export function databaseEnv(source: Record<string, string | undefined> = process.env) {
   return databaseSchema.parse(source);
+}
+
+export function emailEnv(source: Record<string, string | undefined> = process.env) {
+  return emailSchema.parse(source);
 }
 
 export function publicEnv(source: Record<string, string | undefined> = process.env) {

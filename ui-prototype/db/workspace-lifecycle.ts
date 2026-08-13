@@ -27,6 +27,6 @@ export async function requestWorkspaceDeletion(workspaceId: string, userId: stri
     getDb().insert(outboxEvents).values({ id: crypto.randomUUID(), workspaceId, type: "WORKSPACE_DELETE_SCHEDULED", payload: { workspaceId, requestedByUserId: userId }, availableAt: scheduledFor }),
   ]);
   await recordActivity(workspaceId, userId, "workspace.deletion.requested", "workspace", workspaceId, { scheduledFor: scheduledFor.toISOString() });
-  return { kind: "ok" as const, requestedAt, scheduledFor };
+  return { kind: "ok" as const, requestedAt, scheduledFor, workspaceName: workspace.name };
 }
 export async function cancelWorkspaceDeletion(workspaceId: string, userId: string) { const membership = await authorizeWorkspace(workspaceId, userId, "workspace.archive"); if (!membership || membership.role !== "OWNER") return false; await getDb().update(workspaces).set({ deletionRequestedAt: null, deletionScheduledFor: null, updatedAt: new Date() }).where(eq(workspaces.id, workspaceId)).run(); await recordActivity(workspaceId, userId, "workspace.deletion.cancelled", "workspace", workspaceId); return true; }
