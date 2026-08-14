@@ -49,3 +49,9 @@ jobs:
 
       - name: Verify production architecture and environment contract
         run: npm run env:check && npm run test:architecture
+
+      - name: Install Playwright Chromium
+        run: npx playwright install --with-deps chromium
+
+      - name: Run production-critical browser smoke tests
+        run: npm run test:e2e

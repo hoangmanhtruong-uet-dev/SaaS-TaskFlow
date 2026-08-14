@@ -11,7 +11,7 @@ const example = parse(await readFile(new URL("../.env.example", import.meta.url)
 const test = parse(await readFile(new URL("../.env.test", import.meta.url), "utf8"));
 assert.deepEqual(Object.keys(test).sort(), Object.keys(example).sort(), ".env.test and .env.example keys must stay aligned");
 
-const publicKeys = new Set(["NEXT_PUBLIC_SITE_URL", "NEXT_PUBLIC_API_BASE_URL", "NEXT_PUBLIC_SUPABASE_URL", "NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY", "NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY"]);
+const publicKeys = new Set(["NEXT_PUBLIC_APP_ENV", "NEXT_PUBLIC_SITE_URL", "NEXT_PUBLIC_API_BASE_URL", "NEXT_PUBLIC_SUPABASE_URL", "NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY", "NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY", "NEXT_PUBLIC_SENTRY_DSN"]);
 for (const key of Object.keys(example)) {
   if (key.startsWith("NEXT_PUBLIC_")) assert.ok(publicKeys.has(key), `Unexpected browser-visible key: ${key}`);
   if (/SECRET|SERVICE_ROLE|DB_URL|API_KEY/.test(key)) assert.ok(!key.startsWith("NEXT_PUBLIC_"), `Secret must be server-only: ${key}`);

@@ -13,6 +13,9 @@
     "test:db": "node scripts/verify-database.mjs",
     "test:security": "tsx --test tests/security/*.test.ts",
     "test:architecture": "tsx --test tests/architecture/*.test.ts",
+    "test:e2e": "playwright test",
+    "test:e2e:critical": "playwright test e2e/production-critical.spec.ts",
+    "test:e2e:staging": "playwright test --config=playwright.config.ts",
     "env:check": "node scripts/validate-environment.mjs",
     "lint": "eslint . --ignore-pattern dist --ignore-pattern .next",
     "db:generate": "drizzle-kit generate",
@@ -26,6 +29,7 @@
     "supabase:reset": "supabase db reset"
   },
   "dependencies": {
+    "@sentry/nextjs": "^10.70.0",
     "@supabase/ssr": "^0.12.4",
     "@supabase/supabase-js": "^2.112.3",
     "drizzle-orm": "0.45.2",
@@ -41,10 +45,12 @@
   "devDependencies": {
     "@eslint/js": "9.39.4",
     "@next/eslint-plugin-next": "16.3.0",
+    "@playwright/test": "^1.62.1",
     "@tailwindcss/postcss": "4.2.1",
     "@types/node": "22.19.19",
     "@types/react": "19.2.14",
     "@types/react-dom": "19.2.3",
+    "dotenv-cli": "^11.0.0",
     "drizzle-kit": "0.31.10",
     "eslint": "9.39.4",
     "eslint-plugin-jsx-a11y": "6.10.2",

@@ -74,3 +74,10 @@ export function getDb(): any {
   });
   return database;
 }
+
+export async function checkDatabaseHealth() {
+  getDb();
+  const startedAt = Date.now();
+  await client!.unsafe("select 1 as healthy");
+  return { latencyMs: Date.now() - startedAt };
+}
