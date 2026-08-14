@@ -26,9 +26,10 @@ For a disposable staging run, use the guarded fixture runner. It creates tempora
 Supabase Auth users and tenant rows, runs the authenticated suite, and removes all
 fixtures in a `finally` block. Credentials exist only in the runner process.
 
-The runner requires these values from a local secret store or the GitHub
-`staging` environment: `NEXT_PUBLIC_SUPABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY`,
-`SUPABASE_DB_URL`, and `STRIPE_PRICE_PRO_MONTHLY`. Vercel masks sensitive values
+The runner requires these values from local configuration or the GitHub
+`staging` environment. Store `NEXT_PUBLIC_SUPABASE_URL` and
+`STRIPE_PRICE_PRO_MONTHLY` as environment variables; store
+`SUPABASE_SERVICE_ROLE_KEY` and `SUPABASE_DB_URL` as environment secrets. Vercel masks sensitive values
 when pulling them locally, so do not use `vercel env pull` as the credential source.
 
 ```powershell
