@@ -29,7 +29,7 @@ export function logEvent(level: LogLevel, event: string, context: LogContext = {
     event,
     service: "taskflow-web",
     environment: process.env.APP_ENV ?? "unknown",
-    release: process.env.VERCEL_GIT_COMMIT_SHA ?? "local",
+    release: process.env.VERCEL_GIT_COMMIT_SHA || "unknown",
     ...cleanContext(context),
   });
 

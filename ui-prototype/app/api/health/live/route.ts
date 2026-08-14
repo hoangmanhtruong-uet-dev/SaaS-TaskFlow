@@ -9,7 +9,7 @@ export async function GET(request: Request) {
     status: "ok",
     service: "taskflow-web",
     environment: process.env.APP_ENV ?? "unknown",
-    release: process.env.VERCEL_GIT_COMMIT_SHA ?? "local",
+    release: process.env.VERCEL_GIT_COMMIT_SHA || "unknown",
     requestId,
   }, { headers: { "cache-control": "no-store", "x-request-id": requestId } });
 }
