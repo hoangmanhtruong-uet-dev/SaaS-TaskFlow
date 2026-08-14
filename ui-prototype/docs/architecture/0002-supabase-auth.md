@@ -7,7 +7,7 @@
 
 - Supabase Auth quản lý email/password, email verification, password reset và Google OAuth.
 - Browser dùng publishable key; service-role key chỉ tồn tại server-side.
-- Next.js server đọc session bằng `@supabase/ssr` và cookie `HttpOnly`, `Secure` ở production, `SameSite=Lax`.
+- Next.js server đọc session bằng `@supabase/ssr`; Proxy làm mới token bằng `getClaims()` và API nhạy cảm xác minh identity mới nhất bằng `getUser()`.
 - OAuth callback duy nhất: `/auth/callback`; email confirmation: `/auth/confirm`.
 - Redirect allowlist dùng URL chính xác cho production/staging; preview chỉ dùng wildcard Vercel được giới hạn theo account slug.
 - Mỗi môi trường dùng Google OAuth client riêng. Không dùng client production cho local/staging.

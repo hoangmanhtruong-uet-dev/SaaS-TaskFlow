@@ -35,14 +35,13 @@ export async function createTask(workspaceId: string, userId: string, input: Cre
     .where(and(eq(boards.id, input.boardId), eq(boards.projectId, input.projectId), eq(boards.workspaceId, workspaceId), eq(columns.id, input.columnId), eq(columns.workspaceId, workspaceId))).get();
   if (!location) return null;
   const maxPosition = await db.select({ value: sql<number>`coalesce(max(${tasks.position}), 0)` }).from(tasks).where(and(eq(tasks.workspaceId, workspaceId), eq(tasks.columnId, input.columnId))).get();
-  const id = `tsk_${crypto.randomUUID()}`;
-  type BatchQuery = Parameters<typeof db.batch>[0][number];
-  const writes: [BatchQuery, ...BatchQuery[]] = [db.insert(tasks).values({ id, workspaceId, projectId: input.projectId, boardId: input.boardId, columnId: input.columnId, creatorMembershipId: access.membership.id, title: input.title, description: input.description, priority: input.priority, dueAt: input.dueAt ? new Date(input.dueAt) : null, position: Number(maxPosition?.value ?? 0) + 1000 })];
+  const id = crypto.randomUUID();
+  const writes = [db.insert(tasks).values({ id, workspaceId, projectId: input.projectId, boardId: input.boardId, columnId: input.columnId, creatorMembershipId: access.membership.id, title: input.title, description: input.description, priority: input.priority, dueAt: input.dueAt ? new Date(input.dueAt) : null, position: Number(maxPosition?.value ?? 0) + 1000 })];
   for (const membershipId of input.assigneeIds) {
     const assignee = await db.select({ userId: memberships.userId }).from(memberships).where(and(eq(memberships.id, membershipId), eq(memberships.workspaceId, workspaceId), eq(memberships.status, "ACTIVE"))).get();
     if (!assignee || !await authorizeProject(workspaceId, input.projectId, assignee.userId, "task.read")) return null;
-    writes.push(db.insert(taskAssignees).values({ taskId: id, membershipId }).onConflictDoNothing());
-    writes.push(db.insert(notifications).values({ id: `ntf_${crypto.randomUUID()}`, workspaceId, recipientUserId: assignee.userId, type: "ASSIGNMENT", title: "Bạn được giao một công việc", body: input.title }));
+    writes.push(db.insert(taskAssignees).values({ workspaceId, taskId: id, membershipId }).onConflictDoNothing());
+    writes.push(db.insert(notifications).values({ id: crypto.randomUUID(), workspaceId, recipientUserId: assignee.userId, type: "ASSIGNMENT", title: "Bạn được giao một công việc", body: input.title }));
   }
   await db.batch(writes);
   await recordActivity(workspaceId, userId, "task.created", "task", id, { title: input.title, projectId: input.projectId });
@@ -88,5 +87,5 @@ export async function archiveTask(workspaceId: string, taskId: string, userId: s
 async function toTaskDto(task: typeof tasks.$inferSelect, projectName: string, columnName: string) {
   const assignees = await getDb().select({ membershipId: taskAssignees.membershipId }).from(taskAssignees).where(eq(taskAssignees.taskId, task.id)).all();
   const tone = ({ LOW: "blue", MEDIUM: "amber", HIGH: "red", URGENT: "red" } as const)[task.priority];
-  return { id: task.id, workspaceId: task.workspaceId, projectId: task.projectId, boardId: task.boardId, columnId: task.columnId, title: task.title, description: task.description, priority: task.priority, dueAt: task.dueAt?.toISOString() ?? null, assigneeIds: assignees.map((row) => row.membershipId), version: task.version, archivedAt: task.archivedAt?.toISOString() ?? null, projectName, columnName, tone };
+  return { id: task.id, workspaceId: task.workspaceId, projectId: task.projectId, boardId: task.boardId, columnId: task.columnId, title: task.title, description: task.description, priority: task.priority, dueAt: task.dueAt?.toISOString() ?? null, assigneeIds: assignees.map((row: { membershipId: string }) => row.membershipId), version: task.version, archivedAt: task.archivedAt?.toISOString() ?? null, projectName, columnName, tone };
 }

@@ -1,0 +1,57 @@
+name: Staging production-critical E2E
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "17 2 * * *"
+
+concurrency:
+  group: staging-production-critical-e2e
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  authenticated-e2e:
+    name: Tenant isolation and role matrix
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    environment: staging
+    env:
+      APP_ENV: staging
+      E2E_BASE_URL: https://taskflow-mvp-staging.vercel.app
+      TASKFLOW_CONFIRM_E2E_PROVISION: STAGING_ONLY
+      NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
+      SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+      SUPABASE_DB_URL: ${{ secrets.SUPABASE_DB_URL }}
+      STRIPE_PRICE_PRO_MONTHLY: ${{ secrets.STRIPE_PRICE_PRO_MONTHLY }}
+
+    steps:
+      - name: Check out source
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22.13.0
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Require staging secrets
+        shell: bash
+        run: |
+          for key in NEXT_PUBLIC_SUPABASE_URL SUPABASE_SERVICE_ROLE_KEY SUPABASE_DB_URL STRIPE_PRICE_PRO_MONTHLY; do
+            if [ -z "${!key}" ]; then
+              echo "Missing required staging environment secret: $key" >&2
+              exit 1
+            fi
+          done
+
+      - name: Install Playwright Chromium
+        run: npx playwright install --with-deps chromium
+
+      - name: Run authenticated production-critical E2E
+        run: npm run test:e2e:staging:provision

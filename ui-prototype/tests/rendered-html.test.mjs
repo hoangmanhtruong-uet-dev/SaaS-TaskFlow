@@ -1,21 +1,39 @@
 import assert from "node:assert/strict";
+import { spawn } from "node:child_process";
 import { readFile } from "node:fs/promises";
-import test from "node:test";
+import test, { after, before } from "node:test";
 
 const root = new URL("../", import.meta.url);
 
-async function worker() {
-  const workerUrl = new URL("../dist/server/index.js", import.meta.url);
-  workerUrl.searchParams.set("test", `${process.pid}-${Date.now()}`);
-  const { default: app } = await import(workerUrl.href);
-  return app;
-}
+const port = 33000 + Math.floor(Math.random() * 1000);
+let server;
+
+before(async () => {
+  server = spawn(process.execPath, ["node_modules/next/dist/bin/next", "start", "-p", String(port)], {
+    cwd: root,
+    env: { ...process.env, NODE_ENV: "production", NEXT_PUBLIC_SUPABASE_URL: "https://example.supabase.co", NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY: "sb_publishable_test" },
+    stdio: ["ignore", "pipe", "pipe"],
+  });
+  let output = "";
+  server.stdout.on("data", (chunk) => { output += chunk; });
+  server.stderr.on("data", (chunk) => { output += chunk; });
+  for (let attempt = 0; attempt < 100; attempt += 1) {
+    if (server.exitCode !== null) throw new Error(`Next.js exited before startup:\n${output}`);
+    try {
+      const response = await fetch(`http://127.0.0.1:${port}`);
+      if (response.ok) return;
+    } catch {
+      // The server is still starting; retry until the bounded deadline.
+    }
+    await new Promise((resolve) => setTimeout(resolve, 100));
+  }
+  throw new Error(`Next.js did not start in time:\n${output}`);
+});
+
+after(() => server?.kill());
 
 async function render(path = "/") {
-  const app = await worker();
-  return app.fetch(new Request(`http://localhost${path}`, { headers: { accept: "text/html" } }), {
-    ASSETS: { fetch: async () => new Response("Not found", { status: 404 }) },
-  }, { waitUntil() {}, passThroughOnException() {} });
+  return fetch(`http://127.0.0.1:${port}${path}`, { headers: { accept: "text/html" } });
 }
 
 test("registers exactly 89 unique Stitch screens", async () => {

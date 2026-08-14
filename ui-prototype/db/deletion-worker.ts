@@ -1,3 +1,7 @@
+import { and, eq, isNotNull, lt } from "drizzle-orm";
+import { getDb } from "./index";
+import { memberships, rateLimits, workspaceTombstones, workspaces } from "./schema";
+
 const RETENTION_MS = 30 * 86400000;
 
 export function workspaceDeletionPlan(workspaceId: string, deletedAt = new Date()) {
@@ -25,15 +29,23 @@ export function workspaceDeletionPlan(workspaceId: string, deletedAt = new Date(
   ];
 }
 
-export async function purgeWorkspace(database: D1Database, workspaceId: string, deletedAt = new Date()) {
-  const statements = workspaceDeletionPlan(workspaceId, deletedAt).map((statement) => database.prepare(statement.sql).bind(...statement.params));
-  await database.batch(statements);
+export async function purgeWorkspace(workspaceId: string, deletedAt = new Date()) {
+  const db = getDb();
+  const workspace = await db.select().from(workspaces).where(and(eq(workspaces.id, workspaceId), isNotNull(workspaces.deletionScheduledFor), lt(workspaces.deletionScheduledFor, deletedAt))).get();
+  if (!workspace) return false;
+  const owner = await db.select({ userId: memberships.userId }).from(memberships).where(and(eq(memberships.workspaceId, workspaceId), eq(memberships.role, "OWNER"))).limit(1).get();
+  await db.batch([
+    db.insert(workspaceTombstones).values({ workspaceId, name: workspace.name, slug: workspace.slug, requestedAt: workspace.deletionRequestedAt ?? deletedAt, deletedAt, ownerUserId: owner?.userId, metadata: { reason: "scheduled_deletion", retentionDays: 30 } }).onConflictDoNothing(),
+    db.delete(workspaces).where(and(eq(workspaces.id, workspaceId), isNotNull(workspaces.deletionScheduledFor), lt(workspaces.deletionScheduledFor, deletedAt))),
+  ]);
+  return true;
 }
 
-export async function purgeDueWorkspaces(database: D1Database, now = new Date()) {
-  const dueBefore = now.getTime();
-  const due = await database.prepare("SELECT id FROM workspaces WHERE deletion_requested_at IS NOT NULL AND deletion_scheduled_for IS NOT NULL AND deletion_scheduled_for <= ? LIMIT 25").bind(dueBefore).all<{ id: string }>();
-  for (const workspace of due.results) await purgeWorkspace(database, workspace.id, now);
-  await database.prepare("DELETE FROM rate_limits WHERE updated_at < ?").bind(now.getTime() - RETENTION_MS).run();
-  return due.results.length;
+export async function purgeDueWorkspaces(now = new Date()) {
+  const db = getDb();
+  const due = await db.select({ id: workspaces.id }).from(workspaces).where(and(isNotNull(workspaces.deletionRequestedAt), isNotNull(workspaces.deletionScheduledFor), lt(workspaces.deletionScheduledFor, now))).limit(25).all();
+  let purged = 0;
+  for (const workspace of due as Array<{ id: string }>) if (await purgeWorkspace(workspace.id, now)) purged += 1;
+  await db.delete(rateLimits).where(lt(rateLimits.updatedAt, new Date(now.getTime() - RETENTION_MS))).run();
+  return purged;
 }

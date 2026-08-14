@@ -8,7 +8,7 @@ const SESSION_ROTATION_MS = 24 * 60 * 60 * 1000;
 
 async function newSession(userId: string, rotatedFromSessionId?: string) {
   const createdAt = new Date();
-  const id = `ses_${crypto.randomUUID()}`;
+  const id = crypto.randomUUID();
   await getDb().insert(authSessions).values({
     id,
     userId,
@@ -30,7 +30,7 @@ export async function resolveProviderSession(userId: string) {
     await getDb().batch([
       getDb().update(authSessions).set({ revokedAt: now }).where(eq(authSessions.id, latest.id)),
       getDb().insert(authSessions).values({
-        id: `ses_${crypto.randomUUID()}`,
+        id: crypto.randomUUID(),
         userId,
         tokenHash: await hashOpaqueToken(randomOpaqueToken()),
         expiresAt: new Date(now.getTime() + SESSION_LIFETIME_MS),

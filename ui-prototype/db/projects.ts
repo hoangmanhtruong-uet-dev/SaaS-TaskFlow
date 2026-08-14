@@ -10,8 +10,8 @@ export async function listProjects(workspaceId: string, userId: string, includeA
   const membership = await getActiveMembership(workspaceId, userId);
   if (!membership) return null;
   const rows = await getDb().select().from(projects).where(and(eq(projects.workspaceId, workspaceId), includeArchived ? isNotNull(projects.archivedAt) : isNull(projects.archivedAt))).all();
-  const privateAccess = new Set((await getDb().select({ projectId: projectMembers.projectId }).from(projectMembers).where(eq(projectMembers.membershipId, membership.id)).all()).map((row) => row.projectId));
-  const visible = rows.filter((project) => membership.role === "OWNER" || membership.role === "ADMIN" || (membership.role === "MEMBER" && project.visibility === "WORKSPACE") || privateAccess.has(project.id));
+  const privateAccess = new Set((await getDb().select({ projectId: projectMembers.projectId }).from(projectMembers).where(eq(projectMembers.membershipId, membership.id)).all()).map((row: { projectId: string }) => row.projectId));
+  const visible = rows.filter((project: typeof projects.$inferSelect) => membership.role === "OWNER" || membership.role === "ADMIN" || (membership.role === "MEMBER" && project.visibility === "WORKSPACE") || privateAccess.has(project.id));
   return Promise.all(visible.map(toProjectDto));
 }
 
@@ -23,9 +23,9 @@ export async function getProject(workspaceId: string, projectId: string, userId:
 export async function createProject(workspaceId: string, userId: string, input: CreateProjectRequest) {
   if (!await authorizeWorkspace(workspaceId, userId, "project.create")) return null;
   const db = getDb();
-  const projectId = `prj_${crypto.randomUUID()}`;
-  const boardId = `brd_${crypto.randomUUID()}`;
-  const defaultColumns = ["Backlog", "Đang làm", "Review", "Hoàn thành"].map((name, index) => ({ id: `col_${crypto.randomUUID()}`, workspaceId, boardId, name, position: (index + 1) * 1000 }));
+  const projectId = crypto.randomUUID();
+  const boardId = crypto.randomUUID();
+  const defaultColumns = ["Backlog", "Đang làm", "Review", "Hoàn thành"].map((name, index) => ({ id: crypto.randomUUID(), workspaceId, boardId, name, position: (index + 1) * 1000 }));
   await db.batch([
     db.insert(projects).values({ id: projectId, workspaceId, name: input.name, description: input.description, visibility: input.visibility }),
     db.insert(boards).values({ id: boardId, workspaceId, projectId, name: "Công việc" }),
@@ -66,7 +66,7 @@ export async function listProjectBoards(workspaceId: string, projectId: string, 
 
 export async function createBoard(workspaceId: string, projectId: string, userId: string, name: string) {
   if (!await authorizeProject(workspaceId, projectId, userId, "project.update")) return null;
-  const id = `brd_${crypto.randomUUID()}`;
+  const id = crypto.randomUUID();
   await getDb().insert(boards).values({ id, workspaceId, projectId, name });
   await recordActivity(workspaceId, userId, "board.created", "board", id, { projectId, name });
   return getDb().select().from(boards).where(eq(boards.id, id)).get();
