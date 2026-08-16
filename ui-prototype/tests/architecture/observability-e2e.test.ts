@@ -33,3 +33,26 @@ test("Playwright covers health, auth boundary, Stripe signature, tenant isolatio
   for (const marker of ["OWNER", "ADMIN", "MEMBER", "GUEST", "FOREIGN_WORKSPACE_ID", "Billing Portal"]) assert.match(critical, new RegExp(marker));
   assert.match(config, /trace:\s*"retain-on-failure"/);
 });
+
+test("Supabase proxy forwards refreshed cookies on the same request object", async () => {
+  const proxy = await read("app/lib/supabase/proxy.ts");
+  assert.match(proxy, /request\.cookies\.set/);
+  assert.match(proxy, /NextResponse\.next\(\{ request \}\)/);
+  assert.doesNotMatch(proxy, /NextResponse\.next\(\{ request: \{ headers: requestHeaders \} \}\)/);
+});
+
+test("staging E2E provisions disposable tenant fixtures behind protected secrets", async () => {
+  const [workflow, runner] = await Promise.all([
+    read("../.github/workflows/staging-e2e.yml"),
+    read("scripts/run-staging-e2e.mjs"),
+  ]);
+  for (const marker of ["environment: staging", "working-directory: ui-prototype", "SUPABASE_STAGING_PROJECT_REF", "SUPABASE_SERVICE_ROLE_KEY", "test:e2e:staging:provision"]) {
+    assert.match(workflow, new RegExp(marker));
+  }
+  assert.match(runner, /TASKFLOW_CONFIRM_E2E_PROVISION/);
+  assert.match(runner, /Supabase URL must belong to the declared staging project/);
+  assert.match(runner, /supabase\.from\("workspaces"\)/);
+  assert.doesNotMatch(runner, /SUPABASE_DB_URL|from "postgres"/);
+  assert.match(runner, /finally\s*\{/);
+  assert.match(runner, /admin\.deleteUser/);
+});

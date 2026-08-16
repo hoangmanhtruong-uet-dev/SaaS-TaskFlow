@@ -21,3 +21,28 @@ E2E_GUEST_PASSWORD=...
 ```
 
 Keep these values in GitHub Actions or Vercel secrets. Never commit fixture passwords. The suite does not create, cancel, or charge a Stripe subscription; it verifies the entitlement produced by webhook processing.
+
+For a disposable staging run, use the guarded fixture runner. It creates temporary
+Supabase Auth users and tenant rows, runs the authenticated suite, and removes all
+fixtures in a `finally` block. Credentials exist only in the runner process.
+
+The runner requires `SUPABASE_STAGING_PROJECT_REF` plus these values from a local
+secret store or the GitHub `staging` environment: `NEXT_PUBLIC_SUPABASE_URL`,
+`SUPABASE_SERVICE_ROLE_KEY`, and `STRIPE_PRICE_PRO_MONTHLY`.
+The project ref, public Supabase URL, and Stripe price ID are protected environment
+variables; the service-role key is a protected environment secret. The runner
+uses the service role through Supabase Admin/PostgREST and does not require a
+database password. It verifies that the Supabase API belongs to that declared
+staging project. Vercel masks sensitive values
+when pulling them locally, so do not use `vercel env pull` as the credential source.
+
+```powershell
+$env:APP_ENV='staging'
+$env:E2E_BASE_URL='https://taskflow-mvp-staging.vercel.app'
+$env:TASKFLOW_CONFIRM_E2E_PROVISION='STAGING_ONLY'
+npm run test:e2e:staging:provision
+```
+
+GitHub Actions runs the same guarded command manually or on the daily schedule in
+`../.github/workflows/staging-e2e.yml`. Configure its values in the protected
+`staging` environment; do not store them as repository variables.

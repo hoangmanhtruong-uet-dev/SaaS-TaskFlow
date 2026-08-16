@@ -27,6 +27,17 @@ test("Supabase authentication covers SSR verification, revoke, and recovery cont
   ]) await assert.doesNotReject(readFile(new URL(route, import.meta.url), "utf8"));
 });
 
+test("sign out is POST-only so navigation prefetch cannot revoke a session", async () => {
+  const [route, shell] = await Promise.all([
+    readFile(new URL("../../app/auth/signout/route.ts", import.meta.url), "utf8"),
+    readFile(new URL("../../app/components/layout/app-shell.tsx", import.meta.url), "utf8"),
+  ]);
+  assert.match(route, /export async function POST/);
+  assert.doesNotMatch(route, /export async function GET/);
+  assert.match(shell, /method="post"/);
+  assert.doesNotMatch(shell, /<Link href="\/auth\/signout/);
+});
+
 test("invitation authentication resumes at the pending invitation", async () => {
   const view = await readFile(new URL("../../app/components/collaboration-views.tsx", import.meta.url), "utf8");
   const complete = await readFile(new URL("../../app/auth/complete/page.tsx", import.meta.url), "utf8");

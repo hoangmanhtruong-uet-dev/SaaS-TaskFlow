@@ -20,6 +20,18 @@ async function login(page: Page, role: Role) {
   await page.getByLabel(/Mật khẩu/).fill(account.password);
   await page.getByRole("button", { name: /^Đăng nhập/i }).click();
   await page.waitForURL(/\/app(?:\/|$)/, { timeout: 20_000 });
+  await page.waitForLoadState("networkidle");
+}
+
+async function browserGet(page: Page, path: string) {
+  return page.evaluate(async (requestPath) => {
+    const response = await fetch(requestPath, {
+      cache: "no-store",
+      credentials: "same-origin",
+      headers: { accept: "application/json" },
+    });
+    return { status: response.status, body: await response.json() };
+  }, path);
 }
 
 test.describe("authenticated production-critical flows", () => {
@@ -30,23 +42,23 @@ test.describe("authenticated production-critical flows", () => {
       test.skip(!workspaceId || !credentials(role).email || !credentials(role).password, `Missing ${role} fixture environment.`);
       await login(page, role);
 
-      const workspaces = await page.request.get("/api/v1/workspaces");
-      expect(workspaces.status()).toBe(200);
-      const workspaceBody = await workspaces.json();
+      const workspaces = await browserGet(page, "/api/v1/workspaces");
+      expect(workspaces.status).toBe(200);
+      const workspaceBody = workspaces.body;
       expect(workspaceBody.data.some((workspace: { id: string; role: Role }) => workspace.id === workspaceId && workspace.role === role)).toBe(true);
 
-      const billing = await page.request.get(`/api/v1/workspaces/${workspaceId}/billing`);
-      expect(billing.status()).toBe(role === "OWNER" ? 200 : 403);
+      const billing = await browserGet(page, `/api/v1/workspaces/${workspaceId}/billing`);
+      expect(billing.status).toBe(role === "OWNER" ? 200 : 403);
     });
   }
 
   test("tenant isolation rejects a workspace from another account", async ({ page }) => {
     test.skip(!workspaceId || !foreignWorkspaceId || !credentials("MEMBER").email || !credentials("MEMBER").password, "Missing tenant isolation fixtures.");
     await login(page, "MEMBER");
-    const own = await page.request.get(`/api/v1/workspaces/${workspaceId}/projects`);
-    expect(own.status()).toBe(200);
-    const foreign = await page.request.get(`/api/v1/workspaces/${foreignWorkspaceId}/projects`);
-    expect(foreign.status()).toBe(404);
+    const own = await browserGet(page, `/api/v1/workspaces/${workspaceId}/projects`);
+    expect(own.status).toBe(200);
+    const foreign = await browserGet(page, `/api/v1/workspaces/${foreignWorkspaceId}/projects`);
+    expect(foreign.status).toBe(404);
   });
 
   test("Owner sees active Stripe entitlement and Billing Portal entry", async ({ page }) => {

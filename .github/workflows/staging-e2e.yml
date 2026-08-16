@@ -1,0 +1,72 @@
+name: Staging production-critical E2E
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "17 2 * * *"
+
+concurrency:
+  group: staging-production-critical-e2e
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  authenticated-e2e:
+    name: Tenant isolation and role matrix
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    environment: staging
+    defaults:
+      run:
+        working-directory: ui-prototype
+    env:
+      APP_ENV: staging
+      E2E_BASE_URL: https://taskflow-mvp-staging.vercel.app
+      TASKFLOW_CONFIRM_E2E_PROVISION: STAGING_ONLY
+      SUPABASE_STAGING_PROJECT_REF: ${{ vars.SUPABASE_STAGING_PROJECT_REF }}
+      NEXT_PUBLIC_SUPABASE_URL: ${{ vars.NEXT_PUBLIC_SUPABASE_URL }}
+      SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+      STRIPE_PRICE_PRO_MONTHLY: ${{ vars.STRIPE_PRICE_PRO_MONTHLY }}
+
+    steps:
+      - name: Check out source
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22.13.0
+          cache: npm
+          cache-dependency-path: ui-prototype/package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Require staging configuration
+        shell: bash
+        run: |
+          for key in SUPABASE_STAGING_PROJECT_REF NEXT_PUBLIC_SUPABASE_URL SUPABASE_SERVICE_ROLE_KEY STRIPE_PRICE_PRO_MONTHLY; do
+            if [ -z "${!key}" ]; then
+              echo "Missing required staging environment value: $key" >&2
+              exit 1
+            fi
+          done
+
+      - name: Install Playwright Chromium
+        run: npx playwright install --with-deps chromium
+
+      - name: Run authenticated production-critical E2E
+        run: npm run test:e2e:staging:provision
+
+      - name: Upload Playwright diagnostics
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: staging-playwright-diagnostics
+          path: |
+            ui-prototype/playwright-report
+            ui-prototype/test-results
+          if-no-files-found: ignore
+          retention-days: 7

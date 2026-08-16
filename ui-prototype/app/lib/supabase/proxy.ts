@@ -2,7 +2,8 @@ import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
 
 export async function updateSupabaseSession(request: NextRequest, requestHeaders = new Headers(request.headers)) {
-  let response = NextResponse.next({ request: { headers: requestHeaders } });
+  requestHeaders.forEach((value, name) => request.headers.set(name, value));
+  let response = NextResponse.next({ request });
   const supabase = createServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY!,
@@ -11,7 +12,7 @@ export async function updateSupabaseSession(request: NextRequest, requestHeaders
         getAll: () => request.cookies.getAll(),
         setAll(values, headers) {
           values.forEach(({ name, value }) => request.cookies.set(name, value));
-          response = NextResponse.next({ request: { headers: requestHeaders } });
+          response = NextResponse.next({ request });
           values.forEach(({ name, value, options }) => response.cookies.set(name, value, options));
           Object.entries(headers).forEach(([name, value]) => response.headers.set(name, value));
         },
