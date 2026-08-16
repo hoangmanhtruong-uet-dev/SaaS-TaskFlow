@@ -92,3 +92,8 @@ export interface TaskAttachment {
   id: string; taskId: string; fileName: string; mimeType: string; size: number;
   uploadedByUserId: string | null; createdAt: string;
 }
+export interface TaskChecklistItem {
+  id: string; taskId: string; title: string; completed: boolean; position: number;
+  createdByUserId: string | null; completedByUserId: string | null;
+  completedAt: string | null; createdAt: string; updatedAt: string;
+}

@@ -126,6 +126,19 @@ test("task collaboration covers comments, mentions, conflict rollback, and recon
   ]) await assert.doesNotReject(readFile(new URL(route, root), "utf8"));
 });
 
+test("task detail includes a tenant-scoped interactive checklist", async () => {
+  const checklist = await readFile(new URL("db/task-checklist.ts", root), "utf8");
+  const interactions = await readFile(new URL("app/components/task-interactions.tsx", root), "utf8");
+  assert.match(checklist, /MAX_CHECKLIST_ITEMS_PER_TASK = 100/);
+  assert.match(checklist, /task\.checklist_item\.completed/);
+  assert.match(interactions, /Tiến độ checklist/);
+  assert.match(interactions, /toggleChecklistItem/);
+  for (const route of [
+    "app/api/v1/workspaces/[workspaceId]/tasks/[taskId]/checklist/route.ts",
+    "app/api/v1/workspaces/[workspaceId]/tasks/[taskId]/checklist/[itemId]/route.ts",
+  ]) await assert.doesNotReject(readFile(new URL(route, root), "utf8"));
+});
+
 test("operations layer covers scoped search, archive recovery, and workspace lifecycle", async () => {
   const search = await readFile(new URL("db/search.ts", root), "utf8");
   const lifecycle = await readFile(new URL("db/workspace-lifecycle.ts", root), "utf8");
