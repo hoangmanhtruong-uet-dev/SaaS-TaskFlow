@@ -41,6 +41,9 @@ test("staging rehearsal is synthetic, guarded, checksum-verified, and always cle
   assert.match(script, /Restored workspace checksum does not match/);
   assert.match(script, /finally \{/);
   assert.match(script, /await cleanup\(\)/);
+  assert.match(script, /\[\.\.\.TABLE_ORDER\]\.reverse\(\)/);
+  assert.match(script, /cleanupStaleRehearsals/);
+  assert.match(script, /\^recovery-\[a-f0-9\]\{12\}\$/);
   assert.doesNotMatch(script, /writeFile|upload-artifact/);
   assert.match(workflow, /schedule:/);
   assert.match(workflow, /environment: staging/);
