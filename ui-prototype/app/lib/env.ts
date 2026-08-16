@@ -28,6 +28,11 @@ const supabasePublicSchema = z.object({
   NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY: z.string().min(1),
 });
 
+const supabaseAdminSchema = z.object({
+  NEXT_PUBLIC_SUPABASE_URL: z.string().url(),
+  SUPABASE_SERVICE_ROLE_KEY: z.string().min(1),
+});
+
 const databaseSchema = z.object({
   SUPABASE_DB_URL: z.string().startsWith("postgresql://"),
 });
@@ -61,6 +66,14 @@ export function supabasePublicEnv(source: Record<string, string | undefined> = p
     NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY: process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY,
   } : source);
   return { supabaseUrl: value.NEXT_PUBLIC_SUPABASE_URL, supabasePublishableKey: value.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY };
+}
+
+export function supabaseAdminEnv(source: Record<string, string | undefined> = process.env) {
+  const value = supabaseAdminSchema.parse(source === process.env ? {
+    NEXT_PUBLIC_SUPABASE_URL: process.env.NEXT_PUBLIC_SUPABASE_URL,
+    SUPABASE_SERVICE_ROLE_KEY: process.env.SUPABASE_SERVICE_ROLE_KEY,
+  } : source);
+  return { supabaseUrl: value.NEXT_PUBLIC_SUPABASE_URL, serviceRoleKey: value.SUPABASE_SERVICE_ROLE_KEY };
 }
 
 export function databaseEnv(source: Record<string, string | undefined> = process.env) {

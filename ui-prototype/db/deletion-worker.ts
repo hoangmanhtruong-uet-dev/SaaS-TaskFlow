@@ -1,6 +1,7 @@
 import { and, eq, isNotNull, lt } from "drizzle-orm";
 import { getDb } from "./index";
-import { memberships, rateLimits, workspaceTombstones, workspaces } from "./schema";
+import { attachmentUploads, attachments, memberships, rateLimits, workspaceTombstones, workspaces } from "./schema";
+import { ATTACHMENTS_BUCKET, createSupabaseAdminClient } from "@/app/lib/supabase/admin";
 
 const RETENTION_MS = 30 * 86400000;
 
@@ -33,6 +34,15 @@ export async function purgeWorkspace(workspaceId: string, deletedAt = new Date()
   const db = getDb();
   const workspace = await db.select().from(workspaces).where(and(eq(workspaces.id, workspaceId), isNotNull(workspaces.deletionScheduledFor), lt(workspaces.deletionScheduledFor, deletedAt))).get();
   if (!workspace) return false;
+  const [stored, pending] = await Promise.all([
+    db.select({ key: attachments.storageKey }).from(attachments).where(eq(attachments.workspaceId, workspaceId)).all(),
+    db.select({ key: attachmentUploads.storageKey }).from(attachmentUploads).where(eq(attachmentUploads.workspaceId, workspaceId)).all(),
+  ]);
+  const storageKeys = [...stored, ...pending].map((item: { key: string }) => item.key);
+  if (storageKeys.length) {
+    const { error } = await createSupabaseAdminClient().storage.from(ATTACHMENTS_BUCKET).remove(storageKeys);
+    if (error) throw error;
+  }
   const owner = await db.select({ userId: memberships.userId }).from(memberships).where(and(eq(memberships.workspaceId, workspaceId), eq(memberships.role, "OWNER"))).limit(1).get();
   await db.batch([
     db.insert(workspaceTombstones).values({ workspaceId, name: workspace.name, slug: workspace.slug, requestedAt: workspace.deletionRequestedAt ?? deletedAt, deletedAt, ownerUserId: owner?.userId, metadata: { reason: "scheduled_deletion", retentionDays: 30 } }).onConflictDoNothing(),

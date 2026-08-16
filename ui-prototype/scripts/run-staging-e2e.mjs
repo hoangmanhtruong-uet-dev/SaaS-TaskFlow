@@ -33,6 +33,10 @@ if (projectRef !== process.env.SUPABASE_STAGING_PROJECT_REF) {
 const runId = randomUUID().replaceAll("-", "").slice(0, 12);
 const workspaceId = randomUUID();
 const foreignWorkspaceId = randomUUID();
+const projectId = randomUUID();
+const boardId = randomUUID();
+const columnId = randomUUID();
+const taskId = randomUUID();
 const roles = ["OWNER", "ADMIN", "MEMBER", "GUEST"];
 const emailDomain = process.env.E2E_EMAIL_DOMAIN ?? "taskflow-mvp-staging.vercel.app";
 const fixtures = Object.fromEntries(
@@ -71,6 +75,7 @@ async function runPlaywright() {
         E2E_RUN_AUTH: "true",
         E2E_WORKSPACE_ID: workspaceId,
         E2E_FOREIGN_WORKSPACE_ID: foreignWorkspaceId,
+        E2E_TASK_ID: taskId,
         ...Object.fromEntries(
           roles.flatMap((role) => [
             [`E2E_${role}_EMAIL`, fixtures[role].email],
@@ -88,6 +93,13 @@ async function runPlaywright() {
 
 async function cleanup() {
   const failures = [];
+  try {
+    const { data, error } = await supabase.storage.from("task-attachments").list(`${workspaceId}/${taskId}`);
+    if (error) throw error;
+    if (data?.length) await requireSuccess("Delete temporary attachments", supabase.storage.from("task-attachments").remove(data.map((item) => `${workspaceId}/${taskId}/${item.name}`)));
+  } catch (error) {
+    failures.push(error);
+  }
   try {
     await requireSuccess(
       "Delete temporary workspaces",
@@ -122,9 +134,10 @@ try {
     { id: workspaceId, name: "TaskFlow E2E", slug: `taskflow-e2e-${runId}`, plan: "PRO" },
     { id: foreignWorkspaceId, name: "TaskFlow Foreign E2E", slug: `taskflow-foreign-e2e-${runId}`, plan: "FREE" },
   ]));
+  const membershipIds = Object.fromEntries(roles.map((role) => [role, randomUUID()]));
   await requireSuccess("Create temporary memberships", supabase.from("memberships").insert([
     ...roles.map((role) => ({
-      id: randomUUID(), workspace_id: workspaceId, user_id: fixtures[role].userId,
+      id: membershipIds[role], workspace_id: workspaceId, user_id: fixtures[role].userId,
       role, status: "ACTIVE",
     })),
     {
@@ -145,6 +158,10 @@ try {
     current_period_end: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(),
     provider_updated_at: new Date().toISOString(),
   }));
+  await requireSuccess("Create temporary project", supabase.from("projects").insert({ id: projectId, workspace_id: workspaceId, name: "Attachment E2E", description: "", visibility: "WORKSPACE" }));
+  await requireSuccess("Create temporary board", supabase.from("boards").insert({ id: boardId, workspace_id: workspaceId, project_id: projectId, name: "E2E Board" }));
+  await requireSuccess("Create temporary column", supabase.from("board_columns").insert({ id: columnId, workspace_id: workspaceId, board_id: boardId, name: "Todo", position: 0 }));
+  await requireSuccess("Create temporary task", supabase.from("tasks").insert({ id: taskId, workspace_id: workspaceId, project_id: projectId, board_id: boardId, column_id: columnId, creator_membership_id: membershipIds.OWNER, title: "Attachment E2E task", description: "", priority: "MEDIUM", position: 1000 }));
 
   console.log("Running authenticated tenant-isolation and role-matrix tests...");
   const result = await runPlaywright();

@@ -15,7 +15,7 @@ test("an ID from another workspace cannot be authorized even for an Owner", () =
 });
 
 test("tenant repositories scope resource lookup and mutation by workspace", async () => {
-  const files = ["projects.ts", "tasks.ts", "comments.ts", "collaboration.ts", "audit.ts"];
+  const files = ["projects.ts", "tasks.ts", "comments.ts", "attachments.ts", "collaboration.ts", "audit.ts"];
   for (const file of files) {
     const source = await readFile(new URL(`../../db/${file}`, import.meta.url), "utf8");
     assert.match(source, /workspaceId/, file);

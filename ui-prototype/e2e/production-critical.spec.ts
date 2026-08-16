@@ -4,6 +4,7 @@ type Role = "OWNER" | "ADMIN" | "MEMBER" | "GUEST";
 
 const workspaceId = process.env.E2E_WORKSPACE_ID;
 const foreignWorkspaceId = process.env.E2E_FOREIGN_WORKSPACE_ID;
+const taskId = process.env.E2E_TASK_ID;
 
 function credentials(role: Role) {
   return {
@@ -69,5 +70,23 @@ test.describe("authenticated production-critical flows", () => {
     await expect(page.getByText("PRO", { exact: true })).toBeVisible();
     await expect(page.getByText("active", { exact: true })).toBeVisible();
     await expect(page.getByRole("button", { name: "Quản lý trong Billing Portal" })).toBeVisible();
+  });
+
+  test("Owner uploads and downloads a private task attachment", async ({ page }) => {
+    test.skip(!workspaceId || !taskId || !credentials("OWNER").email || !credentials("OWNER").password, "Missing attachment fixture environment.");
+    await login(page, "OWNER");
+    await page.goto(`/app/tasks/${taskId}`);
+    await expect(page.getByRole("heading", { name: "Tệp đính kèm" })).toBeVisible();
+    await page.locator('input[type="file"]').setInputFiles({
+      name: "staging-e2e.txt",
+      mimeType: "text/plain",
+      buffer: Buffer.from("TaskFlow staging attachment E2E"),
+    });
+    await expect(page.getByText("staging-e2e.txt", { exact: true })).toBeVisible({ timeout: 20_000 });
+    const downloadResponse = page.waitForResponse((response) => response.url().includes(`/attachments/`) && response.url().endsWith("/download") && response.request().method() === "POST");
+    await page.getByRole("button", { name: "Tải staging-e2e.txt" }).click();
+    expect((await downloadResponse).status()).toBe(200);
+    await page.getByRole("button", { name: "Xóa staging-e2e.txt" }).click();
+    await expect(page.getByText("staging-e2e.txt", { exact: true })).toHaveCount(0);
   });
 });

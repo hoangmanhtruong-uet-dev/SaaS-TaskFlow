@@ -88,3 +88,7 @@ export interface TaskComment {
   id: string; taskId: string; body: string; authorName: string; authorUserId: string;
   hidden: boolean; deleted: boolean; createdAt: string; updatedAt: string;
 }
+export interface TaskAttachment {
+  id: string; taskId: string; fileName: string; mimeType: string; size: number;
+  uploadedByUserId: string | null; createdAt: string;
+}
