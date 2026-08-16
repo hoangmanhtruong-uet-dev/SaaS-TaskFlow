@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Geist } from "next/font/google";
+import { connection } from "next/server";
 import "./globals.css";
 
 const geist = Geist({ variable: "--font-geist", subsets: ["latin", "latin-ext"] });
@@ -15,6 +16,8 @@ export const metadata: Metadata = {
   },
 };
 
-export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
+export default async function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
+  // Per-request CSP nonces require dynamic rendering so Next.js can attach the nonce to framework scripts.
+  await connection();
   return <html lang="vi"><body className={geist.variable}>{children}</body></html>;
 }

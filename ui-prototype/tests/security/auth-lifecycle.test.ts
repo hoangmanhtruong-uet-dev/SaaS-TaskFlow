@@ -27,6 +27,29 @@ test("Supabase authentication covers SSR verification, revoke, and recovery cont
   ]) await assert.doesNotReject(readFile(new URL(route, import.meta.url), "utf8"));
 });
 
+test("server-side auth uses hardened cookies, multi-dimensional rate limits, password policy, and MFA step-up", async () => {
+  const [cookies, login, authDb, policy, mfa, ownership, billing, form] = await Promise.all([
+    readFile(new URL("../../app/lib/supabase/cookie-options.ts", import.meta.url), "utf8"),
+    readFile(new URL("../../app/api/v1/auth/login/route.ts", import.meta.url), "utf8"),
+    readFile(new URL("../../db/auth.ts", import.meta.url), "utf8"),
+    readFile(new URL("../../app/lib/password-policy.ts", import.meta.url), "utf8"),
+    readFile(new URL("../../app/api/v1/auth/mfa/verify/route.ts", import.meta.url), "utf8"),
+    readFile(new URL("../../app/api/v1/workspaces/[workspaceId]/ownership/route.ts", import.meta.url), "utf8"),
+    readFile(new URL("../../app/api/v1/workspaces/[workspaceId]/billing/checkout/route.ts", import.meta.url), "utf8"),
+    readFile(new URL("../../app/components/auth-form.tsx", import.meta.url), "utf8"),
+  ]);
+  assert.match(cookies, /httpOnly: true/);
+  assert.match(cookies, /sameSite: "lax"/);
+  assert.match(login, /consumeAuthRateLimits/);
+  for (const dimension of ["ip", "account", "device"]) assert.match(authDb, new RegExp(`auth:\\$\\{action\\}:${dimension}`));
+  assert.match(policy, /password\.length < 12/);
+  assert.match(mfa, /mfa\.challenge/);
+  assert.match(mfa, /mfa\.verify/);
+  assert.match(ownership, /hasAal2/);
+  assert.match(billing, /hasAal2/);
+  assert.doesNotMatch(form, /signInWithPassword|signUp\(|resetPasswordForEmail/);
+});
+
 test("sign out is POST-only so navigation prefetch cannot revoke a session", async () => {
   const [route, shell] = await Promise.all([
     readFile(new URL("../../app/auth/signout/route.ts", import.meta.url), "utf8"),

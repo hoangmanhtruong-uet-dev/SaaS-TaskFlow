@@ -290,6 +290,14 @@ export const authTokens = pgTable("auth_tokens", {
   createdAt: createdAt(),
 });
 
+export const mfaRecoveryCodes = pgTable("mfa_recovery_codes", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  userId: uuid("user_id").notNull().references(() => users.id, { onDelete: "cascade" }),
+  codeHash: text("code_hash").notNull().unique(),
+  usedAt: timestamp("used_at", { withTimezone: true, mode: "date" }),
+  createdAt: createdAt(),
+}, (table) => [index("mfa_recovery_codes_user_idx").on(table.userId, table.usedAt)]);
+
 export const rateLimits = pgTable("rate_limits", {
   key: text("key").notNull(),
   windowStartedAt: timestamp("window_started_at", { withTimezone: true, mode: "date" }).notNull(),

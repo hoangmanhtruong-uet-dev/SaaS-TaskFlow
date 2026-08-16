@@ -1,4 +1,4 @@
-import { getApiUser } from "@/app/lib/api-auth";
+import { getApiUser, hasAal2 } from "@/app/lib/api-auth";
 import { fail, ok } from "@/app/lib/api-response";
 import { routeError } from "@/app/lib/route-handler";
 import { enumValue, parseJson, requiredString } from "@/app/lib/validation";
@@ -15,6 +15,7 @@ export async function GET(_: Request, { params }: { params: Promise<{ workspaceI
 export async function POST(request: Request, { params }: { params: Promise<{ workspaceId: string }> }) {
   try {
     const auth = await getApiUser(); if (!auth) return fail("AUTH_REQUIRED", "Authentication required", 401);
+    if (!hasAal2(auth)) return fail("MFA_REQUIRED", "Verify MFA before inviting a member", 403);
     const { workspaceId } = await params; const body = await parseJson(request);
     const email = requiredString(body, "email", 254);
     const role = enumValue(body, "role", ["ADMIN", "MEMBER", "GUEST"] as const, "MEMBER");

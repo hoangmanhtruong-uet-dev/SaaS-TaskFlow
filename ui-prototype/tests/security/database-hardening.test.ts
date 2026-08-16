@@ -27,3 +27,10 @@ test("staging provisioner verifies direct PostgREST tenant isolation and denied 
   assert.match(provisioner, /RLS exposed a server-only checklist table/);
   assert.match(provisioner, /Direct authenticated mutation bypassed/);
 });
+
+test("activity audit records reject mutation and preserve lifecycle-only deletion", async () => {
+  const migration = await readFile(new URL("../../supabase/migrations/20260816170000_protect_activity_audit.sql", import.meta.url), "utf8");
+  assert.match(migration, /before update on public\.activity_events/);
+  assert.match(migration, /activity_events are append-only/);
+  assert.match(migration, /DELETE is reserved for workspace lifecycle retention/);
+});

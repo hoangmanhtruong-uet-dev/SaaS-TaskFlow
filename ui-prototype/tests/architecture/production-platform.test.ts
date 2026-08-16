@@ -39,15 +39,18 @@ test("provider adapters keep server secrets out of browser modules", async () =>
   assert.match(stripe, /STRIPE_SECRET_KEY/);
 });
 
-test("browser API reads recover once from an SSR session refresh race", async () => {
-  const browser = await readFile(new URL("../../app/lib/supabase/browser.ts", import.meta.url), "utf8");
-  const httpClient = await readFile(new URL("../../app/services/http-client.ts", import.meta.url), "utf8");
-
-  assert.match(browser, /let browserClient:/);
-  assert.match(browser, /if \(browserClient\) return browserClient/);
-  assert.match(httpClient, /let sessionRefresh:/);
-  assert.match(httpClient, /auth\.refreshSession\(\)/);
-  assert.match(httpClient, /error\.status !== 401/);
-  assert.match(httpClient, /isSafeRequest\(init\)/);
-  assert.equal(httpClient.match(/refreshSessionOnce\(\)/g)?.length, 2);
+test("authentication refresh stays server-side so HttpOnly session cookies are not exposed to browser code", async () => {
+  const [browser, httpClient, proxy, cookieOptions, authForm] = await Promise.all([
+    readFile(new URL("../../app/lib/supabase/browser.ts", import.meta.url), "utf8"),
+    readFile(new URL("../../app/services/http-client.ts", import.meta.url), "utf8"),
+    readFile(new URL("../../app/lib/supabase/proxy.ts", import.meta.url), "utf8"),
+    readFile(new URL("../../app/lib/supabase/cookie-options.ts", import.meta.url), "utf8"),
+    readFile(new URL("../../app/components/auth-form.tsx", import.meta.url), "utf8"),
+  ]);
+  assert.match(browser, /createBrowserClient<Database>/);
+  assert.doesNotMatch(httpClient, /auth\.refreshSession|refreshSessionOnce/);
+  assert.match(proxy, /getClaims\(\)/);
+  assert.match(cookieOptions, /httpOnly: true/);
+  assert.match(cookieOptions, /secure:/);
+  assert.doesNotMatch(authForm, /signInWithPassword|signUp\(|resetPasswordForEmail|updateUser/);
 });

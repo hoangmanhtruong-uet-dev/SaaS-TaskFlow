@@ -1,4 +1,4 @@
-import { getApiUser } from "@/app/lib/api-auth";
+import { getApiUser, hasAal2 } from "@/app/lib/api-auth";
 import { fail, ok } from "@/app/lib/api-response";
 import { routeError } from "@/app/lib/route-handler";
 import { stripeEnv } from "@/app/lib/env";
@@ -14,6 +14,7 @@ export async function POST(
   try {
     const auth = await getApiUser();
     if (!auth) return fail("AUTH_REQUIRED", "Authentication required", 401);
+    if (!hasAal2(auth)) return fail("MFA_REQUIRED", "Verify MFA before starting checkout", 403);
     const rate = await consumeRateLimit(`billing:session:${auth.user.id}`, 10, 10 * 60 * 1000);
     if (!rate.allowed) return fail("RATE_LIMITED", "Too many billing session attempts", 429, { retryAfterSeconds: rate.retryAfterSeconds });
     const { workspaceId } = await params;

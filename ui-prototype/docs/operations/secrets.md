@@ -20,5 +20,9 @@ Never put real values in GitHub, issue text, logs or chat. Store runtime values 
 | `NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY` | yes | test | fake | test | live |
 | `STRIPE_PRICE_PRO_MONTHLY` | identifier | test | fake | test | live |
 | `CRON_SECRET` | no | ✓ | fake | ✓ | ✓ |
+| `MALWARE_SCANNER_URL` | configuration | optional | blank | optional | ✓ |
+| `MALWARE_SCANNER_TOKEN` | no | optional | blank | optional | ✓ |
 
 Rotate immediately after suspected exposure. Service-role, Stripe secret/webhook and Resend keys must never use a `NEXT_PUBLIC_` prefix.
+
+GitHub CI scans complete committed history with Gitleaks and audits production dependencies. Enable GitHub secret scanning and push protection in repository settings as an additional provider control.

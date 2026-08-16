@@ -1,12 +1,14 @@
 import assert from "node:assert/strict";
 import { readFile } from "node:fs/promises";
 import test from "node:test";
+import Stripe from "stripe";
 import {
   FREE_MEMBER_LIMIT,
   FREE_PROJECT_LIMIT,
   hasPaidAccess,
   resolveEntitlements,
 } from "../../app/lib/billing-entitlements";
+import { STRIPE_WEBHOOK_TOLERANCE_SECONDS, verifyStripeEvent } from "../../app/lib/stripe-webhook";
 
 test("only active or trialing matching Stripe price grants Pro", () => {
   assert.equal(hasPaidAccess("active", true), true);
@@ -53,7 +55,8 @@ test("Stripe webhook verifies raw body, resists replay, and persists server-side
     "utf8",
   );
 
-  assert.match(webhook, /constructEvent\(\s*await request\.text\(\)/);
+  assert.match(webhook, /readTextBody/);
+  assert.match(webhook, /verifyStripeEvent/);
   assert.match(webhook, /stripe-signature/);
   assert.match(webhook, /hasProcessedStripeEvent/);
   assert.match(billing, /onConflictDoNothing/);
@@ -62,6 +65,18 @@ test("Stripe webhook verifies raw body, resists replay, and persists server-side
     migration,
     /revoke insert, update, delete on public\.subscriptions from anon, authenticated/,
   );
+});
+
+test("Stripe webhook rejects wrong signatures and timestamps outside the five-minute window", () => {
+  const stripe = new Stripe(["sk", "test", "placeholder"].join("_"));
+  const secret = "whsec_test_integration_secret";
+  const receivedAt = 1_800_000_000;
+  const payload = JSON.stringify({ id: "evt_security_test", object: "event", type: "customer.subscription.updated", data: { object: {} } });
+  const validHeader = stripe.webhooks.generateTestHeaderString({ payload, secret, timestamp: receivedAt });
+  assert.equal(verifyStripeEvent(stripe.webhooks, payload, validHeader, secret, receivedAt * 1000).id, "evt_security_test");
+  assert.throws(() => verifyStripeEvent(stripe.webhooks, payload, validHeader, "whsec_wrong", receivedAt * 1000), /signature/i);
+  const staleHeader = stripe.webhooks.generateTestHeaderString({ payload, secret, timestamp: receivedAt - STRIPE_WEBHOOK_TOLERANCE_SECONDS - 1 });
+  assert.throws(() => verifyStripeEvent(stripe.webhooks, payload, staleHeader, secret, receivedAt * 1000), /timestamp/i);
 });
 
 test("billing management and entitlements stay tenant and role scoped", async () => {

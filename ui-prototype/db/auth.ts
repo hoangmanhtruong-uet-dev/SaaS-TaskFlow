@@ -1,5 +1,6 @@
 import { and, desc, eq, gt, isNull, sql } from "drizzle-orm";
 import { hashOpaqueToken, randomOpaqueToken } from "@/app/lib/security";
+import { clientAddress } from "@/app/lib/request-security";
 import { getDb } from "./index";
 import { authSessions, rateLimits, users } from "./schema";
 
@@ -76,4 +77,18 @@ export async function consumeRateLimit(key: string, limit: number, windowMs: num
   const allowed = Number(row?.count ?? limit + 1) <= limit && (!row?.blockedUntil || row.blockedUntil.getTime() <= now);
   if (!allowed && !row?.blockedUntil) await getDb().update(rateLimits).set({ blockedUntil: new Date(windowStartedAt.getTime() + windowMs) }).where(and(eq(rateLimits.key, key), eq(rateLimits.windowStartedAt, windowStartedAt))).run();
   return { allowed, retryAfterSeconds: Math.max(1, Math.ceil((windowStartedAt.getTime() + windowMs - now) / 1000)) };
+}
+
+export async function consumeAuthRateLimits(action: string, request: Request, normalizedAccount: string) {
+  const [ipHash, accountHash, deviceHash] = await Promise.all([
+    hashOpaqueToken(clientAddress(request)),
+    hashOpaqueToken(normalizedAccount),
+    hashOpaqueToken(request.headers.get("user-agent") ?? "unknown-device"),
+  ]);
+  const checks = await Promise.all([
+    consumeRateLimit(`auth:${action}:ip:${ipHash}`, 20, 15 * 60 * 1000),
+    consumeRateLimit(`auth:${action}:account:${accountHash}`, 8, 15 * 60 * 1000),
+    consumeRateLimit(`auth:${action}:device:${deviceHash}`, 12, 15 * 60 * 1000),
+  ]);
+  return checks.find((check) => !check.allowed) ?? { allowed: true, retryAfterSeconds: 0 };
 }

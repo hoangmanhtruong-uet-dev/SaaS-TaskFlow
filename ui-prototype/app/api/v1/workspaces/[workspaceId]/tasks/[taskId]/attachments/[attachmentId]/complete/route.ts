@@ -11,6 +11,7 @@ export async function POST(_: Request, { params }: { params: Promise<{ workspace
     const result = await completeAttachmentUpload(workspaceId, taskId, attachmentId, auth.user.id);
     if (result.kind === "ok") return ok(result.attachment, 201);
     if (result.kind === "mismatch") return fail("ATTACHMENT_MISMATCH", "Tệp tải lên không khớp metadata đã khai báo.", 422);
+    if (result.kind === "unsafe") return fail("ATTACHMENT_UNSAFE", "Tệp không vượt qua kiểm tra nội dung hoặc malware.", 422);
     if (result.kind === "not_found") return fail("UPLOAD_NOT_FOUND", "Phiên tải lên đã hết hạn hoặc không tồn tại.", 404);
     return fail("PERMISSION_DENIED", "Bạn không có quyền đính kèm tệp.", 403);
   } catch (error) { return routeError(error); }

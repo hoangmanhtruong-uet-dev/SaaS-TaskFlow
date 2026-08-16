@@ -4,6 +4,8 @@ import { getWorkspaceEntitlements } from "./billing";
 import { authorizeProject } from "./authorization";
 import { getDb } from "./index";
 import { attachments, attachmentUploads, tasks } from "./schema";
+import { attachmentFileNameIsSafe, validateAttachmentContent } from "@/app/lib/attachment-content";
+import { scanAttachment } from "@/app/lib/malware-scanner";
 
 export const MAX_ATTACHMENT_BYTES = 10 * 1024 * 1024;
 export const MAX_ATTACHMENTS_PER_TASK = 25;
@@ -50,7 +52,7 @@ export async function cleanupExpiredAttachmentUploads(now = new Date(), limit = 
 
 export async function beginAttachmentUpload(workspaceId: string, taskId: string, userId: string, input: { fileName: string; mimeType: string; size: number }) {
   if (!await taskAccess(workspaceId, taskId, userId, true)) return { kind: "denied" as const };
-  if (!ALLOWED_ATTACHMENT_TYPES.has(input.mimeType) || !Number.isSafeInteger(input.size) || input.size <= 0 || input.size > MAX_ATTACHMENT_BYTES) return { kind: "invalid" as const };
+  if (!ALLOWED_ATTACHMENT_TYPES.has(input.mimeType) || !attachmentFileNameIsSafe(input.fileName, input.mimeType) || !Number.isSafeInteger(input.size) || input.size <= 0 || input.size > MAX_ATTACHMENT_BYTES) return { kind: "invalid" as const };
   const db = getDb();
   const now = new Date();
   const [taskCount, usage, entitlements] = await Promise.all([
@@ -82,10 +84,14 @@ export async function completeAttachmentUpload(workspaceId: string, taskId: stri
   const { data: file, error } = await storage.info(pending.storageKey);
   const actualSize = Number(file?.size ?? -1);
   const actualType = String(file?.metadata?.mimetype ?? file?.metadata?.contentType ?? pending.mimeType);
-  if (error || actualSize !== pending.size || actualType !== pending.mimeType) {
+  const { data: blob, error: downloadError } = await storage.download(pending.storageKey);
+  const bytes = blob ? new Uint8Array(await blob.arrayBuffer()) : new Uint8Array();
+  const content = validateAttachmentContent(bytes, pending.mimeType, pending.fileName);
+  const scan = content.safe ? await scanAttachment(bytes) : { clean: false as const, reason: content.reason };
+  if (error || downloadError || actualSize !== pending.size || bytes.byteLength !== pending.size || actualType !== pending.mimeType || !content.safe || !scan.clean) {
     await storage.remove([pending.storageKey]);
     await db.delete(attachmentUploads).where(eq(attachmentUploads.id, pending.id)).run();
-    return { kind: "mismatch" as const };
+    return { kind: content.safe && scan.clean ? "mismatch" as const : "unsafe" as const };
   }
   const id = crypto.randomUUID();
   await db.batch([

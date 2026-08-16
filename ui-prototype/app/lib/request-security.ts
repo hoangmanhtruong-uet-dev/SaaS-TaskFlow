@@ -4,14 +4,14 @@ export function clientAddress(request: Request): string {
 
 const SAFE_METHODS = new Set(["GET", "HEAD", "OPTIONS"]);
 
-export function isTrustedMutationRequest(request: Request): boolean {
+export function isTrustedMutationRequest(request: Request, options: { allowOriginless?: boolean } = {}): boolean {
   if (SAFE_METHODS.has(request.method.toUpperCase())) return true;
 
   const fetchSite = request.headers.get("sec-fetch-site")?.toLowerCase();
   if (fetchSite === "cross-site") return false;
 
   const origin = request.headers.get("origin");
-  if (!origin) return true;
+  if (!origin) return options.allowOriginless === true;
 
   try {
     return new URL(origin).origin === new URL(request.url).origin;
