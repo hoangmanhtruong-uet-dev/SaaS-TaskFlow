@@ -72,9 +72,41 @@ async function workspaceExists() {
   return result.length > 0;
 }
 
-async function removeWorkspace() {
-  const { error } = await supabase.from("workspaces").delete().eq("id", ids.workspace);
-  if (error) throw new Error(`Delete rehearsal workspace: ${error.message}`);
+async function removeWorkspace(workspaceId = ids.workspace) {
+  for (const table of [...TABLE_ORDER].reverse()) {
+    const query = supabase.from(table).delete();
+    const { error } = await (table === "workspaces" ? query.eq("id", workspaceId) : query.eq("workspace_id", workspaceId));
+    if (error) throw new Error(`Delete rehearsal ${table}: ${error.message}`);
+  }
+}
+
+async function cleanupStaleRehearsals() {
+  const staleWorkspacePattern = /^recovery-[a-f0-9]{12}$/;
+  const staleUserPattern = /^recovery-(?:owner|member)-[a-f0-9]{12}@taskflow-mvp-staging\.vercel\.app$/;
+  const candidates = await rows(
+    "Find stale rehearsal workspaces",
+    supabase.from("workspaces").select("id, slug").like("slug", "recovery-%"),
+  );
+  const staleWorkspaces = candidates.filter(({ slug }) => staleWorkspacePattern.test(slug));
+  for (const workspace of staleWorkspaces) await removeWorkspace(workspace.id);
+
+  let page = 1;
+  let staleUsers = [];
+  while (true) {
+    const { data, error } = await supabase.auth.admin.listUsers({ page, perPage: 100 });
+    if (error) throw new Error(`Find stale rehearsal users: ${error.message}`);
+    staleUsers = staleUsers.concat(data.users.filter(({ email }) => email && staleUserPattern.test(email)));
+    if (data.users.length < 100) break;
+    page += 1;
+  }
+  for (const user of staleUsers) {
+    const { error } = await supabase.auth.admin.deleteUser(user.id);
+    if (error) throw new Error(`Delete stale rehearsal user: ${error.message}`);
+  }
+
+  if (staleWorkspaces.length || staleUsers.length) {
+    console.log(`Removed stale recovery fixtures: ${staleWorkspaces.length} workspace(s), ${staleUsers.length} user(s).`);
+  }
 }
 
 async function cleanup() {
@@ -92,6 +124,7 @@ let exitCode = 1;
 try {
   const startedAt = Date.now();
   console.log(`Starting synthetic backup-restore rehearsal in staging project ${projectRef}...`);
+  await cleanupStaleRehearsals();
   for (const [index, user] of users.entries()) {
     const { data, error } = await supabase.auth.admin.createUser({
       email: user.email,
