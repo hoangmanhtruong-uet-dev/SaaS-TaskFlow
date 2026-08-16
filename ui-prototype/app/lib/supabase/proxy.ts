@@ -1,5 +1,6 @@
 import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
+import { hardenedAuthCookieOptions } from "@/app/lib/supabase/cookie-options";
 
 export async function updateSupabaseSession(request: NextRequest, requestHeaders = new Headers(request.headers)) {
   requestHeaders.forEach((value, name) => request.headers.set(name, value));
@@ -13,7 +14,7 @@ export async function updateSupabaseSession(request: NextRequest, requestHeaders
         setAll(values, headers) {
           values.forEach(({ name, value }) => request.cookies.set(name, value));
           response = NextResponse.next({ request });
-          values.forEach(({ name, value, options }) => response.cookies.set(name, value, options));
+          values.forEach(({ name, value, options }) => response.cookies.set(name, value, { ...options, ...hardenedAuthCookieOptions() }));
           Object.entries(headers).forEach(([name, value]) => response.headers.set(name, value));
         },
       },

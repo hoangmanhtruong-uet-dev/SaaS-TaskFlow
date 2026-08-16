@@ -8,5 +8,8 @@ export async function GET() {
   const supabase = await createSupabaseServerClient();
   const { data: { session } } = await supabase.auth.getSession();
   if (!session) return ok([]);
-  return ok([{ id: `${auth.user.id}:current`, provider: session.user.app_metadata.provider ?? "email", current: true, expiresAt: session.expires_at ? new Date(session.expires_at * 1000).toISOString() : null, lastSeenAt: new Date().toISOString(), revokedAt: null, createdAt: session.user.created_at }]);
+  return ok([
+    { id: "current", provider: session.user.app_metadata.provider ?? "email", current: true, expiresAt: session.expires_at ? new Date(session.expires_at * 1000).toISOString() : null, lastSeenAt: new Date().toISOString(), revokedAt: null, createdAt: session.user.created_at },
+    { id: "others", provider: "all-other-devices", current: false, expiresAt: null, lastSeenAt: null, revokedAt: null, createdAt: null },
+  ]);
 }

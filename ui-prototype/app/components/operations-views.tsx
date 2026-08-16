@@ -365,6 +365,11 @@ export function WorkspaceSettingsView() {
           Lưu thay đổi
         </Button>
       </form>
+      <section className="ui-card settings-section">
+        <h2>Bảo mật tài khoản</h2>
+        <p>Thiết lập TOTP MFA trước khi quản lý thành viên, ownership, billing hoặc xóa workspace.</p>
+        <a className="ui-button secondary" href="/auth/mfa?next=/app/settings">Quản lý MFA</a>
+      </section>
       {workspace.role === "OWNER" && <BillingSettings />}
       {workspace.role === "OWNER" && (
         <section className="ui-card settings-section">

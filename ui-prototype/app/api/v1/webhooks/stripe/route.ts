@@ -3,6 +3,10 @@ import { stripeEnv } from "@/app/lib/env";
 import { stripeClient } from "@/app/lib/stripe";
 import { hasProcessedStripeEvent, syncStripeSubscription } from "@/db/billing";
 import { logEvent, reportError, requestIdFrom } from "@/app/lib/observability";
+import { readTextBody } from "@/app/lib/validation";
+import { verifyStripeEvent } from "@/app/lib/stripe-webhook";
+
+const MAX_STRIPE_WEBHOOK_BYTES = 1024 * 1024;
 
 function subscriptionIdFromInvoice(invoice: Stripe.Invoice) {
   const subscription = invoice.parent?.subscription_details?.subscription;
@@ -23,8 +27,10 @@ export async function POST(request: Request) {
 
   let event: Stripe.Event;
   try {
-    event = stripeClient().webhooks.constructEvent(
-      await request.text(),
+    const rawBody = await readTextBody(request, MAX_STRIPE_WEBHOOK_BYTES);
+    event = verifyStripeEvent(
+      stripeClient().webhooks,
+      rawBody,
       signature,
       stripeEnv().STRIPE_WEBHOOK_SECRET,
     );

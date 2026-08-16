@@ -4,7 +4,6 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { ArrowRight, CircleUserRound } from "lucide-react";
-import { createSupabaseBrowserClient } from "@/app/lib/supabase/browser";
 import { Button, Field } from "@/app/components/ui";
 import { safeReturnPath } from "@/app/lib/auth-redirect";
 
@@ -17,6 +16,13 @@ export function AuthForm({ mode, next = "/app" }: { mode: Mode; next?: string })
   const [message, setMessage] = useState("");
   const destination = safeReturnPath(next);
 
+  async function authRequest<T>(path: string, body: Record<string, unknown>) {
+    const response = await fetch(path, { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify(body) });
+    const payload = await response.json() as { data?: T; error?: { message?: string } };
+    if (!response.ok || !payload.data) throw new Error(payload.error?.message ?? "Không thể xử lý yêu cầu.");
+    return payload.data;
+  }
+
   async function submit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setBusy(true); setError(""); setMessage("");
@@ -24,27 +30,21 @@ export function AuthForm({ mode, next = "/app" }: { mode: Mode; next?: string })
     const email = String(form.get("email") ?? "").trim();
     const password = String(form.get("password") ?? "");
     const fullName = String(form.get("fullName") ?? "").trim();
-    const supabase = createSupabaseBrowserClient();
     try {
       if (mode === "login") {
-        const { error: authError } = await supabase.auth.signInWithPassword({ email, password });
-        if (authError) throw authError;
-        router.push(destination); router.refresh();
+        const data = await authRequest<{ mfaRequired: boolean }>("/api/v1/auth/login", { email, password });
+        router.push(data.mfaRequired ? `/auth/mfa?next=${encodeURIComponent(destination)}` : destination); router.refresh();
       } else if (mode === "register") {
-        const { data, error: authError } = await supabase.auth.signUp({ email, password, options: { data: { full_name: fullName }, emailRedirectTo: `${location.origin}/auth/callback?next=${encodeURIComponent(destination)}` } });
-        if (authError) throw authError;
-        if (data.session) { router.push(destination); router.refresh(); }
+        const data = await authRequest<{ authenticated: boolean }>("/api/v1/auth/register", { email, password, fullName });
+        if (data.authenticated) { router.push(destination); router.refresh(); }
         else setMessage("Đã gửi email xác minh. Hãy mở liên kết để tiếp tục.");
       } else if (mode === "forgot") {
-        const { error: authError } = await supabase.auth.resetPasswordForEmail(email, { redirectTo: `${location.origin}/auth/callback?next=/reset-password` });
-        if (authError) throw authError;
+        await authRequest("/api/v1/auth/password/forgot", { email });
         setMessage("Nếu tài khoản tồn tại, hướng dẫn đặt lại mật khẩu đã được gửi.");
       } else {
         const confirmation = String(form.get("confirmation") ?? "");
-        if (password.length < 8) throw new Error("Mật khẩu phải có ít nhất 8 ký tự.");
         if (password !== confirmation) throw new Error("Mật khẩu xác nhận không khớp.");
-        const { error: authError } = await supabase.auth.updateUser({ password });
-        if (authError) throw authError;
+        await authRequest("/api/v1/auth/password/reset", { password });
         router.push("/app"); router.refresh();
       }
     } catch (value) {
@@ -56,9 +56,10 @@ export function AuthForm({ mode, next = "/app" }: { mode: Mode; next?: string })
 
   async function google() {
     setBusy(true); setError("");
-    const supabase = createSupabaseBrowserClient();
-    const { error: authError } = await supabase.auth.signInWithOAuth({ provider: "google", options: { redirectTo: `${location.origin}/auth/callback?next=${encodeURIComponent(destination)}` } });
-    if (authError) { setError(authError.message); setBusy(false); }
+    try {
+      const data = await authRequest<{ url: string }>("/api/v1/auth/provider", { provider: "google", next: destination });
+      window.location.assign(data.url);
+    } catch (value) { setError(value instanceof Error ? value.message : "Không thể bắt đầu đăng nhập Google."); setBusy(false); }
   }
 
   return <>
@@ -66,8 +67,8 @@ export function AuthForm({ mode, next = "/app" }: { mode: Mode; next?: string })
     <form onSubmit={submit}>
       {mode === "register" && <Field name="fullName" label="Họ và tên" autoComplete="name" required />}
       {mode !== "reset" && <Field name="email" label="Email" type="email" autoComplete="email" required />}
-      {mode !== "forgot" && <Field name="password" label={mode === "reset" ? "Mật khẩu mới" : "Mật khẩu"} type="password" autoComplete={mode === "login" ? "current-password" : "new-password"} minLength={8} required />}
-      {mode === "reset" && <Field name="confirmation" label="Xác nhận mật khẩu" type="password" autoComplete="new-password" minLength={8} required />}
+      {mode !== "forgot" && <Field name="password" label={mode === "reset" ? "Mật khẩu mới" : "Mật khẩu"} type="password" autoComplete={mode === "login" ? "current-password" : "new-password"} minLength={mode === "login" ? 8 : 12} required />}
+      {mode === "reset" && <Field name="confirmation" label="Xác nhận mật khẩu" type="password" autoComplete="new-password" minLength={12} required />}
       {error && <p className="form-error" role="alert">{error}</p>}
       <Button type="submit" disabled={busy}>{busy ? "Đang xử lý..." : mode === "login" ? "Đăng nhập" : mode === "register" ? "Tạo tài khoản" : mode === "forgot" ? "Gửi hướng dẫn" : "Lưu mật khẩu"} <ArrowRight size={16} /></Button>
     </form>

@@ -23,4 +23,21 @@ export function enumValue<T extends string>(body: Record<string, unknown>, key: 
   if (typeof value !== "string" || !allowed.includes(value as T)) throw new ValidationError({ [key]: `Giá trị phải là ${allowed.join(", ")}` });
   return value as T;
 }
-export async function parseJson(request: Request) { try { return objectBody(await request.json()); } catch (error) { if (error instanceof ValidationError) throw error; throw new ValidationError({ body: "JSON không hợp lệ" }); } }
+export const DEFAULT_JSON_BODY_LIMIT = 64 * 1024;
+
+export async function readTextBody(request: Request, maxBytes: number) {
+  const declared = request.headers.get("content-length");
+  if (declared && (!/^\d+$/.test(declared) || Number(declared) > maxBytes)) throw new ValidationError({ body: `Body vượt quá ${maxBytes} bytes` });
+  const text = await request.text();
+  if (new TextEncoder().encode(text).byteLength > maxBytes) throw new ValidationError({ body: `Body vượt quá ${maxBytes} bytes` });
+  return text;
+}
+
+export async function parseJson(request: Request, maxBytes = DEFAULT_JSON_BODY_LIMIT) {
+  try {
+    return objectBody(JSON.parse(await readTextBody(request, maxBytes)));
+  } catch (error) {
+    if (error instanceof ValidationError) throw error;
+    throw new ValidationError({ body: "JSON không hợp lệ" });
+  }
+}

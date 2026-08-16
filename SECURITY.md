@@ -1,5 +1,7 @@
 Security Requirements
 
+The operational threat model, data flows, trust boundaries, control owners, detection signals, and recovery procedures are maintained in [`ui-prototype/docs/security/threat-model.md`](ui-prototype/docs/security/threat-model.md). Mobile release gates are maintained in [`ui-prototype/docs/security/mobile-baseline.md`](ui-prototype/docs/security/mobile-baseline.md).
+
 1. Threat model chính
 
 Đọc hoặc sửa dữ liệu của workspace khác bằng ID đoán được.

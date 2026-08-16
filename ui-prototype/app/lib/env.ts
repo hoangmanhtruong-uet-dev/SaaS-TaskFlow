@@ -19,6 +19,11 @@ const serverSchema = z.object({
   NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY: z.string().startsWith("pk_"),
   STRIPE_PRICE_PRO_MONTHLY: z.string().startsWith("price_"),
   CRON_SECRET: z.string().min(32),
+  MALWARE_SCANNER_URL: z.string().url().optional(),
+  MALWARE_SCANNER_TOKEN: z.string().min(32).optional(),
+}).superRefine((value, context) => {
+  if (value.APP_ENV === "production" && (!value.MALWARE_SCANNER_URL || !value.MALWARE_SCANNER_TOKEN)) context.addIssue({ code: "custom", message: "Production requires a malware scanner URL and token" });
+  if (value.MALWARE_SCANNER_URL && !value.MALWARE_SCANNER_URL.startsWith("https://")) context.addIssue({ code: "custom", message: "Malware scanner must use HTTPS" });
 });
 
 export type ServerEnv = z.infer<typeof serverSchema>;
