@@ -43,13 +43,16 @@ test("Supabase proxy forwards refreshed cookies on the same request object", asy
 
 test("staging E2E provisions disposable tenant fixtures behind protected secrets", async () => {
   const [workflow, runner] = await Promise.all([
-    read(".github/workflows/staging-e2e.yml"),
+    read("../.github/workflows/staging-e2e.yml"),
     read("scripts/run-staging-e2e.mjs"),
   ]);
-  for (const marker of ["environment: staging", "SUPABASE_SERVICE_ROLE_KEY", "SUPABASE_DB_URL", "test:e2e:staging:provision"]) {
+  for (const marker of ["environment: staging", "working-directory: ui-prototype", "SUPABASE_STAGING_PROJECT_REF", "SUPABASE_SERVICE_ROLE_KEY", "test:e2e:staging:provision"]) {
     assert.match(workflow, new RegExp(marker));
   }
   assert.match(runner, /TASKFLOW_CONFIRM_E2E_PROVISION/);
+  assert.match(runner, /Supabase URL must belong to the declared staging project/);
+  assert.match(runner, /supabase\.from\("workspaces"\)/);
+  assert.doesNotMatch(runner, /SUPABASE_DB_URL|from "postgres"/);
   assert.match(runner, /finally\s*\{/);
   assert.match(runner, /admin\.deleteUser/);
 });
