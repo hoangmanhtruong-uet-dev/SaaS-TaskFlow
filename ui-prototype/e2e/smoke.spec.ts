@@ -23,6 +23,9 @@ test("protected API rejects anonymous access without leaking internals", async (
   expect(body.error.code).toBe("AUTH_REQUIRED");
   expect(body.meta.requestId).toMatch(/^req_/);
   expect(JSON.stringify(body)).not.toMatch(/SUPABASE|postgresql:|service.role|stack/i);
+  const cron = await request.get("/api/internal/jobs/workspace-deletion");
+  expect(cron.status()).toBe(401);
+  await expect(cron.json()).resolves.toMatchObject({ error: { code: "AUTH_REQUIRED" } });
 });
 
 test("readiness reports dependency state without credentials or stack traces", async ({ request }) => {

@@ -106,4 +106,14 @@ test.describe("authenticated production-critical flows", () => {
     await page.getByRole("button", { name: `Xóa mục ${title}` }).click();
     await expect(page.getByText(title, { exact: true })).toHaveCount(0);
   });
+
+  test("Owner sees task deadlines in the calendar", async ({ page }) => {
+    test.skip(!workspaceId || !credentials("OWNER").email || !credentials("OWNER").password, "Missing calendar fixture environment.");
+    await login(page, "OWNER");
+    await page.goto("/app/calendar");
+    await expect(page.getByRole("heading", { name: "Lịch công việc" })).toBeVisible({ timeout: 20_000 });
+    await expect(page.getByRole("button", { name: "Tháng trước" })).toBeVisible();
+    await expect(page.getByRole("button", { name: "Tháng sau" })).toBeVisible();
+    await expect(page.getByText("Cần chú ý", { exact: true })).toBeVisible();
+  });
 });

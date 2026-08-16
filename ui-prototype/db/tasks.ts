@@ -1,8 +1,8 @@
-import { and, asc, eq, isNotNull, isNull, sql } from "drizzle-orm";
+import { and, asc, count, eq, isNotNull, isNull, sql } from "drizzle-orm";
 import type { CreateTaskRequest, MoveTaskRequest, UpdateTaskRequest } from "@/app/types/api";
 import { authorizeProject, authorizeWorkspace, getActiveMembership } from "./authorization";
 import { getDb } from "./index";
-import { boards, columns, projects, taskAssignees, tasks } from "./schema";
+import { boards, columns, projects, taskAssignees, taskChecklistItems, tasks } from "./schema";
 import { memberships, notifications } from "./schema";
 import { recordActivity } from "./audit";
 import { canArchiveTask } from "@/app/lib/permissions";
@@ -85,7 +85,10 @@ export async function archiveTask(workspaceId: string, taskId: string, userId: s
 }
 
 async function toTaskDto(task: typeof tasks.$inferSelect, projectName: string, columnName: string) {
-  const assignees = await getDb().select({ membershipId: taskAssignees.membershipId }).from(taskAssignees).where(eq(taskAssignees.taskId, task.id)).all();
+  const [assignees, checklist] = await Promise.all([
+    getDb().select({ membershipId: taskAssignees.membershipId }).from(taskAssignees).where(and(eq(taskAssignees.workspaceId, task.workspaceId), eq(taskAssignees.taskId, task.id))).all(),
+    getDb().select({ total: count(), completed: sql<number>`count(*) filter (where ${taskChecklistItems.completed})` }).from(taskChecklistItems).where(and(eq(taskChecklistItems.workspaceId, task.workspaceId), eq(taskChecklistItems.taskId, task.id))).get(),
+  ]);
   const tone = ({ LOW: "blue", MEDIUM: "amber", HIGH: "red", URGENT: "red" } as const)[task.priority];
-  return { id: task.id, workspaceId: task.workspaceId, projectId: task.projectId, boardId: task.boardId, columnId: task.columnId, title: task.title, description: task.description, priority: task.priority, dueAt: task.dueAt?.toISOString() ?? null, assigneeIds: assignees.map((row: { membershipId: string }) => row.membershipId), version: task.version, archivedAt: task.archivedAt?.toISOString() ?? null, projectName, columnName, tone };
+  return { id: task.id, workspaceId: task.workspaceId, projectId: task.projectId, boardId: task.boardId, columnId: task.columnId, title: task.title, description: task.description, priority: task.priority, dueAt: task.dueAt?.toISOString() ?? null, assigneeIds: assignees.map((row: { membershipId: string }) => row.membershipId), version: task.version, archivedAt: task.archivedAt?.toISOString() ?? null, projectName, columnName, tone, checklistTotal: Number(checklist?.total ?? 0), checklistCompleted: Number(checklist?.completed ?? 0) };
 }

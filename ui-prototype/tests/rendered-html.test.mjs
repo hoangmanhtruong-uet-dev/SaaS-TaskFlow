@@ -139,6 +139,22 @@ test("task detail includes a tenant-scoped interactive checklist", async () => {
   ]) await assert.doesNotReject(readFile(new URL(route, root), "utf8"));
 });
 
+test("planning feature batch includes calendar, checklist progress, and deadline reminders", async () => {
+  const [calendar, tasks, reminders, cron] = await Promise.all([
+    readFile(new URL("app/components/calendar-view.tsx", root), "utf8"),
+    readFile(new URL("db/tasks.ts", root), "utf8"),
+    readFile(new URL("db/task-reminders.ts", root), "utf8"),
+    readFile(new URL("app/api/internal/jobs/workspace-deletion/route.ts", root), "utf8"),
+  ]);
+  assert.match(calendar, /Lịch công việc/);
+  assert.match(calendar, /calendar-grid/);
+  assert.match(tasks, /checklistCompleted/);
+  assert.match(reminders, /DUE_SOON/);
+  assert.match(reminders, /OVERDUE/);
+  assert.match(cron, /CRON_SECRET/);
+  await assert.doesNotReject(readFile(new URL("app/app/calendar/page.tsx", root), "utf8"));
+});
+
 test("operations layer covers scoped search, archive recovery, and workspace lifecycle", async () => {
   const search = await readFile(new URL("db/search.ts", root), "utf8");
   const lifecycle = await readFile(new URL("db/workspace-lifecycle.ts", root), "utf8");

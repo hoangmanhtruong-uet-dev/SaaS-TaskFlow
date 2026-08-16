@@ -244,6 +244,19 @@ export const notifications = pgTable("notifications", {
   createdAt: createdAt(),
 }, (table) => [index("notifications_recipient_idx").on(table.recipientUserId, table.readAt, table.createdAt)]);
 
+export const taskReminderDeliveries = pgTable("task_reminder_deliveries", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  workspaceId: uuid("workspace_id").notNull().references(() => workspaces.id, { onDelete: "cascade" }),
+  taskId: uuid("task_id").notNull().references(() => tasks.id, { onDelete: "cascade" }),
+  recipientUserId: uuid("recipient_user_id").notNull().references(() => users.id, { onDelete: "cascade" }),
+  kind: text("kind", { enum: ["DUE_SOON", "OVERDUE"] }).notNull(),
+  dueAt: timestamp("due_at", { withTimezone: true, mode: "date" }).notNull(),
+  createdAt: createdAt(),
+}, (table) => [
+  uniqueIndex("task_reminder_deliveries_dedup_uidx").on(table.taskId, table.recipientUserId, table.kind, table.dueAt),
+  index("task_reminder_deliveries_workspace_idx").on(table.workspaceId, table.createdAt),
+]);
+
 export const activityEvents = pgTable("activity_events", {
   id: uuid("id").primaryKey().defaultRandom(),
   workspaceId: uuid("workspace_id").notNull().references(() => workspaces.id, { onDelete: "cascade" }),

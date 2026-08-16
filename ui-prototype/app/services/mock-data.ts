@@ -11,9 +11,9 @@ export const mockProjects: Project[] = [
 ];
 
 export const mockTasks: TaskSummary[] = [
-  { id: "tsk_auth", workspaceId: "ws_alpha", projectId: "prj_web", boardId: "brd_web", columnId: "col_doing", title: "Hoàn thiện luồng đăng ký", description: "", priority: "HIGH", dueAt: "Hôm nay", assigneeIds: ["usr_lan"], version: 3, archivedAt: null, projectName: "Website Redesign", columnName: "Đang làm", tone: "red" },
-  { id: "tsk_ui", workspaceId: "ws_alpha", projectId: "prj_mobile", boardId: "brd_mobile", columnId: "col_review", title: "Review hệ thống component", description: "", priority: "MEDIUM", dueAt: "Ngày mai", assigneeIds: ["usr_lan"], version: 1, archivedAt: null, projectName: "Mobile App MVP", columnName: "Review", tone: "amber" },
-  { id: "tsk_api", workspaceId: "ws_alpha", projectId: "prj_q4", boardId: "brd_q4", columnId: "col_backlog", title: "Cập nhật tài liệu API", description: "", priority: "LOW", dueAt: "26/08", assigneeIds: [], version: 2, archivedAt: null, projectName: "Q4 Planning", columnName: "Backlog", tone: "blue" },
+  { id: "tsk_auth", workspaceId: "ws_alpha", projectId: "prj_web", boardId: "brd_web", columnId: "col_doing", title: "Hoàn thiện luồng đăng ký", description: "", priority: "HIGH", dueAt: "2026-08-16T00:00:00.000Z", assigneeIds: ["usr_lan"], version: 3, archivedAt: null, projectName: "Website Redesign", columnName: "Đang làm", tone: "red", checklistTotal: 4, checklistCompleted: 3 },
+  { id: "tsk_ui", workspaceId: "ws_alpha", projectId: "prj_mobile", boardId: "brd_mobile", columnId: "col_review", title: "Review hệ thống component", description: "", priority: "MEDIUM", dueAt: "2026-08-17T00:00:00.000Z", assigneeIds: ["usr_lan"], version: 1, archivedAt: null, projectName: "Mobile App MVP", columnName: "Review", tone: "amber", checklistTotal: 2, checklistCompleted: 1 },
+  { id: "tsk_api", workspaceId: "ws_alpha", projectId: "prj_q4", boardId: "brd_q4", columnId: "col_backlog", title: "Cập nhật tài liệu API", description: "", priority: "LOW", dueAt: "2026-08-26T00:00:00.000Z", assigneeIds: [], version: 2, archivedAt: null, projectName: "Q4 Planning", columnName: "Backlog", tone: "blue", checklistTotal: 0, checklistCompleted: 0 },
 ];
 
 export const legacyTasks = mockTasks.map((task) => ({ title: task.title, project: task.projectName, priority: ({ LOW: "Thấp", MEDIUM: "Trung bình", HIGH: "Cao", URGENT: "Khẩn cấp" })[task.priority], due: task.dueAt ?? "Chưa đặt", tone: task.tone }));

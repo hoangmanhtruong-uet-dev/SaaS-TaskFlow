@@ -1,6 +1,7 @@
 import Link from "next/link";
-import { CalendarDays, FolderKanban, LockKeyhole, Plus } from "lucide-react";
+import { CalendarDays, CheckSquare, FolderKanban, LockKeyhole, Plus } from "lucide-react";
 import type { Project, TaskSummary } from "@/app/types/domain";
+import { taskDueState } from "@/app/lib/task-dates";
 import { Avatar, Badge, ButtonLink, Card, EmptyState } from "./ui";
 
 export function PageHeading({ eyebrow, title, action }: { eyebrow: string; title: string; action?: React.ReactNode }) {
@@ -9,7 +10,7 @@ export function PageHeading({ eyebrow, title, action }: { eyebrow: string; title
 
 export function TaskList({ tasks }: { tasks: TaskSummary[] }) {
   if (!tasks.length) return <EmptyState title="Chưa có công việc" body="Tạo công việc đầu tiên để bắt đầu theo dõi tiến độ." />;
-  return <div>{tasks.map((task) => <Link className="task-row" href={`/app/tasks/${task.id}`} key={task.id}><span className={`priority-line ${task.tone}`} /><div><strong>{task.title}</strong><small><FolderKanban size={13} />{task.projectName} · {task.columnName}</small></div><Badge tone={task.tone}>{priorityLabel(task.priority)}</Badge><span className="due"><CalendarDays size={14} />{task.dueAt ?? "Chưa đặt"}</span><Avatar name="Lan Anh" small /></Link>)}</div>;
+  return <div>{tasks.map((task) => { const due = taskDueState(task.dueAt); return <Link className="task-row" href={`/app/tasks/${task.id}`} key={task.id}><span className={`priority-line ${task.tone}`} /><div><strong>{task.title}</strong><small><FolderKanban size={13} />{task.projectName} · {task.columnName}</small>{task.checklistTotal > 0 && <small><CheckSquare size={13} />{task.checklistCompleted}/{task.checklistTotal} hoàn tất</small>}</div><Badge tone={task.tone}>{priorityLabel(task.priority)}</Badge><span className={`due ${due.tone}`}><CalendarDays size={14} />{due.label}</span><Avatar name="Lan Anh" small /></Link>; })}</div>;
 }
 
 export function ProjectGrid({ projects }: { projects: Project[] }) {

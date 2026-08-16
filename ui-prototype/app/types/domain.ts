@@ -60,6 +60,8 @@ export interface TaskSummary extends Task {
   projectName: string;
   columnName: string;
   tone: Tone;
+  checklistTotal: number;
+  checklistCompleted: number;
 }
 
 export interface Notification {
