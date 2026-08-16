@@ -22,5 +22,5 @@ test("deadline reminders are tenant-scoped, recipient-scoped, and idempotent", a
   assert.match(worker, /type: "DEADLINE"/);
   assert.match(migration, /unique \(task_id, recipient_user_id, kind, due_at\)/);
   assert.match(migration, /revoke all on public\.task_reminder_deliveries from anon, authenticated/);
-  assert.match(route, /Bearer \$\{expected\}/);
+  assert.match(route, /secureTokenMatches\(actual, expected\)/);
 });
