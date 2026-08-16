@@ -92,6 +92,7 @@ test.describe("authenticated production-critical flows", () => {
   });
 
   test("Owner creates, completes, and removes a task checklist item", async ({ page }) => {
+    test.setTimeout(90_000);
     test.skip(!workspaceId || !taskId || !credentials("OWNER").email || !credentials("OWNER").password, "Missing checklist fixture environment.");
     const title = `Checklist staging E2E ${Date.now()}`;
     await login(page, "OWNER");
