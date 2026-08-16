@@ -61,6 +61,54 @@ async function requireSuccess(operation, resultPromise) {
   if (error) throw new Error(`${operation}: ${error.message}`);
 }
 
+async function directRest(accessToken, table, query = "select=id") {
+  const response = await fetch(`${process.env.NEXT_PUBLIC_SUPABASE_URL}/rest/v1/${table}?${query}`, {
+    headers: {
+      apikey: process.env.SUPABASE_SERVICE_ROLE_KEY,
+      authorization: `Bearer ${accessToken}`,
+      accept: "application/json",
+    },
+  });
+  return { status: response.status, body: await response.json().catch(() => null) };
+}
+
+async function verifyDirectRls() {
+  const authClient = createClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL,
+    process.env.SUPABASE_SERVICE_ROLE_KEY,
+    { auth: { autoRefreshToken: false, persistSession: false, detectSessionInUrl: false } },
+  );
+  const { data, error } = await authClient.auth.signInWithPassword({
+    email: fixtures.MEMBER.email,
+    password: fixtures.MEMBER.password,
+  });
+  if (error || !data.session?.access_token) throw error ?? new Error("Member RLS session was not created.");
+  const token = data.session.access_token;
+
+  const ownWorkspace = await directRest(token, "workspaces", `select=id&id=eq.${workspaceId}`);
+  if (ownWorkspace.status !== 200 || ownWorkspace.body?.length !== 1) throw new Error("RLS denied the member's own workspace.");
+  const foreignWorkspace = await directRest(token, "workspaces", `select=id&id=eq.${foreignWorkspaceId}`);
+  if (foreignWorkspace.status !== 200 || foreignWorkspace.body?.length !== 0) throw new Error("RLS exposed a foreign workspace.");
+  const ownProject = await directRest(token, "projects", `select=id&id=eq.${projectId}`);
+  if (ownProject.status !== 200 || ownProject.body?.length !== 1) throw new Error("RLS denied the member's own project.");
+  const serverOnly = await directRest(token, "task_checklist_items", `select=id&workspace_id=eq.${workspaceId}`);
+  if (serverOnly.status < 400) throw new Error("RLS exposed a server-only checklist table.");
+
+  const mutation = await fetch(`${process.env.NEXT_PUBLIC_SUPABASE_URL}/rest/v1/workspaces`, {
+    method: "POST",
+    headers: {
+      apikey: process.env.SUPABASE_SERVICE_ROLE_KEY,
+      authorization: `Bearer ${token}`,
+      "content-type": "application/json",
+      prefer: "return=minimal",
+    },
+    body: JSON.stringify({ id: randomUUID(), name: "RLS bypass attempt", slug: `rls-bypass-${runId}` }),
+  });
+  if (mutation.status < 400) throw new Error("Direct authenticated mutation bypassed the server-only write boundary.");
+  await authClient.auth.signOut();
+  console.log("Direct Supabase RLS checks passed: own tenant visible, foreign tenant hidden, server-only tables and writes denied.");
+}
+
 async function runPlaywright() {
   const cli = resolve("node_modules/@playwright/test/cli.js");
   const child = spawn(
@@ -169,6 +217,8 @@ try {
   await requireSuccess("Create temporary board", supabase.from("boards").insert({ id: boardId, workspace_id: workspaceId, project_id: projectId, name: "E2E Board" }));
   await requireSuccess("Create temporary column", supabase.from("board_columns").insert({ id: columnId, workspace_id: workspaceId, board_id: boardId, name: "Todo", position: 0 }));
   await requireSuccess("Create temporary task", supabase.from("tasks").insert({ id: taskId, workspace_id: workspaceId, project_id: projectId, board_id: boardId, column_id: columnId, creator_membership_id: membershipIds.OWNER, title: "Attachment E2E task", description: "", priority: "MEDIUM", position: 1000 }));
+
+  await verifyDirectRls();
 
   console.log("Running authenticated tenant-isolation and role-matrix tests...");
   const result = await runPlaywright();
