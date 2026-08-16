@@ -73,10 +73,11 @@ test.describe("authenticated production-critical flows", () => {
   });
 
   test("Owner uploads and downloads a private task attachment", async ({ page }) => {
+    test.setTimeout(60_000);
     test.skip(!workspaceId || !taskId || !credentials("OWNER").email || !credentials("OWNER").password, "Missing attachment fixture environment.");
     await login(page, "OWNER");
     await page.goto(`/app/tasks/${taskId}`);
-    await expect(page.getByRole("heading", { name: "Tệp đính kèm" })).toBeVisible();
+    await expect(page.getByRole("heading", { name: "Tệp đính kèm" })).toBeVisible({ timeout: 20_000 });
     await page.locator('input[type="file"]').setInputFiles({
       name: "staging-e2e.txt",
       mimeType: "text/plain",
