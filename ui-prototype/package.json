@@ -12,6 +12,7 @@
     "test": "npm run build && node --test tests/rendered-html.test.mjs",
     "test:db": "node scripts/verify-database.mjs",
     "test:security": "tsx --test tests/security/*.test.ts",
+    "test:migrations": "node scripts/check-migration-safety.mjs",
     "test:architecture": "tsx --test tests/architecture/*.test.ts",
     "test:security:database": "node scripts/audit-supabase-security.mjs",
     "test:recovery:staging": "node scripts/run-backup-restore-rehearsal.mjs",

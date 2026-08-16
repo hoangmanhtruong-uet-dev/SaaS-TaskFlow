@@ -21,8 +21,12 @@ const serverSchema = z.object({
   CRON_SECRET: z.string().min(32),
   MALWARE_SCANNER_URL: z.string().url().optional(),
   MALWARE_SCANNER_TOKEN: z.string().min(32).optional(),
+  BACKUP_PROVIDER: z.string().min(2).optional(),
+  BACKUP_RETENTION_DAYS: z.coerce.number().int().min(7).optional(),
+  BACKUP_LAST_ISOLATED_RESTORE_AT: z.string().datetime().optional(),
 }).superRefine((value, context) => {
   if (value.APP_ENV === "production" && (!value.MALWARE_SCANNER_URL || !value.MALWARE_SCANNER_TOKEN)) context.addIssue({ code: "custom", message: "Production requires a malware scanner URL and token" });
+  if (value.APP_ENV === "production" && (!value.BACKUP_PROVIDER || !value.BACKUP_RETENTION_DAYS || !value.BACKUP_LAST_ISOLATED_RESTORE_AT)) context.addIssue({ code: "custom", message: "Production requires a backup provider, retention, and isolated restore evidence" });
   if (value.MALWARE_SCANNER_URL && !value.MALWARE_SCANNER_URL.startsWith("https://")) context.addIssue({ code: "custom", message: "Malware scanner must use HTTPS" });
 });
 

@@ -7,7 +7,7 @@ export const taskService = {
   list: (workspaceId: string, projectId?: string) => apiRequest<CursorPage<TaskSummary>>(`${apiRoutes.tasks(workspaceId)}${projectId ? `?projectId=${encodeURIComponent(projectId)}` : ""}`).then((page) => page.items),
   archived: (workspaceId: string) => apiRequest<CursorPage<TaskSummary>>(`${apiRoutes.tasks(workspaceId)}?archived=true`).then((page) => page.items),
   get: (workspaceId: string, taskId: string) => apiRequest<TaskSummary>(apiRoutes.task(workspaceId, taskId)),
-  create: (workspaceId: string, input: CreateTaskRequest) => apiRequest<TaskSummary>(apiRoutes.tasks(workspaceId), { method: "POST", body: JSON.stringify(input) }),
+  create: (workspaceId: string, input: CreateTaskRequest) => apiRequest<TaskSummary>(apiRoutes.tasks(workspaceId), { method: "POST", headers: { "idempotency-key": crypto.randomUUID() }, body: JSON.stringify(input) }),
   update: (workspaceId: string, taskId: string, input: UpdateTaskRequest) => apiRequest<TaskSummary>(apiRoutes.task(workspaceId, taskId), { method: "PATCH", body: JSON.stringify(input) }),
   move: (workspaceId: string, taskId: string, input: MoveTaskRequest) => apiRequest<TaskSummary>(apiRoutes.moveTask(workspaceId, taskId), { method: "POST", body: JSON.stringify(input) }),
   comments: (workspaceId: string, taskId: string) => apiRequest<TaskComment[]>(`${apiRoutes.task(workspaceId, taskId)}/comments`),

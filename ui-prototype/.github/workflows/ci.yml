@@ -45,6 +45,9 @@ jobs:
       - name: Verify database migrations and seed
         run: npm run test:db
 
+      - name: Reject unsafe contract migrations
+        run: npm run test:migrations
+
       - name: Verify tenant isolation and role matrix
         run: npm run test:security
 

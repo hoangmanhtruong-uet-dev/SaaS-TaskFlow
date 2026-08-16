@@ -157,11 +157,14 @@ test("planning feature batch includes calendar, checklist progress, and deadline
 
 test("operations layer covers scoped search, archive recovery, and workspace lifecycle", async () => {
   const search = await readFile(new URL("db/search.ts", root), "utf8");
+  const tasksRepository = await readFile(new URL("db/tasks.ts", root), "utf8");
   const lifecycle = await readFile(new URL("db/workspace-lifecycle.ts", root), "utf8");
   const projectService = await readFile(new URL("app/services/project-service.ts", root), "utf8");
   const taskService = await readFile(new URL("app/services/task-service.ts", root), "utf8");
   assert.match(search, /listTasks/);
-  assert.match(search, /title\.toLocaleLowerCase/);
+  assert.match(search, /50/);
+  assert.match(tasksRepository, /ilike\(tasks\.title/);
+  assert.match(tasksRepository, /boundedLimit \+ 1/);
   assert.match(lifecycle, /workspace\.ownership\.transferred/);
   assert.match(lifecycle, /confirmation !== workspace\.name/);
   assert.match(lifecycle, /30 \* 86400000/);

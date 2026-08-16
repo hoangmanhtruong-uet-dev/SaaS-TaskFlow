@@ -26,11 +26,15 @@ test("MVP email catalog covers auth, invitation, suspension, and deletion", () =
 });
 
 test("business email hooks use deterministic Resend idempotency keys", async () => {
-  const routes = await Promise.all([
+  const [invitationRoute, outbox, ...routes] = await Promise.all([
     readFile(new URL("../../app/api/v1/workspaces/[workspaceId]/invitations/route.ts", import.meta.url), "utf8"),
+    readFile(new URL("../../db/outbox.ts", import.meta.url), "utf8"),
     readFile(new URL("../../app/api/v1/workspaces/[workspaceId]/members/[membershipId]/route.ts", import.meta.url), "utf8"),
     readFile(new URL("../../app/api/v1/workspaces/[workspaceId]/deletion-request/route.ts", import.meta.url), "utf8"),
   ]);
+  assert.match(invitationRoute, /processOutbox/);
+  assert.match(outbox, /sendTransactionalEmail/);
+  assert.match(outbox, /idempotencyKey/);
   for (const route of routes) {
     assert.match(route, /sendTransactionalEmail/);
     assert.match(route, /idempotencyKey/);

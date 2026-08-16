@@ -326,10 +326,16 @@ export const outboxEvents = pgTable("outbox_events", {
   type: text("type").notNull(),
   payload: jsonb("payload").$type<Record<string, unknown>>().notNull(),
   attempts: integer("attempts").notNull().default(0),
+  dedupKey: text("dedup_key"),
   availableAt: timestamp("available_at", { withTimezone: true, mode: "date" }).notNull().defaultNow(),
+  lockedAt: timestamp("locked_at", { withTimezone: true, mode: "date" }),
+  lastError: text("last_error"),
   processedAt: timestamp("processed_at", { withTimezone: true, mode: "date" }),
   createdAt: createdAt(),
-});
+}, (table) => [
+  uniqueIndex("outbox_dedup_uidx").on(table.workspaceId, table.dedupKey).where(sql`${table.dedupKey} is not null`),
+  index("outbox_claim_idx").on(table.availableAt, table.createdAt).where(sql`${table.processedAt} is null`),
+]);
 
 export const subscriptions = pgTable("subscriptions", {
   id: uuid("id").primaryKey().defaultRandom(),
@@ -357,14 +363,23 @@ export const subscriptions = pgTable("subscriptions", {
 
 export const idempotencyRecords = pgTable("idempotency_records", {
   workspaceId: uuid("workspace_id").notNull().references(() => workspaces.id, { onDelete: "cascade" }),
+  actorUserId: uuid("actor_user_id").references(() => users.id, { onDelete: "cascade" }),
   key: text("key").notNull(),
   operation: text("operation").notNull(),
+  requestHash: text("request_hash"),
   responseHash: text("response_hash").notNull(),
+  responseStatus: integer("response_status"),
+  responseBody: jsonb("response_body").$type<Record<string, unknown>>(),
+  completedAt: timestamp("completed_at", { withTimezone: true, mode: "date" }),
   expiresAt: timestamp("expires_at", { withTimezone: true, mode: "date" }).notNull(),
   createdAt: createdAt(),
 }, (table) => [
   primaryKey({ columns: [table.workspaceId, table.key, table.operation] }),
   index("idempotency_expiry_idx").on(table.expiresAt),
+  index("idempotency_actor_lookup_idx").on(table.workspaceId, table.actorUserId, table.operation, table.createdAt),
+  check("idempotency_request_hash_check", sql`${table.requestHash} is null or char_length(${table.requestHash}) = 64`),
+  check("idempotency_response_status_check", sql`${table.responseStatus} is null or ${table.responseStatus} between 100 and 599`),
+  check("idempotency_completion_check", sql`(${table.completedAt} is null and ${table.responseStatus} is null and ${table.responseBody} is null) or (${table.completedAt} is not null and ${table.responseStatus} is not null and ${table.responseBody} is not null)`),
 ]);
 
 export const stripeEvents = pgTable("stripe_events", {

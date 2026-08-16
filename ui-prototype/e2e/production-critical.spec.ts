@@ -35,6 +35,18 @@ async function browserGet(page: Page, path: string) {
   }, path);
 }
 
+async function browserMutation(page: Page, path: string, body: Record<string, unknown>, headers: Record<string, string> = {}) {
+  return page.evaluate(async ({ requestPath, requestBody, requestHeaders }) => {
+    const response = await fetch(requestPath, {
+      method: "POST",
+      credentials: "same-origin",
+      headers: { accept: "application/json", "content-type": "application/json", ...requestHeaders },
+      body: JSON.stringify(requestBody),
+    });
+    return { status: response.status, body: await response.json() };
+  }, { requestPath: path, requestBody: body, requestHeaders: headers });
+}
+
 test.describe("authenticated production-critical flows", () => {
   test.skip(process.env.E2E_RUN_AUTH !== "true", "Set E2E_RUN_AUTH=true with dedicated staging accounts.");
 
@@ -60,6 +72,41 @@ test.describe("authenticated production-critical flows", () => {
     expect(own.status).toBe(200);
     const foreign = await browserGet(page, `/api/v1/workspaces/${foreignWorkspaceId}/projects`);
     expect(foreign.status).toBe(404);
+  });
+
+  test("same idempotency key creates exactly one project and rejects payload reuse", async ({ page }) => {
+    test.skip(!workspaceId || !credentials("OWNER").email || !credentials("OWNER").password, "Missing Owner fixture environment.");
+    await login(page, "OWNER");
+    const key = crypto.randomUUID();
+    const path = `/api/v1/workspaces/${workspaceId}/projects`;
+    const payload = { name: `Idempotency E2E ${Date.now()}`, description: "concurrent replay", visibility: "WORKSPACE" };
+    const [left, right] = await Promise.all([
+      browserMutation(page, path, payload, { "idempotency-key": key }),
+      browserMutation(page, path, payload, { "idempotency-key": key }),
+    ]);
+    expect([left.status, right.status].sort()).toEqual([201, 201]);
+    expect(left.body.data.id).toBe(right.body.data.id);
+    const mismatch = await browserMutation(page, path, { ...payload, name: `${payload.name} changed` }, { "idempotency-key": key });
+    expect(mismatch.status).toBe(409);
+    expect(mismatch.body.error.code).toBe("IDEMPOTENCY_PAYLOAD_MISMATCH");
+  });
+
+  test("optimistic task concurrency accepts one writer and rejects the stale writer", async ({ page }) => {
+    test.skip(!workspaceId || !taskId || !credentials("OWNER").email || !credentials("OWNER").password, "Missing task concurrency fixtures.");
+    await login(page, "OWNER");
+    const current = await browserGet(page, `/api/v1/workspaces/${workspaceId}/tasks/${taskId}`);
+    expect(current.status).toBe(200);
+    const path = `/api/v1/workspaces/${workspaceId}/tasks/${taskId}`;
+    const version = current.body.data.version;
+    const results = await page.evaluate(async ({ requestPath, expectedVersion }) => {
+      const update = async (title: string) => {
+        const response = await fetch(requestPath, { method: "PATCH", credentials: "same-origin", headers: { "content-type": "application/json" }, body: JSON.stringify({ title, expectedVersion }) });
+        return { status: response.status, body: await response.json() };
+      };
+      return Promise.all([update(`Race left ${Date.now()}`), update(`Race right ${Date.now()}`)]);
+    }, { requestPath: path, expectedVersion: version });
+    expect(results.map((result) => result.status).sort()).toEqual([200, 409]);
+    expect(results.find((result) => result.status === 409)?.body.error.code).toBe("TASK_VERSION_CONFLICT");
   });
 
   test("Owner sees active Stripe entitlement and Billing Portal entry", async ({ page }) => {

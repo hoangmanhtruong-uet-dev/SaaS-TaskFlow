@@ -204,8 +204,13 @@ export async function hasSeatCapacity(
   workspaceId: string,
   includePendingInvitations = false,
 ) {
-  const entitlements = await getWorkspaceEntitlements(workspaceId);
-  const active = await getDb()
+  return hasSeatCapacityWithDb(getDb(), workspaceId, includePendingInvitations);
+}
+
+export async function hasSeatCapacityWithDb(database: ReturnType<typeof getDb>, workspaceId: string, includePendingInvitations = false) {
+  const subscription = await database.select().from(subscriptions).where(eq(subscriptions.workspaceId, workspaceId)).get();
+  const entitlements = resolveEntitlements({ status: subscription?.status ?? null, quantity: subscription?.quantity ?? null, priceMatches: subscription?.stripePriceId === stripeEnv().STRIPE_PRICE_PRO_MONTHLY });
+  const active = await database
     .select({ count: sql<number>`count(*)` })
     .from(memberships)
     .where(
@@ -217,7 +222,7 @@ export async function hasSeatCapacity(
     .get();
   let used = Number(active?.count ?? 0);
   if (includePendingInvitations) {
-    const pending = await getDb()
+    const pending = await database
       .select({ count: sql<number>`count(*)` })
       .from(invitations)
       .where(

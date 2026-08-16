@@ -1,6 +1,6 @@
 import { listTasks } from "./tasks";
 export async function searchWorkspace(workspaceId: string, userId: string, query: string) {
   const value = query.trim().toLocaleLowerCase("vi"); if (!value) return [];
-  const tasks = await listTasks(workspaceId, userId); if (!tasks) return null;
-  return tasks.filter((task) => task.title.toLocaleLowerCase("vi").includes(value)).slice(0, 50);
+  const page = await listTasks(workspaceId, userId, undefined, false, null, 50, value); if (!page) return null;
+  return page.items;
 }

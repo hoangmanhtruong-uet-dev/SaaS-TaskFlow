@@ -5,7 +5,10 @@ import { authorizeWorkspace } from "./authorization";
 import { getWorkspaceEntitlements } from "./billing";
 
 export async function recordActivity(workspaceId: string, actorUserId: string | null, action: string, targetType: string, targetId: string, metadata: Record<string, unknown> = {}) {
-  await getDb().insert(activityEvents).values({ id: crypto.randomUUID(), workspaceId, actorUserId, action, targetType, targetId, metadata });
+  await insertActivity(getDb(), workspaceId, actorUserId, action, targetType, targetId, metadata);
+}
+export async function insertActivity(database: ReturnType<typeof getDb>, workspaceId: string, actorUserId: string | null, action: string, targetType: string, targetId: string, metadata: Record<string, unknown> = {}) {
+  await database.insert(activityEvents).values({ id: crypto.randomUUID(), workspaceId, actorUserId, action, targetType, targetId, metadata });
 }
 export async function listActivity(workspaceId: string, userId: string) {
   if (!await authorizeWorkspace(workspaceId, userId, "audit.read")) return null;

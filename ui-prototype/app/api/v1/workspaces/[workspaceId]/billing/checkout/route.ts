@@ -6,6 +6,7 @@ import { stripeClient } from "@/app/lib/stripe";
 import { parseJson } from "@/app/lib/validation";
 import { getBillingSummary } from "@/db/billing";
 import { consumeRateLimit } from "@/db/auth";
+import { readIdempotencyKey } from "@/db/idempotency";
 
 export async function POST(
   request: Request,
@@ -15,6 +16,8 @@ export async function POST(
     const auth = await getApiUser();
     if (!auth) return fail("AUTH_REQUIRED", "Authentication required", 401);
     if (!hasAal2(auth)) return fail("MFA_REQUIRED", "Verify MFA before starting checkout", 403);
+    const idempotencyKey = readIdempotencyKey(request);
+    if (!idempotencyKey) return fail("IDEMPOTENCY_KEY_REQUIRED", "A valid Idempotency-Key header is required", 400);
     const rate = await consumeRateLimit(`billing:session:${auth.user.id}`, 10, 10 * 60 * 1000);
     if (!rate.allowed) return fail("RATE_LIMITED", "Too many billing session attempts", 429, { retryAfterSeconds: rate.retryAfterSeconds });
     const { workspaceId } = await params;
@@ -65,7 +68,10 @@ export async function POST(
         cancel_url: `${env.NEXT_PUBLIC_SITE_URL}/app/settings?billing=cancelled`,
       },
       {
-        idempotencyKey: `checkout-${workspaceId}-${Math.floor(Date.now() / 300000)}`,
+        // Stripe owns the durable result for this external side effect. Reusing
+        // this client key returns the same Checkout Session without holding a
+        // database transaction open across a network call.
+        idempotencyKey: `checkout:${workspaceId}:${auth.user.id}:${idempotencyKey}`,
       },
     );
 

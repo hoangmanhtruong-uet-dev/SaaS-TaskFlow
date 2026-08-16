@@ -32,3 +32,5 @@ npm run test:recovery:staging
 4. Run database migrations, catalog security audit, row counts, foreign-key checks, and authenticated E2E against the restored project.
 5. Record actual RPO/RTO, restore identifier, timestamps, and approver without copying credentials into logs.
 6. Keep destructive live-project restore behind incident approval and a second operator review.
+
+The production runtime also fails environment validation unless `BACKUP_PROVIDER`, `BACKUP_RETENTION_DAYS`, and `BACKUP_LAST_ISOLATED_RESTORE_AT` identify this verified capability. These values are evidence metadata only; credentials remain in the provider secret manager.
