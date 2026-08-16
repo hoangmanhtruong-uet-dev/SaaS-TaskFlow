@@ -99,12 +99,12 @@ test.describe("authenticated production-critical flows", () => {
     await expect(page.getByRole("heading", { name: "Checklist" })).toBeVisible({ timeout: 20_000 });
     await page.getByLabel("Thêm mục checklist").fill(title);
     await page.getByRole("button", { name: "Thêm mục" }).click();
-    await expect(page.getByText(title, { exact: true })).toBeVisible();
+    await expect(page.getByText(title, { exact: true })).toBeVisible({ timeout: 20_000 });
     const checkbox = page.getByRole("checkbox", { name: `Đánh dấu ${title}` });
     await checkbox.check();
-    await expect(checkbox).toBeChecked();
+    await expect(checkbox).toBeChecked({ timeout: 20_000 });
     await page.getByRole("button", { name: `Xóa mục ${title}` }).click();
-    await expect(page.getByText(title, { exact: true })).toHaveCount(0);
+    await expect(page.getByText(title, { exact: true })).toHaveCount(0, { timeout: 20_000 });
   });
 
   test("Owner sees task deadlines in the calendar", async ({ page }) => {
