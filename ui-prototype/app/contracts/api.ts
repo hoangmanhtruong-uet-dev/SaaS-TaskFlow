@@ -16,6 +16,7 @@ export const apiRoutes = {
   task: (workspaceId: string, taskId: string) => `${API_BASE}/workspaces/${workspaceId}/tasks/${taskId}`,
   moveTask: (workspaceId: string, taskId: string) => `${API_BASE}/workspaces/${workspaceId}/tasks/${taskId}/move`,
   taskAttachments: (workspaceId: string, taskId: string) => `${API_BASE}/workspaces/${workspaceId}/tasks/${taskId}/attachments`,
+  taskChecklist: (workspaceId: string, taskId: string) => `${API_BASE}/workspaces/${workspaceId}/tasks/${taskId}/checklist`,
 } as const;
 
 export interface ApiContract {

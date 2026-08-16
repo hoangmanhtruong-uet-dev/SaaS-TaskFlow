@@ -1,6 +1,6 @@
 import { apiRoutes } from "@/app/contracts/api";
 import type { CreateTaskRequest, CursorPage, MoveTaskRequest, UpdateTaskRequest } from "@/app/types/api";
-import type { TaskAttachment, TaskComment, TaskSummary } from "@/app/types/domain";
+import type { TaskAttachment, TaskChecklistItem, TaskComment, TaskSummary } from "@/app/types/domain";
 import { apiRequest } from "./http-client";
 import { createSupabaseBrowserClient } from "@/app/lib/supabase/browser";
 export const taskService = {
@@ -25,4 +25,8 @@ export const taskService = {
   },
   attachmentDownload: (workspaceId: string, taskId: string, attachmentId: string) => apiRequest<{ url: string; expiresIn: number }>(`${apiRoutes.taskAttachments(workspaceId, taskId)}/${attachmentId}/download`, { method: "POST" }),
   deleteAttachment: (workspaceId: string, taskId: string, attachmentId: string) => apiRequest<{ deleted: true }>(`${apiRoutes.taskAttachments(workspaceId, taskId)}/${attachmentId}`, { method: "DELETE" }),
+  checklist: (workspaceId: string, taskId: string) => apiRequest<TaskChecklistItem[]>(apiRoutes.taskChecklist(workspaceId, taskId)),
+  createChecklistItem: (workspaceId: string, taskId: string, title: string) => apiRequest<TaskChecklistItem>(apiRoutes.taskChecklist(workspaceId, taskId), { method: "POST", body: JSON.stringify({ title }) }),
+  updateChecklistItem: (workspaceId: string, taskId: string, itemId: string, input: { title?: string; completed?: boolean }) => apiRequest<TaskChecklistItem>(`${apiRoutes.taskChecklist(workspaceId, taskId)}/${itemId}`, { method: "PATCH", body: JSON.stringify(input) }),
+  deleteChecklistItem: (workspaceId: string, taskId: string, itemId: string) => apiRequest<{ deleted: true }>(`${apiRoutes.taskChecklist(workspaceId, taskId)}/${itemId}`, { method: "DELETE" }),
 };

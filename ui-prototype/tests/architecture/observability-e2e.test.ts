@@ -25,12 +25,13 @@ test("structured logs redact sensitive fields and health checks never expose cre
   assert.doesNotMatch(live + ready, /SUPABASE_DB_URL|SERVICE_ROLE_KEY|SENTRY_AUTH_TOKEN/);
 });
 
-test("Playwright covers health, auth boundary, Stripe signature, tenant isolation, and all roles", async () => {
+test("Playwright covers health, auth boundary, Stripe signature, tenant isolation, calendar, and all roles", async () => {
   const [smoke, critical, config] = await Promise.all([
     read("e2e/smoke.spec.ts"), read("e2e/production-critical.spec.ts"), read("playwright.config.ts"),
   ]);
   for (const marker of ["health/live", "health/ready", "AUTH_REQUIRED", "stripe-signature"]) assert.match(smoke, new RegExp(marker));
   for (const marker of ["OWNER", "ADMIN", "MEMBER", "GUEST", "FOREIGN_WORKSPACE_ID", "Billing Portal"]) assert.match(critical, new RegExp(marker));
+  assert.match(critical, /Lịch công việc/);
   assert.match(config, /trace:\s*"retain-on-failure"/);
 });
 

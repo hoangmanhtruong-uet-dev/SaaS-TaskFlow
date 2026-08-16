@@ -90,4 +90,30 @@ test.describe("authenticated production-critical flows", () => {
     await page.getByRole("button", { name: "Xóa staging-e2e.txt" }).click();
     await expect(page.getByText("staging-e2e.txt", { exact: true })).toHaveCount(0);
   });
+
+  test("Owner creates, completes, and removes a task checklist item", async ({ page }) => {
+    test.skip(!workspaceId || !taskId || !credentials("OWNER").email || !credentials("OWNER").password, "Missing checklist fixture environment.");
+    const title = `Checklist staging E2E ${Date.now()}`;
+    await login(page, "OWNER");
+    await page.goto(`/app/tasks/${taskId}`);
+    await expect(page.getByRole("heading", { name: "Checklist" })).toBeVisible({ timeout: 20_000 });
+    await page.getByLabel("Thêm mục checklist").fill(title);
+    await page.getByRole("button", { name: "Thêm mục" }).click();
+    await expect(page.getByText(title, { exact: true })).toBeVisible();
+    const checkbox = page.getByRole("checkbox", { name: `Đánh dấu ${title}` });
+    await checkbox.check();
+    await expect(checkbox).toBeChecked();
+    await page.getByRole("button", { name: `Xóa mục ${title}` }).click();
+    await expect(page.getByText(title, { exact: true })).toHaveCount(0);
+  });
+
+  test("Owner sees task deadlines in the calendar", async ({ page }) => {
+    test.skip(!workspaceId || !credentials("OWNER").email || !credentials("OWNER").password, "Missing calendar fixture environment.");
+    await login(page, "OWNER");
+    await page.goto("/app/calendar");
+    await expect(page.getByRole("heading", { name: "Lịch công việc" })).toBeVisible({ timeout: 20_000 });
+    await expect(page.getByRole("button", { name: "Tháng trước" })).toBeVisible();
+    await expect(page.getByRole("button", { name: "Tháng sau" })).toBeVisible();
+    await expect(page.getByText("Cần chú ý", { exact: true })).toBeVisible();
+  });
 });

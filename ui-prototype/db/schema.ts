@@ -155,6 +155,24 @@ export const taskAssignees = pgTable("task_assignees", {
   membershipId: uuid("membership_id").notNull().references(() => memberships.id, { onDelete: "cascade" }),
 }, (table) => [primaryKey({ columns: [table.taskId, table.membershipId] })]);
 
+export const taskChecklistItems = pgTable("task_checklist_items", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  workspaceId: uuid("workspace_id").notNull().references(() => workspaces.id, { onDelete: "cascade" }),
+  taskId: uuid("task_id").notNull().references(() => tasks.id, { onDelete: "cascade" }),
+  title: text("title").notNull(),
+  completed: boolean("completed").notNull().default(false),
+  position: integer("position").notNull(),
+  createdByUserId: uuid("created_by_user_id").references(() => users.id, { onDelete: "set null" }),
+  completedByUserId: uuid("completed_by_user_id").references(() => users.id, { onDelete: "set null" }),
+  completedAt: timestamp("completed_at", { withTimezone: true, mode: "date" }),
+  createdAt: createdAt(),
+  updatedAt: updatedAt(),
+}, (table) => [
+  index("task_checklist_items_task_position_idx").on(table.workspaceId, table.taskId, table.position),
+  check("task_checklist_items_position_check", sql`${table.position} >= 0`),
+  check("task_checklist_items_completion_check", sql`(${table.completed} and ${table.completedAt} is not null) or (not ${table.completed} and ${table.completedAt} is null)`),
+]);
+
 export const labels = pgTable("labels", {
   id: uuid("id").primaryKey().defaultRandom(),
   workspaceId: uuid("workspace_id").notNull().references(() => workspaces.id, { onDelete: "cascade" }),
@@ -225,6 +243,19 @@ export const notifications = pgTable("notifications", {
   readAt: timestamp("read_at", { withTimezone: true, mode: "date" }),
   createdAt: createdAt(),
 }, (table) => [index("notifications_recipient_idx").on(table.recipientUserId, table.readAt, table.createdAt)]);
+
+export const taskReminderDeliveries = pgTable("task_reminder_deliveries", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  workspaceId: uuid("workspace_id").notNull().references(() => workspaces.id, { onDelete: "cascade" }),
+  taskId: uuid("task_id").notNull().references(() => tasks.id, { onDelete: "cascade" }),
+  recipientUserId: uuid("recipient_user_id").notNull().references(() => users.id, { onDelete: "cascade" }),
+  kind: text("kind", { enum: ["DUE_SOON", "OVERDUE"] }).notNull(),
+  dueAt: timestamp("due_at", { withTimezone: true, mode: "date" }).notNull(),
+  createdAt: createdAt(),
+}, (table) => [
+  uniqueIndex("task_reminder_deliveries_dedup_uidx").on(table.taskId, table.recipientUserId, table.kind, table.dueAt),
+  index("task_reminder_deliveries_workspace_idx").on(table.workspaceId, table.createdAt),
+]);
 
 export const activityEvents = pgTable("activity_events", {
   id: uuid("id").primaryKey().defaultRandom(),
