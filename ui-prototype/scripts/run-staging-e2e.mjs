@@ -113,7 +113,10 @@ async function cleanup() {
     const { error } = await supabase.auth.admin.deleteUser(fixtures[role].userId);
     if (error) failures.push(error);
   }
-  if (failures.length) throw new AggregateError(failures, "One or more E2E fixtures could not be removed.");
+  if (failures.length) {
+    const details = failures.map((error) => error instanceof Error ? error.message : String(error)).join("; ");
+    throw new AggregateError(failures, `One or more E2E fixtures could not be removed: ${details}`);
+  }
 }
 
 let exitCode = 1;
