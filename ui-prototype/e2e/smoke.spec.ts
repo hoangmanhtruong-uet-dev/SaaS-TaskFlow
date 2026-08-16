@@ -9,11 +9,24 @@ test("marketing, authentication, and liveness are available", async ({ page, req
   expect(liveBody.requestId).toMatch(/^req_/);
 
   await page.goto("/");
+  const headers = await page.request.get("/");
+  expect(headers.headers()["content-security-policy"]).toContain("object-src 'none'");
+  expect(headers.headers()["strict-transport-security"]).toContain("max-age=63072000");
+  expect(headers.headers()["permissions-policy"]).toContain("camera=()");
   await expect(page.getByRole("heading", { level: 1 })).toBeVisible();
   await page.goto("/login");
   await expect(page.getByRole("heading", { name: /Đăng nhập TaskFlow/i })).toBeVisible();
   await expect(page.getByLabel("Email")).toBeVisible();
   await expect(page.getByLabel(/Mật khẩu/)).toBeVisible();
+});
+
+test("cross-site mutation requests are blocked before authentication", async ({ request }) => {
+  const response = await request.post("/api/v1/workspaces", {
+    data: { name: "Blocked", slug: "blocked" },
+    headers: { origin: "https://evil.example", "sec-fetch-site": "cross-site" },
+  });
+  expect(response.status()).toBe(403);
+  await expect(response.json()).resolves.toMatchObject({ error: { code: "CROSS_SITE_REQUEST_BLOCKED" } });
 });
 
 test("protected API rejects anonymous access without leaking internals", async ({ request }) => {

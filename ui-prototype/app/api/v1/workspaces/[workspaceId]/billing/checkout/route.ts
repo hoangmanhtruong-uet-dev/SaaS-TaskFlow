@@ -5,6 +5,7 @@ import { stripeEnv } from "@/app/lib/env";
 import { stripeClient } from "@/app/lib/stripe";
 import { parseJson } from "@/app/lib/validation";
 import { getBillingSummary } from "@/db/billing";
+import { consumeRateLimit } from "@/db/auth";
 
 export async function POST(
   request: Request,
@@ -13,6 +14,8 @@ export async function POST(
   try {
     const auth = await getApiUser();
     if (!auth) return fail("AUTH_REQUIRED", "Authentication required", 401);
+    const rate = await consumeRateLimit(`billing:session:${auth.user.id}`, 10, 10 * 60 * 1000);
+    if (!rate.allowed) return fail("RATE_LIMITED", "Too many billing session attempts", 429, { retryAfterSeconds: rate.retryAfterSeconds });
     const { workspaceId } = await params;
     const summary = await getBillingSummary(workspaceId, auth.user.id);
     if (!summary)
