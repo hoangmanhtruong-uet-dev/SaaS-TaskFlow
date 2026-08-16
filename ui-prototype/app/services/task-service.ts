@@ -1,7 +1,8 @@
 import { apiRoutes } from "@/app/contracts/api";
 import type { CreateTaskRequest, CursorPage, MoveTaskRequest, UpdateTaskRequest } from "@/app/types/api";
-import type { TaskComment, TaskSummary } from "@/app/types/domain";
+import type { TaskAttachment, TaskComment, TaskSummary } from "@/app/types/domain";
 import { apiRequest } from "./http-client";
+import { createSupabaseBrowserClient } from "@/app/lib/supabase/browser";
 export const taskService = {
   list: (workspaceId: string, projectId?: string) => apiRequest<CursorPage<TaskSummary>>(`${apiRoutes.tasks(workspaceId)}${projectId ? `?projectId=${encodeURIComponent(projectId)}` : ""}`).then((page) => page.items),
   archived: (workspaceId: string) => apiRequest<CursorPage<TaskSummary>>(`${apiRoutes.tasks(workspaceId)}?archived=true`).then((page) => page.items),
@@ -14,4 +15,14 @@ export const taskService = {
   deleteComment: (workspaceId: string, commentId: string) => apiRequest<{ deleted: true }>(`/api/v1/workspaces/${workspaceId}/comments/${commentId}`, { method: "DELETE" }),
   hideComment: (workspaceId: string, commentId: string) => apiRequest<{ hidden: true }>(`/api/v1/workspaces/${workspaceId}/comments/${commentId}`, { method: "PATCH" }),
   restore: (workspaceId: string, taskId: string) => apiRequest<TaskSummary>(`${apiRoutes.task(workspaceId, taskId)}/archive?restore=true`, { method: "POST" }),
+  attachments: (workspaceId: string, taskId: string) => apiRequest<TaskAttachment[]>(apiRoutes.taskAttachments(workspaceId, taskId)),
+  uploadAttachment: async (workspaceId: string, taskId: string, file: File) => {
+    const base = apiRoutes.taskAttachments(workspaceId, taskId);
+    const upload = await apiRequest<{ id: string; path: string; token: string }>(base, { method: "POST", body: JSON.stringify({ fileName: file.name, mimeType: file.type, size: file.size }) });
+    const { error } = await createSupabaseBrowserClient().storage.from("task-attachments").uploadToSignedUrl(upload.path, upload.token, file, { contentType: file.type });
+    if (error) throw error;
+    return apiRequest<TaskAttachment>(`${base}/${upload.id}/complete`, { method: "POST" });
+  },
+  attachmentDownload: (workspaceId: string, taskId: string, attachmentId: string) => apiRequest<{ url: string; expiresIn: number }>(`${apiRoutes.taskAttachments(workspaceId, taskId)}/${attachmentId}/download`, { method: "POST" }),
+  deleteAttachment: (workspaceId: string, taskId: string, attachmentId: string) => apiRequest<{ deleted: true }>(`${apiRoutes.taskAttachments(workspaceId, taskId)}/${attachmentId}`, { method: "DELETE" }),
 };

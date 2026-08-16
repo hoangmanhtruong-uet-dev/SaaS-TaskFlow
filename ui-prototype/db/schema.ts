@@ -177,10 +177,30 @@ export const attachments = pgTable("attachments", {
   fileName: text("file_name").notNull(),
   mimeType: text("mime_type").notNull(),
   size: bigint("size", { mode: "number" }).notNull(),
+  uploadedByUserId: uuid("uploaded_by_user_id").references(() => users.id, { onDelete: "set null" }),
   createdAt: createdAt(),
 }, (table) => [
   index("attachments_task_idx").on(table.workspaceId, table.taskId),
+  uniqueIndex("attachments_storage_key_uidx").on(table.storageKey),
   check("attachments_size_check", sql`${table.size} >= 0`),
+]);
+
+export const attachmentUploads = pgTable("attachment_uploads", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  workspaceId: uuid("workspace_id").notNull().references(() => workspaces.id, { onDelete: "cascade" }),
+  taskId: uuid("task_id").notNull().references(() => tasks.id, { onDelete: "cascade" }),
+  uploaderUserId: uuid("uploader_user_id").notNull().references(() => users.id, { onDelete: "cascade" }),
+  storageKey: text("storage_key").notNull(),
+  fileName: text("file_name").notNull(),
+  mimeType: text("mime_type").notNull(),
+  size: bigint("size", { mode: "number" }).notNull(),
+  expiresAt: timestamp("expires_at", { withTimezone: true, mode: "date" }).notNull(),
+  createdAt: createdAt(),
+}, (table) => [
+  uniqueIndex("attachment_uploads_storage_key_uidx").on(table.storageKey),
+  index("attachment_uploads_expiry_idx").on(table.expiresAt),
+  index("attachment_uploads_task_idx").on(table.workspaceId, table.taskId),
+  check("attachment_uploads_size_check", sql`${table.size} > 0`),
 ]);
 
 export const comments = pgTable("comments", {

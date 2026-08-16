@@ -196,6 +196,22 @@ svg { flex: 0 0 auto; }
 .comments-panel { overflow: visible; }
 .comments-panel > header { padding: 18px 20px; display: flex; align-items: center; gap: 9px; border-bottom: 1px solid var(--line); }
 .comments-panel h2 { margin: 0; font-size: 16px; }
+.attachments-panel { overflow: hidden; }
+.attachments-panel > header { padding: 18px 20px; display: flex; align-items: center; gap: 9px; border-bottom: 1px solid var(--line); }
+.attachments-panel h2 { margin: 0; font-size: 16px; }
+.attachment-upload { margin-left: auto; display: inline-flex; align-items: center; gap: 7px; cursor: pointer; color: var(--accent); font-weight: 700; font-size: 14px; }
+.attachment-upload svg, .attachment-list svg { width: 17px; height: 17px; }
+.attachment-upload input { position: absolute; width: 1px; height: 1px; opacity: 0; }
+.attachment-help { margin: 0; padding: 12px 20px; color: var(--muted); font-size: 12px; border-bottom: 1px solid var(--line); }
+.attachment-list { display: grid; }
+.attachment-list article { padding: 13px 20px; display: grid; grid-template-columns: minmax(0, 1fr) auto auto; align-items: center; gap: 10px; border-bottom: 1px solid var(--line); }
+.attachment-list article:last-child { border-bottom: 0; }
+.attachment-list article div { min-width: 0; display: grid; gap: 4px; }
+.attachment-list strong { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.attachment-list small { color: var(--muted); }
+.attachment-list button { border: 0; background: transparent; color: var(--muted); cursor: pointer; padding: 7px; border-radius: 7px; }
+.attachment-list button:hover { color: var(--text); background: var(--surface-soft); }
+.attachment-list button:disabled { opacity: .5; cursor: wait; }
 .comment-list { padding: 0 20px; }
 .comment-list article { padding: 16px 0; border-bottom: 1px solid var(--line); }
 .comment-list article p { margin: 7px 0; white-space: pre-wrap; line-height: 1.55; }
