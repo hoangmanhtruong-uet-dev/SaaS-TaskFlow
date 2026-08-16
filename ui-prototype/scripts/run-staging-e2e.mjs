@@ -102,6 +102,10 @@ async function cleanup() {
   }
   try {
     await requireSuccess(
+      "Delete temporary tasks",
+      supabase.from("tasks").delete().in("workspace_id", [workspaceId, foreignWorkspaceId]),
+    );
+    await requireSuccess(
       "Delete temporary workspaces",
       supabase.from("workspaces").delete().in("id", [workspaceId, foreignWorkspaceId]),
     );
