@@ -2,13 +2,12 @@ import { randomUUID } from "node:crypto";
 import { spawn } from "node:child_process";
 import { resolve } from "node:path";
 import { createClient } from "@supabase/supabase-js";
-import postgres from "postgres";
 
 const baseUrl = process.env.E2E_BASE_URL ?? "https://taskflow-mvp-staging.vercel.app";
 const required = [
+  "SUPABASE_STAGING_PROJECT_REF",
   "NEXT_PUBLIC_SUPABASE_URL",
   "SUPABASE_SERVICE_ROLE_KEY",
-  "SUPABASE_DB_URL",
   "STRIPE_PRICE_PRO_MONTHLY",
 ];
 
@@ -23,6 +22,12 @@ if (new URL(baseUrl).hostname !== "taskflow-mvp-staging.vercel.app") {
 }
 for (const key of required) {
   if (!process.env[key]) throw new Error(`Missing required environment variable: ${key}`);
+}
+
+const supabaseUrl = new URL(process.env.NEXT_PUBLIC_SUPABASE_URL);
+const projectRef = supabaseUrl.hostname.split(".")[0];
+if (projectRef !== process.env.SUPABASE_STAGING_PROJECT_REF) {
+  throw new Error("Supabase URL must belong to the declared staging project.");
 }
 
 const runId = randomUUID().replaceAll("-", "").slice(0, 12);
@@ -46,7 +51,11 @@ const supabase = createClient(
   process.env.SUPABASE_SERVICE_ROLE_KEY,
   { auth: { autoRefreshToken: false, persistSession: false, detectSessionInUrl: false } },
 );
-const sql = postgres(process.env.SUPABASE_DB_URL, { max: 1, prepare: false });
+
+async function requireSuccess(operation, resultPromise) {
+  const { error } = await resultPromise;
+  if (error) throw new Error(`${operation}: ${error.message}`);
+}
 
 async function runPlaywright() {
   const cli = resolve("node_modules/@playwright/test/cli.js");
@@ -80,7 +89,10 @@ async function runPlaywright() {
 async function cleanup() {
   const failures = [];
   try {
-    await sql`delete from public.workspaces where id in (${workspaceId}, ${foreignWorkspaceId})`;
+    await requireSuccess(
+      "Delete temporary workspaces",
+      supabase.from("workspaces").delete().in("id", [workspaceId, foreignWorkspaceId]),
+    );
   } catch (error) {
     failures.push(error);
   }
@@ -94,7 +106,7 @@ async function cleanup() {
 
 let exitCode = 1;
 try {
-  console.log("Provisioning temporary Supabase Auth fixtures for four roles...");
+  console.log(`Provisioning temporary Supabase Auth fixtures for four roles in staging project ${projectRef}...`);
   for (const role of roles) {
     const { data, error } = await supabase.auth.admin.createUser({
       email: fixtures[role].email,
@@ -106,35 +118,33 @@ try {
     fixtures[role].userId = data.user.id;
   }
 
-  await sql.begin(async (transaction) => {
-    await transaction`
-      insert into public.workspaces (id, name, slug, plan)
-      values
-        (${workspaceId}, 'TaskFlow E2E', ${`taskflow-e2e-${runId}`}, 'PRO'),
-        (${foreignWorkspaceId}, 'TaskFlow Foreign E2E', ${`taskflow-foreign-e2e-${runId}`}, 'FREE')
-    `;
-    for (const role of roles) {
-      await transaction`
-        insert into public.memberships (id, workspace_id, user_id, role, status)
-        values (${randomUUID()}, ${workspaceId}, ${fixtures[role].userId}, ${role}, 'ACTIVE')
-      `;
-    }
-    await transaction`
-      insert into public.memberships (id, workspace_id, user_id, role, status)
-      values (${randomUUID()}, ${foreignWorkspaceId}, ${fixtures.ADMIN.userId}, 'OWNER', 'ACTIVE')
-    `;
-    await transaction`
-      insert into public.subscriptions (
-        id, workspace_id, stripe_customer_id, stripe_subscription_id,
-        stripe_subscription_item_id, stripe_price_id, stripe_product_id,
-        status, quantity, current_period_end, provider_updated_at
-      ) values (
-        ${randomUUID()}, ${workspaceId}, ${`cus_e2e_${runId}`}, ${`sub_e2e_${runId}`},
-        ${`si_e2e_${runId}`}, ${process.env.STRIPE_PRICE_PRO_MONTHLY}, ${`prod_e2e_${runId}`},
-        'active', 5, now() + interval '30 days', now()
-      )
-    `;
-  });
+  await requireSuccess("Create temporary workspaces", supabase.from("workspaces").insert([
+    { id: workspaceId, name: "TaskFlow E2E", slug: `taskflow-e2e-${runId}`, plan: "PRO" },
+    { id: foreignWorkspaceId, name: "TaskFlow Foreign E2E", slug: `taskflow-foreign-e2e-${runId}`, plan: "FREE" },
+  ]));
+  await requireSuccess("Create temporary memberships", supabase.from("memberships").insert([
+    ...roles.map((role) => ({
+      id: randomUUID(), workspace_id: workspaceId, user_id: fixtures[role].userId,
+      role, status: "ACTIVE",
+    })),
+    {
+      id: randomUUID(), workspace_id: foreignWorkspaceId,
+      user_id: fixtures.ADMIN.userId, role: "OWNER", status: "ACTIVE",
+    },
+  ]));
+  await requireSuccess("Create temporary Pro entitlement", supabase.from("subscriptions").insert({
+    id: randomUUID(),
+    workspace_id: workspaceId,
+    stripe_customer_id: `cus_e2e_${runId}`,
+    stripe_subscription_id: `sub_e2e_${runId}`,
+    stripe_subscription_item_id: `si_e2e_${runId}`,
+    stripe_price_id: process.env.STRIPE_PRICE_PRO_MONTHLY,
+    stripe_product_id: `prod_e2e_${runId}`,
+    status: "active",
+    quantity: 5,
+    current_period_end: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(),
+    provider_updated_at: new Date().toISOString(),
+  }));
 
   console.log("Running authenticated tenant-isolation and role-matrix tests...");
   const result = await runPlaywright();
@@ -146,7 +156,6 @@ try {
     console.error("E2E cleanup failed:", error instanceof Error ? error.message : String(error));
     exitCode = 1;
   });
-  await sql.end({ timeout: 5 });
 }
 
 process.exitCode = exitCode;
