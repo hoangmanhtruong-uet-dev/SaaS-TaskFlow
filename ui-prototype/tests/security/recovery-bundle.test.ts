@@ -45,7 +45,10 @@ test("staging rehearsal is synthetic, guarded, checksum-verified, and always cle
   assert.match(workflow, /schedule:/);
   assert.match(workflow, /environment: staging/);
   assert.doesNotMatch(workflow, /upload-artifact/);
-  assert.match(runbook, /Free Plan does not include managed backups|Free Plan.*not available/is);
+  assert.match(
+    runbook.replace(/\s+/g, " "),
+    /Free Plan does not include managed backups|Free Plan.*not available/i,
+  );
   assert.match(runbook, /Target RPO: 24 hours/);
   assert.match(runbook, /Target RTO: 60 minutes/);
 });
