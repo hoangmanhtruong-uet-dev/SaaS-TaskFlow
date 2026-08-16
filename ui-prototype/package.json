@@ -13,6 +13,7 @@
     "test:db": "node scripts/verify-database.mjs",
     "test:security": "tsx --test tests/security/*.test.ts",
     "test:architecture": "tsx --test tests/architecture/*.test.ts",
+    "test:security:database": "node scripts/audit-supabase-security.mjs",
     "test:e2e": "playwright test",
     "test:e2e:critical": "playwright test e2e/production-critical.spec.ts",
     "test:e2e:staging": "playwright test --config=playwright.config.ts",
