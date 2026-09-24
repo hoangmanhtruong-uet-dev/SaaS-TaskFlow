@@ -72,7 +72,7 @@ Web và API: Next.js, TypeScript.
 
 UI: Tailwind CSS và một thư viện component có accessibility tốt.
 
-Database: PostgreSQL, Prisma ORM.
+Database/ORM: Supabase Postgres & Drizzle ORM.
 
 Cache, rate limit, queue nhẹ: Redis.
 

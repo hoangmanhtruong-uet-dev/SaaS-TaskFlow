@@ -1,118 +1,210 @@
-import { and, desc, eq, exists, inArray, isNotNull, isNull, lt, or, sql } from "drizzle-orm";
 import type { CreateProjectRequest } from "@/app/types/api";
 import { authorizeProject, getActiveMembership } from "./authorization";
-import { boards, columns, projectMembers, projects, tasks } from "./schema";
-import { getDb } from "./index";
 import { insertActivity, recordActivity } from "./audit";
-import { canArchiveProject } from "@/app/lib/permissions";
-import { can } from "@/app/lib/permissions";
+import { canArchiveProject, can } from "@/app/lib/permissions";
 import { resolveEntitlements } from "@/app/lib/billing-entitlements";
 import { stripeEnv } from "@/app/lib/env";
-import { memberships, subscriptions } from "./schema";
 import { decodeCursor, encodeCursor } from "./pagination";
+import { createSupabaseAdminClient } from "@/app/lib/supabase/admin";
 
 export async function listProjects(workspaceId: string, userId: string, includeArchived = false, cursor?: string | null, limit = 50) {
   const membership = await getActiveMembership(workspaceId, userId);
   if (!membership) return null;
   const boundedLimit = Math.min(Math.max(limit, 1), 100);
   const decoded = decodeCursor<{ updatedAt: string; id: string }>(cursor);
-  const access = membership.role === "OWNER" || membership.role === "ADMIN" ? undefined : or(
-    membership.role === "MEMBER" ? eq(projects.visibility, "WORKSPACE") : undefined,
-    exists(getDb().select({ value: sql`1` }).from(projectMembers).where(and(eq(projectMembers.projectId, projects.id), eq(projectMembers.membershipId, membership.id)))),
-  );
-  const cursorCondition = decoded ? or(
-    lt(projects.updatedAt, new Date(decoded.updatedAt)),
-    and(eq(projects.updatedAt, new Date(decoded.updatedAt)), lt(projects.id, decoded.id)),
-  ) : undefined;
-  const rows = await getDb().select().from(projects).where(and(
-    eq(projects.workspaceId, workspaceId),
-    includeArchived ? isNotNull(projects.archivedAt) : isNull(projects.archivedAt),
-    access,
-    cursorCondition,
-  )).orderBy(desc(projects.updatedAt), desc(projects.id)).limit(boundedLimit + 1).all();
-  const pageRows = rows.slice(0, boundedLimit) as Array<typeof projects.$inferSelect>;
-  const ids = pageRows.map((project) => project.id);
-  const countRows = ids.length ? await getDb().select({
-    projectId: tasks.projectId,
-    total: sql<number>`count(*)`,
-    done: sql<number>`count(*) filter (where ${columns.name} = 'Hoàn thành')`,
-  }).from(tasks).innerJoin(columns, eq(tasks.columnId, columns.id)).where(and(inArray(tasks.projectId, ids), isNull(tasks.archivedAt))).groupBy(tasks.projectId).all() : [];
-  const counts = new Map<string, { projectId: string; total: number; done: number }>(
-    countRows.map((row: { projectId: string; total: number; done: number }) => [row.projectId, row]),
-  );
-  const items = pageRows.map((project) => projectDto(project, Number(counts.get(project.id)?.total ?? 0), Number(counts.get(project.id)?.done ?? 0)));
+  const supabase = createSupabaseAdminClient();
+
+  let query = supabase.from("projects").select("*").eq("workspace_id", workspaceId);
+
+  if (includeArchived) {
+    query = query.not("archived_at", "is", null);
+  } else {
+    query = query.is("archived_at", null);
+  }
+
+  if (decoded) {
+    query = query.lt("updated_at", decoded.updatedAt);
+  }
+
+  const { data: rows, error } = await query
+    .order("updated_at", { ascending: false })
+    .order("id", { ascending: false })
+    .limit(boundedLimit + 1);
+
+  if (error || !rows) {
+    console.error("listProjects error:", error);
+    return { items: [], nextCursor: null };
+  }
+
+  const pageRows = rows.slice(0, boundedLimit);
+  const ids = pageRows.map((p: any) => p.id);
+
+  const countsMap = new Map<string, { total: number; done: number }>();
+
+  if (ids.length > 0) {
+    const { data: taskRows } = await supabase
+      .from("tasks")
+      .select("project_id, columns!inner(name)")
+      .in("project_id", ids)
+      .is("archived_at", null);
+
+    if (taskRows) {
+      for (const t of taskRows) {
+        const stats = countsMap.get(t.project_id) ?? { total: 0, done: 0 };
+        stats.total += 1;
+        if ((t.columns as any)?.name === "Hoàn thành") {
+          stats.done += 1;
+        }
+        countsMap.set(t.project_id, stats);
+      }
+    }
+  }
+
+  const items = pageRows.map((project: any) => {
+    const stats = countsMap.get(project.id) ?? { total: 0, done: 0 };
+    return projectDtoFromDb(project, stats.total, stats.done);
+  });
+
   const last = pageRows.at(-1);
-  return { items, nextCursor: rows.length > boundedLimit && last ? encodeCursor({ updatedAt: last.updatedAt.toISOString(), id: last.id }) : null };
+  return {
+    items,
+    nextCursor: rows.length > boundedLimit && last ? encodeCursor({ updatedAt: last.updated_at, id: last.id }) : null,
+  };
 }
 
 export async function getProject(workspaceId: string, projectId: string, userId: string) {
   const access = await authorizeProject(workspaceId, projectId, userId, "task.read");
-  return access ? toProjectDto(access.project) : null;
+  return access ? toProjectDtoSupabase(access.project) : null;
 }
 
-export async function createProject(workspaceId: string, userId: string, input: CreateProjectRequest, database = getDb()) {
-  const db = database;
-  await db.execute(sql`select id from public.workspaces where id = ${workspaceId} for update`);
-  const membership = await db.select().from(memberships).where(and(eq(memberships.workspaceId, workspaceId), eq(memberships.userId, userId), eq(memberships.status, "ACTIVE"))).get();
+export async function createProject(workspaceId: string, userId: string, input: CreateProjectRequest) {
+  const supabase = createSupabaseAdminClient();
+  const membership = await getActiveMembership(workspaceId, userId);
   if (!membership || !can(membership.role, "project.create")) return { kind: "denied" as const };
-  const subscription = await db.select().from(subscriptions).where(eq(subscriptions.workspaceId, workspaceId)).get();
-  const entitlements = resolveEntitlements({ status: subscription?.status ?? null, quantity: subscription?.quantity ?? null, priceMatches: subscription?.stripePriceId === stripeEnv().STRIPE_PRICE_PRO_MONTHLY });
-  const active = await db.select({ count: sql<number>`count(*)` }).from(projects).where(and(eq(projects.workspaceId, workspaceId), isNull(projects.archivedAt))).get();
-  if (entitlements.projectLimit !== null && Number(active?.count ?? 0) >= entitlements.projectLimit) return { kind: "project_limit" as const };
+
+  const { data: subscription } = await supabase.from("subscriptions").select("*").eq("workspace_id", workspaceId).maybeSingle();
+  const entitlements = resolveEntitlements({
+    status: subscription?.status ?? null,
+    quantity: subscription?.quantity ?? null,
+    priceMatches: subscription?.stripe_price_id === stripeEnv().STRIPE_PRICE_PRO_MONTHLY,
+  });
+
+  const { count: activeCount } = await supabase
+    .from("projects")
+    .select("id", { count: "exact", head: true })
+    .eq("workspace_id", workspaceId)
+    .is("archived_at", null);
+
+  if (entitlements.projectLimit !== null && Number(activeCount ?? 0) >= entitlements.projectLimit) return { kind: "project_limit" as const };
   if (input.visibility === "PRIVATE" && !entitlements.canUseAdvancedPermissions) return { kind: "pro_required" as const };
+
   const projectId = crypto.randomUUID();
   const boardId = crypto.randomUUID();
-  const defaultColumns = ["Backlog", "Đang làm", "Review", "Hoàn thành"].map((name, index) => ({ id: crypto.randomUUID(), workspaceId, boardId, name, position: (index + 1) * 1000 }));
-  await db.insert(projects).values({ id: projectId, workspaceId, name: input.name, description: input.description, visibility: input.visibility });
-  await db.insert(boards).values({ id: boardId, workspaceId, projectId, name: "Công việc" });
-  for (const column of defaultColumns) await db.insert(columns).values(column);
-  await insertActivity(db, workspaceId, userId, "project.created", "project", projectId, { name: input.name });
-  const project = await db.select().from(projects).where(eq(projects.id, projectId)).get();
-  return project ? { kind: "ok" as const, project: projectDto(project, 0, 0) } : { kind: "denied" as const };
+  const defaultColumns = ["Backlog", "Đang làm", "Review", "Hoàn thành"].map((name, index) => ({
+    id: crypto.randomUUID(),
+    workspace_id: workspaceId,
+    board_id: boardId,
+    name,
+    position: (index + 1) * 1000,
+  }));
+
+  const { error: projErr } = await supabase.from("projects").insert({
+    id: projectId,
+    workspace_id: workspaceId,
+    name: input.name,
+    description: input.description ?? null,
+    visibility: input.visibility,
+  });
+
+  if (projErr) throw new Error(`createProject failed: ${projErr.message}`);
+
+  await supabase.from("boards").insert({ id: boardId, workspace_id: workspaceId, project_id: projectId, name: "Công việc" });
+  for (const col of defaultColumns) {
+    await supabase.from("columns").insert(col);
+  }
+
+  await insertActivity(null, workspaceId, userId, "project.created", "project", projectId, { name: input.name });
+
+  const { data: project } = await supabase.from("projects").select("*").eq("id", projectId).single();
+  return project ? { kind: "ok" as const, project: projectDtoFromDb(project, 0, 0) } : { kind: "denied" as const };
 }
 
 export async function updateProject(workspaceId: string, projectId: string, userId: string, input: Partial<CreateProjectRequest>) {
-  if (!await authorizeProject(workspaceId, projectId, userId, "project.update")) return null;
-  const changes = { ...input, updatedAt: new Date() };
-  const row = await getDb().update(projects).set(changes).where(and(eq(projects.id, projectId), eq(projects.workspaceId, workspaceId))).returning().get();
+  if (!(await authorizeProject(workspaceId, projectId, userId, "project.update"))) return null;
+  const supabase = createSupabaseAdminClient();
+  const changes = { ...input, updated_at: new Date().toISOString() };
+  const { data: row } = await supabase.from("projects").update(changes).eq("id", projectId).eq("workspace_id", workspaceId).select().maybeSingle();
   if (row) await recordActivity(workspaceId, userId, "project.updated", "project", projectId, input);
-  return row ? toProjectDto(row) : null;
+  return row ? toProjectDtoSupabase(row) : null;
 }
 
 export async function archiveProject(workspaceId: string, projectId: string, userId: string, restore = false) {
   const membership = await getActiveMembership(workspaceId, userId);
-  const project = await getDb().select().from(projects).where(and(eq(projects.id, projectId), eq(projects.workspaceId, workspaceId))).get();
-  if (!membership || !project || !canArchiveProject(membership.role, membership.id, project.leadMembershipId)) return null;
-  const row = await getDb().update(projects).set({ archivedAt: restore ? null : new Date(), updatedAt: new Date() }).where(and(eq(projects.id, projectId), eq(projects.workspaceId, workspaceId))).returning().get();
+  const supabase = createSupabaseAdminClient();
+  const { data: project } = await supabase.from("projects").select("*").eq("id", projectId).eq("workspace_id", workspaceId).maybeSingle();
+  if (!membership || !project || !canArchiveProject(membership.role, membership.id, project.lead_membership_id)) return null;
+
+  const { data: row } = await supabase
+    .from("projects")
+    .update({ archived_at: restore ? null : new Date().toISOString(), updated_at: new Date().toISOString() })
+    .eq("id", projectId)
+    .eq("workspace_id", workspaceId)
+    .select()
+    .maybeSingle();
+
   if (row) await recordActivity(workspaceId, userId, restore ? "project.restored" : "project.archived", "project", projectId);
-  return row ? toProjectDto(row) : null;
+  return row ? toProjectDtoSupabase(row) : null;
 }
 
-async function toProjectDto(project: typeof projects.$inferSelect) {
-  const counts = await getDb().select({ total: sql<number>`count(*)`, done: sql<number>`sum(case when ${columns.name} = 'Hoàn thành' then 1 else 0 end)` }).from(tasks).innerJoin(columns, eq(tasks.columnId, columns.id)).where(and(eq(tasks.projectId, project.id), isNull(tasks.archivedAt))).get();
-  const total = Number(counts?.total ?? 0); const done = Number(counts?.done ?? 0);
-  return projectDto(project, total, done);
+async function toProjectDtoSupabase(project: any) {
+  const supabase = createSupabaseAdminClient();
+  const { data: taskRows } = await supabase
+    .from("tasks")
+    .select("columns!inner(name)")
+    .eq("project_id", project.id)
+    .is("archived_at", null);
+
+  const total = taskRows?.length ?? 0;
+  const done = taskRows?.filter((t: any) => t.columns?.name === "Hoàn thành").length ?? 0;
+
+  return projectDtoFromDb(project, total, done);
 }
 
-function projectDto(project: typeof projects.$inferSelect, total: number, done: number) {
-  return { id: project.id, workspaceId: project.workspaceId, name: project.name, description: project.description, visibility: project.visibility, taskCount: total, progress: total ? Math.round(done / total * 100) : 0, archivedAt: project.archivedAt?.toISOString() ?? null };
+function projectDtoFromDb(project: any, total: number, done: number) {
+  return {
+    id: project.id,
+    workspaceId: project.workspace_id ?? project.workspaceId,
+    name: project.name,
+    description: project.description,
+    visibility: project.visibility,
+    taskCount: total,
+    progress: total ? Math.round((done / total) * 100) : 0,
+    archivedAt: project.archived_at ? new Date(project.archived_at).toISOString() : null,
+  };
 }
 
 export async function listProjectBoards(workspaceId: string, projectId: string, userId: string) {
-  if (!await authorizeProject(workspaceId, projectId, userId, "task.read")) return null;
-  return getDb().select().from(boards).where(and(eq(boards.workspaceId, workspaceId), eq(boards.projectId, projectId))).all();
+  if (!(await authorizeProject(workspaceId, projectId, userId, "task.read"))) return null;
+  const supabase = createSupabaseAdminClient();
+  const { data } = await supabase.from("boards").select("*").eq("workspace_id", workspaceId).eq("project_id", projectId);
+  return data ?? [];
 }
 
 export async function createBoard(workspaceId: string, projectId: string, userId: string, name: string) {
-  if (!await authorizeProject(workspaceId, projectId, userId, "project.update")) return null;
+  if (!(await authorizeProject(workspaceId, projectId, userId, "project.update"))) return null;
+  const supabase = createSupabaseAdminClient();
   const id = crypto.randomUUID();
-  await getDb().insert(boards).values({ id, workspaceId, projectId, name });
+  await supabase.from("boards").insert({ id, workspace_id: workspaceId, project_id: projectId, name });
   await recordActivity(workspaceId, userId, "board.created", "board", id, { projectId, name });
-  return getDb().select().from(boards).where(eq(boards.id, id)).get();
+  const { data } = await supabase.from("boards").select("*").eq("id", id).maybeSingle();
+  return data;
 }
 
 export async function listBoardColumns(workspaceId: string, boardId: string, userId: string) {
-  const board = await getDb().select().from(boards).where(and(eq(boards.id, boardId), eq(boards.workspaceId, workspaceId))).get();
-  if (!board || !await authorizeProject(workspaceId, board.projectId, userId, "task.read")) return null;
-  return getDb().select().from(columns).where(and(eq(columns.workspaceId, workspaceId), eq(columns.boardId, boardId))).orderBy(columns.position).all();
+  const supabase = createSupabaseAdminClient();
+  const { data: board } = await supabase.from("boards").select("*").eq("id", boardId).eq("workspace_id", workspaceId).maybeSingle();
+  if (!board || !(await authorizeProject(workspaceId, board.project_id, userId, "task.read"))) return null;
+
+  const { data } = await supabase.from("columns").select("*").eq("workspace_id", workspaceId).eq("board_id", boardId).order("position", { ascending: true });
+  return data ?? [];
 }

@@ -66,17 +66,25 @@ export async function markProviderEmailVerified(userId: string) {
   return getDb().update(users).set({ emailVerifiedAt: new Date(), updatedAt: new Date() }).where(eq(users.id, userId)).returning({ verifiedAt: users.emailVerifiedAt }).get();
 }
 
+// In-memory rate limiter — avoids needing a DB connection for local dev
+const _rateLimitStore = new Map<string, { count: number; windowStartedAt: number; blockedUntil?: number }>();
+
 export async function consumeRateLimit(key: string, limit: number, windowMs: number) {
   const now = Date.now();
-  const windowStartedAt = new Date(Math.floor(now / windowMs) * windowMs);
-  await getDb().insert(rateLimits).values({ key, windowStartedAt, count: 1, updatedAt: new Date(now) }).onConflictDoUpdate({
-    target: [rateLimits.key, rateLimits.windowStartedAt],
-    set: { count: sql`${rateLimits.count} + 1`, updatedAt: new Date(now) },
-  });
-  const row = await getDb().select().from(rateLimits).where(and(eq(rateLimits.key, key), eq(rateLimits.windowStartedAt, windowStartedAt))).get();
-  const allowed = Number(row?.count ?? limit + 1) <= limit && (!row?.blockedUntil || row.blockedUntil.getTime() <= now);
-  if (!allowed && !row?.blockedUntil) await getDb().update(rateLimits).set({ blockedUntil: new Date(windowStartedAt.getTime() + windowMs) }).where(and(eq(rateLimits.key, key), eq(rateLimits.windowStartedAt, windowStartedAt))).run();
-  return { allowed, retryAfterSeconds: Math.max(1, Math.ceil((windowStartedAt.getTime() + windowMs - now) / 1000)) };
+  const windowStartedAt = Math.floor(now / windowMs) * windowMs;
+  const storeKey = `${key}:${windowStartedAt}`;
+  const entry = _rateLimitStore.get(storeKey) ?? { count: 0, windowStartedAt };
+  entry.count += 1;
+  _rateLimitStore.set(storeKey, entry);
+  // Cleanup old entries periodically
+  if (_rateLimitStore.size > 1000) {
+    for (const [k, v] of _rateLimitStore.entries()) {
+      if (v.windowStartedAt + windowMs < now) _rateLimitStore.delete(k);
+    }
+  }
+  const allowed = entry.count <= limit && (!entry.blockedUntil || entry.blockedUntil <= now);
+  if (!allowed && !entry.blockedUntil) entry.blockedUntil = windowStartedAt + windowMs;
+  return { allowed, retryAfterSeconds: Math.max(1, Math.ceil((windowStartedAt + windowMs - now) / 1000)) };
 }
 
 export async function consumeAuthRateLimits(action: string, request: Request, normalizedAccount: string) {

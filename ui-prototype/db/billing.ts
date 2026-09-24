@@ -103,17 +103,21 @@ export async function syncStripeSubscription(input: {
   ]);
 }
 
+import { createSupabaseAdminClient } from "@/app/lib/supabase/admin";
+
 export async function getWorkspaceEntitlements(workspaceId: string) {
-  const subscription = await getDb()
-    .select()
-    .from(subscriptions)
-    .where(eq(subscriptions.workspaceId, workspaceId))
-    .get();
+  const supabase = createSupabaseAdminClient();
+  const { data: subscription } = await supabase
+    .from("subscriptions")
+    .select("*")
+    .eq("workspace_id", workspaceId)
+    .maybeSingle();
+
   return resolveEntitlements({
     status: subscription?.status ?? null,
     quantity: subscription?.quantity ?? null,
     priceMatches:
-      subscription?.stripePriceId === stripeEnv().STRIPE_PRICE_PRO_MONTHLY,
+      subscription?.stripe_price_id === stripeEnv().STRIPE_PRICE_PRO_MONTHLY,
   });
 }
 
@@ -122,77 +126,48 @@ export async function getBillingSummary(workspaceId: string, userId: string) {
     !(await authorizeWorkspace(workspaceId, userId, "workspace.billing.manage"))
   )
     return null;
-  const [subscription, projectCount, memberCount, pendingCount] =
-    await Promise.all([
-      getDb()
-        .select()
-        .from(subscriptions)
-        .where(eq(subscriptions.workspaceId, workspaceId))
-        .get(),
-      getDb()
-        .select({ count: sql<number>`count(*)` })
-        .from(projects)
-        .where(
-          and(
-            eq(projects.workspaceId, workspaceId),
-            isNull(projects.archivedAt),
-          ),
-        )
-        .get(),
-      getDb()
-        .select({ count: sql<number>`count(*)` })
-        .from(memberships)
-        .where(
-          and(
-            eq(memberships.workspaceId, workspaceId),
-            eq(memberships.status, "ACTIVE"),
-          ),
-        )
-        .get(),
-      getDb()
-        .select({ count: sql<number>`count(*)` })
-        .from(invitations)
-        .where(
-          and(
-            eq(invitations.workspaceId, workspaceId),
-            eq(invitations.status, "PENDING"),
-            gt(invitations.expiresAt, new Date()),
-          ),
-        )
-        .get(),
-    ]);
+
+  const supabase = createSupabaseAdminClient();
+  const [subRes, projRes, memRes, invRes] = await Promise.all([
+    supabase.from("subscriptions").select("*").eq("workspace_id", workspaceId).maybeSingle(),
+    supabase.from("projects").select("id", { count: "exact", head: true }).eq("workspace_id", workspaceId).is("archived_at", null),
+    supabase.from("memberships").select("id", { count: "exact", head: true }).eq("workspace_id", workspaceId).eq("status", "ACTIVE"),
+    supabase.from("invitations").select("id", { count: "exact", head: true }).eq("workspace_id", workspaceId).eq("status", "PENDING").gt("expires_at", new Date().toISOString()),
+  ]);
+
+  const subscription = subRes.data;
   const entitlements = resolveEntitlements({
     status: subscription?.status ?? null,
     quantity: subscription?.quantity ?? null,
     priceMatches:
-      subscription?.stripePriceId === stripeEnv().STRIPE_PRICE_PRO_MONTHLY,
+      subscription?.stripe_price_id === stripeEnv().STRIPE_PRICE_PRO_MONTHLY,
   });
   return {
     ...entitlements,
-    activeProjects: Number(projectCount?.count ?? 0),
-    activeMembers: Number(memberCount?.count ?? 0),
-    pendingInvitations: Number(pendingCount?.count ?? 0),
-    customerId: subscription?.providerCustomerId ?? null,
-    subscriptionId: subscription?.stripeSubscriptionId ?? null,
-    priceId: subscription?.stripePriceId ?? null,
+    activeProjects: Number(projRes.count ?? 0),
+    activeMembers: Number(memRes.count ?? 0),
+    pendingInvitations: Number(invRes.count ?? 0),
+    customerId: subscription?.provider_customer_id ?? null,
+    subscriptionId: subscription?.stripe_subscription_id ?? null,
+    priceId: subscription?.stripe_price_id ?? null,
     quantity: subscription?.quantity ?? null,
-    cancelAtPeriodEnd: subscription?.cancelAtPeriodEnd ?? false,
-    currentPeriodEnd: subscription?.currentPeriodEnd?.toISOString() ?? null,
-    lastInvoiceStatus: subscription?.lastInvoiceStatus ?? null,
+    cancelAtPeriodEnd: subscription?.cancel_at_period_end ?? false,
+    currentPeriodEnd: subscription?.current_period_end ? new Date(subscription.current_period_end).toISOString() : null,
+    lastInvoiceStatus: subscription?.last_invoice_status ?? null,
   };
 }
 
 export async function hasProjectCapacity(workspaceId: string) {
   const entitlements = await getWorkspaceEntitlements(workspaceId);
   if (entitlements.projectLimit === null) return true;
-  const row = await getDb()
-    .select({ count: sql<number>`count(*)` })
-    .from(projects)
-    .where(
-      and(eq(projects.workspaceId, workspaceId), isNull(projects.archivedAt)),
-    )
-    .get();
-  return Number(row?.count ?? 0) < entitlements.projectLimit;
+  const supabase = createSupabaseAdminClient();
+  const { count } = await supabase
+    .from("projects")
+    .select("id", { count: "exact", head: true })
+    .eq("workspace_id", workspaceId)
+    .is("archived_at", null);
+
+  return Number(count ?? 0) < entitlements.projectLimit;
 }
 
 export async function canUseAdvancedPermissions(workspaceId: string) {
@@ -204,36 +179,29 @@ export async function hasSeatCapacity(
   workspaceId: string,
   includePendingInvitations = false,
 ) {
-  return hasSeatCapacityWithDb(getDb(), workspaceId, includePendingInvitations);
+  return hasSeatCapacityWithDb(null as any, workspaceId, includePendingInvitations);
 }
 
-export async function hasSeatCapacityWithDb(database: ReturnType<typeof getDb>, workspaceId: string, includePendingInvitations = false) {
-  const subscription = await database.select().from(subscriptions).where(eq(subscriptions.workspaceId, workspaceId)).get();
-  const entitlements = resolveEntitlements({ status: subscription?.status ?? null, quantity: subscription?.quantity ?? null, priceMatches: subscription?.stripePriceId === stripeEnv().STRIPE_PRICE_PRO_MONTHLY });
-  const active = await database
-    .select({ count: sql<number>`count(*)` })
-    .from(memberships)
-    .where(
-      and(
-        eq(memberships.workspaceId, workspaceId),
-        eq(memberships.status, "ACTIVE"),
-      ),
-    )
-    .get();
-  let used = Number(active?.count ?? 0);
+export async function hasSeatCapacityWithDb(_database: any, workspaceId: string, includePendingInvitations = false) {
+  const supabase = createSupabaseAdminClient();
+  const { data: subscription } = await supabase.from("subscriptions").select("*").eq("workspace_id", workspaceId).maybeSingle();
+  const entitlements = resolveEntitlements({ status: subscription?.status ?? null, quantity: subscription?.quantity ?? null, priceMatches: subscription?.stripe_price_id === stripeEnv().STRIPE_PRICE_PRO_MONTHLY });
+  const { count: activeCount } = await supabase
+    .from("memberships")
+    .select("id", { count: "exact", head: true })
+    .eq("workspace_id", workspaceId)
+    .eq("status", "ACTIVE");
+
+  let used = Number(activeCount ?? 0);
   if (includePendingInvitations) {
-    const pending = await database
-      .select({ count: sql<number>`count(*)` })
-      .from(invitations)
-      .where(
-        and(
-          eq(invitations.workspaceId, workspaceId),
-          inArray(invitations.status, ["PENDING"]),
-          gt(invitations.expiresAt, new Date()),
-        ),
-      )
-      .get();
-    used += Number(pending?.count ?? 0);
+    const { count: pendingCount } = await supabase
+      .from("invitations")
+      .select("id", { count: "exact", head: true })
+      .eq("workspace_id", workspaceId)
+      .eq("status", "PENDING")
+      .gt("expires_at", new Date().toISOString());
+
+    used += Number(pendingCount ?? 0);
   }
   return used < entitlements.memberLimit;
 }

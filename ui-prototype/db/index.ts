@@ -60,12 +60,18 @@ function wrapDatabase<T extends object>(raw: T, allowNativeTransaction = true): 
 export function getDb(): any {
   if (database) return database;
   if (!client) {
-    const { SUPABASE_DB_URL } = databaseEnv();
-    client = postgres(SUPABASE_DB_URL, {
+    const env = databaseEnv();
+    client = postgres({
+      host: env.SUPABASE_DB_HOST,
+      port: env.SUPABASE_DB_PORT,
+      user: env.SUPABASE_DB_USER,
+      password: env.SUPABASE_DB_PASSWORD,
+      database: env.SUPABASE_DB_NAME,
       max: 5,
       prepare: false,
       idle_timeout: 20,
       connect_timeout: 10,
+      ssl: "require",
     });
   }
 

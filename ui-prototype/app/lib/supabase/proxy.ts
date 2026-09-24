@@ -5,6 +5,9 @@ import { hardenedAuthCookieOptions } from "@/app/lib/supabase/cookie-options";
 export async function updateSupabaseSession(request: NextRequest, requestHeaders = new Headers(request.headers)) {
   requestHeaders.forEach((value, name) => request.headers.set(name, value));
   let response = NextResponse.next({ request });
+  if (!process.env.NEXT_PUBLIC_SUPABASE_URL || !process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY) {
+    return response;
+  }
   const supabase = createServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY!,
