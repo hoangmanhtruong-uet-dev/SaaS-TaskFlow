@@ -1,3 +1,4 @@
+ 
 "use client";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
@@ -10,12 +11,10 @@ import {
 } from "lucide-react";
 import { useWorkspace } from "./providers/workspace-provider";
 import { collaborationService } from "@/app/services/collaboration-service";
-import { projectService } from "@/app/services/project-service";
-import { taskService } from "@/app/services/task-service";
 import { workspaceService } from "@/app/services/workspace-service";
-import type { Member, Project, TaskSummary } from "@/app/types/domain";
+import type { Member, TaskSummary } from "@/app/types/domain";
 import { Button, EmptyState, ErrorState, Field, ListSkeleton } from "./ui";
-import { ProjectGrid, TaskList } from "./product-views";
+import { TaskList } from "./product-views";
 import { useApiResource } from "@/app/hooks/use-api-resource";
 
 export function SearchView() {
@@ -78,93 +77,17 @@ export function SearchView() {
   );
 }
 
+import { ArchivedDashboardContainer } from "./archived/ArchivedDashboardContainer";
+
 export function ArchivedView() {
-  const workspace = useWorkspace();
-  const resource = useApiResource(async () => {
-    const [projects, tasks] = await Promise.all([
-      projectService.archived(workspace.id),
-      taskService.archived(workspace.id),
-    ]);
-    return { projects, tasks };
-  }, `archived:${workspace.id}`);
-  const [error, setError] = useState("");
-  if (resource.loading) return <ListSkeleton />;
-  if (resource.error || !resource.data)
-    return <ErrorState retry={resource.reload} />;
-  async function restoreProject(project: Project) {
-    try {
-      await projectService.restore(workspace.id, project.id);
-      resource.reload();
-    } catch (value) {
-      setError(
-        value instanceof Error ? value.message : "Không thể khôi phục dự án",
-      );
-    }
-  }
-  async function restoreTask(task: TaskSummary) {
-    try {
-      await taskService.restore(workspace.id, task.id);
-      resource.reload();
-    } catch (value) {
-      setError(
-        value instanceof Error
-          ? value.message
-          : "Không thể khôi phục công việc",
-      );
-    }
-  }
-  const { projects, tasks } = resource.data;
   return (
-    <div className="archived-stack">
-      {error && <p className="form-error">{error}</p>}
-      <section>
-        <h2>Dự án đã lưu trữ</h2>
-        {projects.length ? (
-          <div className="restore-grid">
-            {projects.map((project) => (
-              <div key={project.id}>
-                <ProjectGrid projects={[project]} />
-                <Button
-                  variant="secondary"
-                  onClick={() => restoreProject(project)}
-                >
-                  <RefreshCw />
-                  Khôi phục
-                </Button>
-              </div>
-            ))}
-          </div>
-        ) : (
-          <EmptyState
-            title="Không có dự án lưu trữ"
-            body="Dự án đã archive sẽ xuất hiện tại đây."
-          />
-        )}
-      </section>
-      <section>
-        <h2>Công việc đã lưu trữ</h2>
-        {tasks.length ? (
-          <div>
-            {tasks.map((task) => (
-              <div className="restore-row" key={task.id}>
-                <TaskList tasks={[task]} />
-                <Button variant="secondary" onClick={() => restoreTask(task)}>
-                  <RefreshCw />
-                  Khôi phục
-                </Button>
-              </div>
-            ))}
-          </div>
-        ) : (
-          <EmptyState
-            title="Không có công việc lưu trữ"
-            body="Công việc đã archive sẽ xuất hiện tại đây."
-          />
-        )}
-      </section>
+    <div className="w-full h-full flex-1 p-4 sm:p-6 bg-zinc-950 text-zinc-100">
+      <ArchivedDashboardContainer />
     </div>
   );
 }
+
+
 
 function BillingSettings() {
   const workspace = useWorkspace();

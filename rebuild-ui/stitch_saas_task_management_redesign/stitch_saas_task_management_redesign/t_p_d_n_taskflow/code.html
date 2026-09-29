@@ -1,0 +1,466 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head><meta charset="utf-8"/><meta content="width=device-width, initial-scale=1.0" name="viewport"/><meta content="web_dashboard" name="shell-type"/><style>@layer base{html,body{margin:0;padding:0;}body{overscroll-behavior:none;}main>:first-child{margin-top:0!important;}main>:last-child{margin-bottom:0!important;}}::-webkit-scrollbar{display:none;}</style><script src="https://cdn.tailwindcss.com"></script><script id="tailwind-config">tailwind.config = {darkMode: "class", theme: {extend: {"colors": {"on-tertiary-fixed": "#131b2e", "primary-fixed": "#6ffbbe", "background": "#0f131c", "outline-variant": "#3c4a42", "on-background": "#dfe2ef", "on-tertiary": "#283044", "secondary-fixed-dim": "#c0c1ff", "error": "#ffb4ab", "tertiary-fixed": "#dae2fd", "error-container": "#93000a", "on-primary-container": "#00422b", "on-tertiary-fixed-variant": "#3f465c", "inverse-on-surface": "#2c303a", "primary": "#4edea3", "surface-variant": "#31353f", "secondary": "#c0c1ff", "on-surface-variant": "#bbcabf", "inverse-surface": "#dfe2ef", "on-error-container": "#ffdad6", "secondary-container": "#3131c0", "surface": "#0f131c", "on-secondary": "#1000a9", "secondary-fixed": "#e1e0ff", "surface-container": "#1c1f29", "tertiary": "#bec6e0", "on-secondary-fixed": "#07006c", "surface-container-lowest": "#0a0e17", "on-primary-fixed-variant": "#005236", "on-error": "#690005", "primary-fixed-dim": "#4edea3", "surface-bright": "#353943", "surface-container-highest": "#31353f", "surface-tint": "#4edea3", "on-secondary-fixed-variant": "#2f2ebe", "on-surface": "#dfe2ef", "on-tertiary-container": "#31394d", "on-primary-fixed": "#002113", "surface-container-low": "#181b25", "on-primary": "#003824", "tertiary-container": "#9ba2bb", "primary-container": "#10b981", "outline": "#86948a", "surface-container-high": "#262a34", "tertiary-fixed-dim": "#bec6e0", "on-secondary-container": "#b0b2ff", "inverse-primary": "#006c49", "surface-dim": "#0f131c"}, "borderRadius": {"DEFAULT": "0.125rem", "lg": "0.25rem", "xl": "0.5rem", "full": "0.75rem"}, "spacing": {"space-xl": "2.5rem", "gutter": "1.5rem", "space-sm": "0.5rem", "space-xs": "0.25rem", "space-md": "1rem", "space-lg": "1.5rem", "margin": "2.0rem"}, "fontFamily": {"headline-xl": ["Inter"], "body-lg": ["Inter"], "headline-lg": ["Inter"], "headline-md": ["Inter"], "headline-sm": ["Inter"], "body-sm": ["Inter"], "label-md": ["Inter"], "label-sm": ["Inter"], "headline-lg-mobile": ["Inter"], "body-md": ["Inter"]}, "fontSize": {"headline-xl": ["36px", {"lineHeight": "44px", "letterSpacing": "-0.02em", "fontWeight": "600"}], "body-lg": ["16px", {"lineHeight": "24px", "fontWeight": "400"}], "headline-lg": ["28px", {"lineHeight": "36px", "letterSpacing": "-0.01em", "fontWeight": "600"}], "headline-md": ["20px", {"lineHeight": "28px", "letterSpacing": "-0.01em", "fontWeight": "600"}], "headline-sm": ["16px", {"lineHeight": "24px", "fontWeight": "600"}], "body-sm": ["13px", {"lineHeight": "18px", "fontWeight": "400"}], "label-md": ["12px", {"lineHeight": "16px", "letterSpacing": "0.01em", "fontWeight": "500"}], "label-sm": ["11px", {"lineHeight": "14px", "letterSpacing": "0.02em", "fontWeight": "500"}], "headline-lg-mobile": ["24px", {"lineHeight": "32px", "letterSpacing": "-0.01em", "fontWeight": "600"}], "headline-md-mobile": ["24px", {"lineHeight": "32px", "letterSpacing": "-0.01em", "fontWeight": "600"}], "body-md": ["14px", {"lineHeight": "20px", "fontWeight": "400"}]}}}};</script><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/></head><body class="bg-surface font-body-md text-on-surface"><aside class="fixed left-0 top-0 h-full w-64 bg-surface-container-low z-50 flex flex-col pt-space-lg pb-space-lg"><div class="px-space-lg mb-space-lg flex items-center gap-space-sm"><img alt="TaskFlow Logo" class="h-8 w-auto object-contain" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDLbA68MwHi1tLdjx6ULiM_9RBCIEVTxPamJxdSw0NhrXjAfcui8ls_j9GhITLw6LFJgAC1nkjljw6Fc0mgIcneRbC8k1H6donOt8Se9duESLPO3j-QF41aTk8iLOgan_OaG-N9VfxNoRX1GjEYac4_EiB-khE90CVgOr2mf6NozxP5kcwVb9ZGQP1ESbWJR84W1XNQn7VK2e4pn0-tMNcyvf1CiGaOS980bZMDCgI"/><span class="text-headline-sm text-primary font-headline-sm">TaskFlow</span></div><nav class="flex-1 px-space-md space-y-space-xs overflow-y-auto" data-active-classes="bg-primary-container text-on-primary-container font-semibold rounded-lg"><a class="flex items-center px-space-md py-space-sm rounded-lg text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-all" data-path="tong-quan" href="#"><span class="material-symbols-outlined mr-space-md text-[20px]">dashboard</span>Tổng quan</a><a class="flex items-center px-space-md py-space-sm rounded-lg text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-all" data-path="tim-kiem" href="#"><span class="material-symbols-outlined mr-space-md text-[20px]">search</span>Tìm kiếm</a><a class="flex items-center px-space-md py-space-sm rounded-lg text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-all" data-path="du-an" href="#"><span class="material-symbols-outlined mr-space-md text-[20px]">folder</span>Dự án</a><a class="flex items-center px-space-md py-space-sm rounded-lg text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-all" data-path="viec-cua-toi" href="#"><span class="material-symbols-outlined mr-space-md text-[20px]">task</span>Việc của tôi</a><a class="flex items-center px-space-md py-space-sm rounded-lg text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-all" data-path="lich" href="#"><span class="material-symbols-outlined mr-space-md text-[20px]">calendar_today</span>Lịch</a><a class="flex items-center px-space-md py-space-sm rounded-lg text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-all" data-path="da-luu-tru" href="#"><span class="material-symbols-outlined mr-space-md text-[20px]">archive</span>Đã lưu trữ</a><a class="flex items-center px-space-md py-space-sm rounded-lg text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-all" data-path="hoat-dong" href="#"><span class="material-symbols-outlined mr-space-md text-[20px]">history</span>Hoạt động</a><a class="flex items-center px-space-md py-space-sm rounded-lg text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-all" data-path="thanh-vien" href="#"><span class="material-symbols-outlined mr-space-md text-[20px]">group</span>Thành viên</a><a class="flex items-center px-space-md py-space-sm rounded-lg text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-all" data-path="cai-dat" href="#"><span class="material-symbols-outlined mr-space-md text-[20px]">settings</span>Cài đặt</a></nav></aside><div class="pl-64"><header class="fixed top-0 left-64 right-0 h-16 bg-surface/80 backdrop-blur-xl z-40 flex items-center justify-between px-space-gutter shadow-[0_1px_8px_rgba(0,0,0,0.04)]"><div class="flex items-center gap-space-md"><span class="text-headline-sm text-on-surface">Dashboard Workspace</span></div><div class="flex items-center gap-space-md"><button class="bg-primary text-on-primary px-space-md py-space-xs rounded-lg flex items-center gap-space-xs font-semibold text-label-md hover:bg-primary-fixed transition-colors"><span class="material-symbols-outlined text-[18px]">add</span>Tạo công việc</button><button class="w-10 h-10 rounded-lg hover:bg-surface-container-high flex items-center justify-center text-on-surface-variant hover:text-on-surface transition-colors"><span class="material-symbols-outlined">notifications</span></button><div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center"><span class="material-symbols-outlined text-on-primary text-[18px]">person</span></div></div></header><main class="relative pt-16 bg-surface min-h-screen px-space-gutter py-space-gutter"><div class="flex flex-col w-full text-on-surface">
+<div class="flex flex-col md:flex-row md:items-center justify-between gap-space-md mb-space-xl">
+<div>
+<div class="flex items-center gap-space-xs text-label-md text-on-surface-variant mb-space-xs">
+<a class="hover:text-primary transition-colors" href="#">Dự án</a>
+<span class="material-symbols-outlined text-[14px]">chevron_right</span>
+<a class="hover:text-primary transition-colors" href="#">Workspace Redesign</a>
+<span class="material-symbols-outlined text-[14px]">chevron_right</span>
+<span class="text-on-surface font-semibold">Tập tin</span>
+</div>
+<h1 class="text-headline-xl font-headline-xl text-on-surface">Kho lưu trữ dự án</h1>
+</div>
+<div class="flex items-center gap-space-sm">
+<button class="bg-surface-container-high hover:bg-surface-bright text-on-surface px-space-md py-space-sm rounded-lg font-semibold text-label-md flex items-center gap-space-xs transition-all">
+<span class="material-symbols-outlined text-[18px]">create_new_folder</span>Tạo thư mục
+      </button>
+<button class="bg-primary hover:bg-primary-fixed text-on-primary px-space-md py-space-sm rounded-lg font-semibold text-label-md flex items-center gap-space-xs transition-all shadow-sm" onclick="openUploadModal()">
+<span class="material-symbols-outlined text-[18px]">upload</span>Tải lên tập tin
+      </button>
+</div>
+</div>
+<div class="grid grid-cols-1 xl:grid-cols-4 gap-space-lg mb-space-xl">
+<div class="xl:col-span-3 bg-surface-container-low rounded-xl p-space-lg flex flex-col justify-between shadow-sm relative overflow-hidden">
+<div class="absolute -right-16 -bottom-16 w-64 h-64 bg-primary/5 rounded-full blur-3xl pointer-events-none"></div>
+<div>
+<div class="flex items-center justify-between mb-space-md">
+<span class="text-label-md uppercase tracking-wider text-primary font-semibold">Dung lượng sử dụng</span>
+<span class="text-label-md text-on-surface-variant">Đã dùng 45.2 GB / 100 GB</span>
+</div>
+<div class="w-full h-3 bg-surface-container rounded-full overflow-hidden flex mb-space-md">
+<div class="bg-primary h-full rounded-full transition-all duration-500" style="width: 45%;"></div>
+</div>
+</div>
+<div class="grid grid-cols-2 sm:grid-cols-4 gap-space-md pt-space-md">
+<div class="bg-surface-container p-space-md rounded-lg">
+<div class="flex items-center gap-space-xs text-on-surface-variant mb-space-xs">
+<span class="material-symbols-outlined text-primary text-[18px]">description</span>
+<span class="text-label-md">Tài liệu</span>
+</div>
+<span class="text-headline-sm font-headline-sm">18.4 GB</span>
+</div>
+<div class="bg-surface-container p-space-md rounded-lg">
+<div class="flex items-center gap-space-xs text-on-surface-variant mb-space-xs">
+<span class="material-symbols-outlined text-secondary text-[18px]">image</span>
+<span class="text-label-md">Hình ảnh</span>
+</div>
+<span class="text-headline-sm font-headline-sm">22.1 GB</span>
+</div>
+<div class="bg-surface-container p-space-md rounded-lg">
+<div class="flex items-center gap-space-xs text-on-surface-variant mb-space-xs">
+<span class="material-symbols-outlined text-error text-[18px]">movie</span>
+<span class="text-label-md">Video</span>
+</div>
+<span class="text-headline-sm font-headline-sm">3.7 GB</span>
+</div>
+<div class="bg-surface-container p-space-md rounded-lg">
+<div class="flex items-center gap-space-xs text-on-surface-variant mb-space-xs">
+<span class="material-symbols-outlined text-tertiary text-[18px]">folder_zip</span>
+<span class="text-label-md">Khác</span>
+</div>
+<span class="text-headline-sm font-headline-sm">1.0 GB</span>
+</div>
+</div>
+</div>
+<div class="bg-surface-container-low rounded-xl p-space-lg flex flex-col justify-between shadow-sm">
+<div>
+<h3 class="text-headline-sm font-headline-sm mb-space-sm flex items-center gap-space-xs">
+<span class="material-symbols-outlined text-primary">bolt</span>Hoạt động gần đây
+        </h3>
+<p class="text-body-sm text-on-surface-variant mb-space-md">Các thay đổi tập tin mới nhất trong workspace.</p>
+<div class="space-y-space-md">
+<div class="flex items-start gap-space-sm">
+<div class="w-8 h-8 rounded-full bg-primary-container text-on-primary-container flex items-center justify-center font-semibold text-label-md shrink-0">A</div>
+<div class="min-w-0 flex-1">
+<p class="text-body-sm truncate"><span class="font-semibold text-on-surface">An Nguyễn</span> đã tải lên <span class="text-primary">Design_System_v2.fig</span></p>
+<span class="text-label-sm text-on-surface-variant">10 phút trước</span>
+</div>
+</div>
+<div class="flex items-start gap-space-sm">
+<div class="w-8 h-8 rounded-full bg-secondary-container text-on-secondary-container flex items-center justify-center font-semibold text-label-md shrink-0">H</div>
+<div class="min-w-0 flex-1">
+<p class="text-body-sm truncate"><span class="font-semibold text-on-surface">Hoàng Nam</span> đã đổi tên <span class="text-primary">API_Specs.pdf</span></p>
+<span class="text-label-sm text-on-surface-variant">2 giờ trước</span>
+</div>
+</div>
+</div>
+</div>
+<button class="w-full mt-space-md py-space-xs text-label-md font-semibold text-primary hover:text-primary-fixed transition-colors text-center">Xem tất cả hoạt động</button>
+</div>
+</div>
+<div class="bg-surface-container-low rounded-xl p-space-lg mb-space-xl shadow-sm">
+<div class="flex flex-col lg:flex-row items-stretch lg:items-center justify-between gap-space-md mb-space-lg">
+<div class="flex flex-wrap items-center gap-space-sm flex-1">
+<div class="relative min-w-[240px] flex-1">
+<span class="material-symbols-outlined absolute left-space-md top-1/2 -translate-y-1/2 text-on-surface-variant text-[18px]">search</span>
+<input class="w-full bg-surface-container text-on-surface placeholder:text-on-surface-variant text-body-md pl-10 pr-space-md py-space-sm rounded-lg outline-none focus:ring-2 focus:ring-primary transition-all" placeholder="Tìm kiếm tập tin, thư mục..." type="text"/>
+</div>
+<div class="flex items-center gap-space-xs">
+<select class="bg-surface-container text-on-surface text-label-md px-space-md py-space-sm rounded-lg outline-none cursor-pointer hover:bg-surface-container-high transition-colors">
+<option>Tất cả định dạng</option>
+<option>Tài liệu (PDF, DOCX)</option>
+<option>Hình ảnh (PNG, FIG)</option>
+<option>Video (MP4)</option>
+<option>Nén (ZIP)</option>
+</select>
+<select class="bg-surface-container text-on-surface text-label-md px-space-md py-space-sm rounded-lg outline-none cursor-pointer hover:bg-surface-container-high transition-colors">
+<option>Sắp xếp: Mới nhất</option>
+<option>Tên (A-Z)</option>
+<option>Kích thước</option>
+</select>
+</div>
+</div>
+<div class="flex items-center gap-space-xs self-end lg:self-auto bg-surface-container p-1 rounded-lg">
+<button class="p-2 rounded bg-surface-container-high text-primary transition-all" id="grid-view-btn" onclick="switchView('grid')">
+<span class="material-symbols-outlined text-[18px]">grid_view</span>
+</button>
+<button class="p-2 rounded text-on-surface-variant hover:text-on-surface transition-all" id="list-view-btn" onclick="switchView('list')">
+<span class="material-symbols-outlined text-[18px]">view_list</span>
+</button>
+</div>
+</div>
+<div class="flex items-center gap-space-xs text-label-md text-on-surface-variant mb-space-md pb-space-sm border-b border-surface-container-high">
+<span class="material-symbols-outlined text-[16px]">folder</span>
+<span class="text-on-surface font-semibold">Thư mục gốc</span>
+<span class="material-symbols-outlined text-[14px]">chevron_right</span>
+<span class="text-on-surface">Design Assets</span>
+</div>
+<div class="mb-space-lg" id="folders-section">
+<h4 class="text-label-md uppercase tracking-wider text-on-surface-variant font-semibold mb-space-sm">Thư mục</h4>
+<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-space-md">
+<div class="bg-surface-container hover:bg-surface-container-high p-space-md rounded-xl cursor-pointer transition-all flex items-center justify-between group">
+<div class="flex items-center gap-space-md min-w-0">
+<div class="w-10 h-10 rounded-lg bg-primary/10 text-primary flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined">folder</span>
+</div>
+<div class="min-w-0">
+<h5 class="text-headline-sm font-headline-sm truncate">UI Wireframes</h5>
+<span class="text-label-sm text-on-surface-variant">12 tập tin</span>
+</div>
+</div>
+<button class="opacity-0 group-hover:opacity-100 p-1 hover:bg-surface-container-highest rounded text-on-surface-variant hover:text-on-surface transition-all">
+<span class="material-symbols-outlined text-[18px]">more_vert</span>
+</button>
+</div>
+<div class="bg-surface-container hover:bg-surface-container-high p-space-md rounded-xl cursor-pointer transition-all flex items-center justify-between group">
+<div class="flex items-center gap-space-md min-w-0">
+<div class="w-10 h-10 rounded-lg bg-secondary/10 text-secondary flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined">folder</span>
+</div>
+<div class="min-w-0">
+<h5 class="text-headline-sm font-headline-sm truncate">Brand Guidelines</h5>
+<span class="text-label-sm text-on-surface-variant">5 tập tin</span>
+</div>
+</div>
+<button class="opacity-0 group-hover:opacity-100 p-1 hover:bg-surface-container-highest rounded text-on-surface-variant hover:text-on-surface transition-all">
+<span class="material-symbols-outlined text-[18px]">more_vert</span>
+</button>
+</div>
+<div class="bg-surface-container hover:bg-surface-container-high p-space-md rounded-xl cursor-pointer transition-all flex items-center justify-between group">
+<div class="flex items-center gap-space-md min-w-0">
+<div class="w-10 h-10 rounded-lg bg-tertiary/10 text-tertiary flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined">folder</span>
+</div>
+<div class="min-w-0">
+<h5 class="text-headline-sm font-headline-sm truncate">Research &amp; Data</h5>
+<span class="text-label-sm text-on-surface-variant">8 tập tin</span>
+</div>
+</div>
+<button class="opacity-0 group-hover:opacity-100 p-1 hover:bg-surface-container-highest rounded text-on-surface-variant hover:text-on-surface transition-all">
+<span class="material-symbols-outlined text-[18px]">more_vert</span>
+</button>
+</div>
+<div class="bg-surface-container hover:bg-surface-container-high p-space-md rounded-xl cursor-pointer transition-all flex items-center justify-between group">
+<div class="flex items-center gap-space-md min-w-0">
+<div class="w-10 h-10 rounded-lg bg-error/10 text-error flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined">folder</span>
+</div>
+<div class="min-w-0">
+<h5 class="text-headline-sm font-headline-sm truncate">Archive 2024</h5>
+<span class="text-label-sm text-on-surface-variant">34 tập tin</span>
+</div>
+</div>
+<button class="opacity-0 group-hover:opacity-100 p-1 hover:bg-surface-container-highest rounded text-on-surface-variant hover:text-on-surface transition-all">
+<span class="material-symbols-outlined text-[18px]">more_vert</span>
+</button>
+</div>
+</div>
+</div>
+<div>
+<h4 class="text-label-md uppercase tracking-wider text-on-surface-variant font-semibold mb-space-sm">Tập tin</h4>
+<div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-space-md" id="grid-view-container">
+<div class="bg-surface-container hover:bg-surface-container-high rounded-xl p-space-md transition-all group flex flex-col justify-between">
+<div>
+<div class="h-36 rounded-lg mb-space-md overflow-hidden relative bg-surface-container-high flex items-center justify-center">
+<div class="absolute inset-0 bg-cover bg-center opacity-80 group-hover:scale-105 transition-transform duration-300" data-alt="A sleek dark mode UI design mockup featuring a software dashboard interface with emerald green accents and crisp typography." style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuAnxQ1urgJydapWc7n7UTdsUYK9UpMaHVhSVG6mGLMp0UDLVL3VFIh_x8kXUulc2goQQzJT8EFcS6hnTjflDI0sgxao0Sp6ec217kVLL3Pa3-vg_CrCqZgGxcpxdXM-Z9m8k1vhcBHYwUZAnAWPcV2vmFv26kc5-Uqg-guYHLHOKy3kApaioNyhdnGd4GPMTFz9S_UVkyix2XlIJVb5Z8zVEf9Uhw1cAeASvKwHoEg')"></div>
+<div class="absolute inset-0 bg-gradient-to-t from-surface-container to-transparent opacity-60"></div>
+<span class="absolute top-space-xs right-space-xs bg-surface/80 backdrop-blur text-primary text-label-sm px-2 py-0.5 rounded font-mono">FIG</span>
+</div>
+<h5 class="text-headline-sm font-headline-sm truncate mb-space-xs">Design_System_v2.fig</h5>
+<div class="flex items-center justify-between text-label-sm text-on-surface-variant">
+<span>24.5 MB</span>
+<span>10 phút trước</span>
+</div>
+</div>
+<div class="flex items-center justify-end gap-space-xs pt-space-md mt-space-md border-t border-surface-container-high">
+<button class="p-1.5 rounded hover:bg-surface-container-highest text-on-surface-variant hover:text-on-surface transition-colors" onclick="previewFile('Design_System_v2.fig')" title="Xem trước">
+<span class="material-symbols-outlined text-[18px]">visibility</span>
+</button>
+<button class="p-1.5 rounded hover:bg-surface-container-highest text-on-surface-variant hover:text-on-surface transition-colors" title="Tải xuống">
+<span class="material-symbols-outlined text-[18px]">download</span>
+</button>
+<button class="p-1.5 rounded hover:bg-surface-container-highest text-on-surface-variant hover:text-on-surface transition-colors" title="Đổi tên">
+<span class="material-symbols-outlined text-[18px]">edit</span>
+</button>
+<button class="p-1.5 rounded hover:bg-surface-container-highest text-error transition-colors" title="Xóa">
+<span class="material-symbols-outlined text-[18px]">delete</span>
+</button>
+</div>
+</div>
+<div class="bg-surface-container hover:bg-surface-container-high rounded-xl p-space-md transition-all group flex flex-col justify-between">
+<div>
+<div class="h-36 rounded-lg mb-space-md overflow-hidden relative bg-surface-container-high flex items-center justify-center">
+<span class="material-symbols-outlined text-[48px] text-error">description</span>
+<span class="absolute top-space-xs right-space-xs bg-surface/80 backdrop-blur text-error text-label-sm px-2 py-0.5 rounded font-mono">PDF</span>
+</div>
+<h5 class="text-headline-sm font-headline-sm truncate mb-space-xs">API_Specs_Final.pdf</h5>
+<div class="flex items-center justify-between text-label-sm text-on-surface-variant">
+<span>4.2 MB</span>
+<span>2 giờ trước</span>
+</div>
+</div>
+<div class="flex items-center justify-end gap-space-xs pt-space-md mt-space-md border-t border-surface-container-high">
+<button class="p-1.5 rounded hover:bg-surface-container-highest text-on-surface-variant hover:text-on-surface transition-colors" onclick="previewFile('API_Specs_Final.pdf')" title="Xem trước">
+<span class="material-symbols-outlined text-[18px]">visibility</span>
+</button>
+<button class="p-1.5 rounded hover:bg-surface-container-highest text-on-surface-variant hover:text-on-surface transition-colors" title="Tải xuống">
+<span class="material-symbols-outlined text-[18px]">download</span>
+</button>
+<button class="p-1.5 rounded hover:bg-surface-container-highest text-on-surface-variant hover:text-on-surface transition-colors" title="Đổi tên">
+<span class="material-symbols-outlined text-[18px]">edit</span>
+</button>
+<button class="p-1.5 rounded hover:bg-surface-container-highest text-error transition-colors" title="Xóa">
+<span class="material-symbols-outlined text-[18px]">delete</span>
+</button>
+</div>
+</div>
+<div class="bg-surface-container hover:bg-surface-container-high rounded-xl p-space-md transition-all group flex flex-col justify-between">
+<div>
+<div class="h-36 rounded-lg mb-space-md overflow-hidden relative bg-surface-container-high flex items-center justify-center">
+<div class="absolute inset-0 bg-cover bg-center opacity-80 group-hover:scale-105 transition-transform duration-300" data-alt="A modern product launch presentation slide deck featuring dark grey backgrounds, bright typography, and high contrast stats." style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuB5vi3DZNkcXYhDHtX4JbHVgc7rRBkqKr4OTKiDrOZf6HzxA7-7JCmXFZ9PHT7iiCZ_BpAkkrWx31t7OyIs4HChXMLtXUWN01OzQ7lyCTDF24sW8kYrL08ZLaSlxr_lBRgwHNQov8J4veBfe3zR_Ocdk8WGGf-fEp2NKunHfXkFvPRzed0jh5U61Xn88sXr0Ed2EdlE07KueDd5sFtsbp5agR8aTVyam9YsGxz4Kxw')"></div>
+<div class="absolute inset-0 bg-gradient-to-t from-surface-container to-transparent opacity-60"></div>
+<span class="absolute top-space-xs right-space-xs bg-surface/80 backdrop-blur text-secondary text-label-sm px-2 py-0.5 rounded font-mono">KEY</span>
+</div>
+<h5 class="text-headline-sm font-headline-sm truncate mb-space-xs">Product_Launch_Deck.key</h5>
+<div class="flex items-center justify-between text-label-sm text-on-surface-variant">
+<span>18.9 MB</span>
+<span>Hôm qua</span>
+</div>
+</div>
+<div class="flex items-center justify-end gap-space-xs pt-space-md mt-space-md border-t border-surface-container-high">
+<button class="p-1.5 rounded hover:bg-surface-container-highest text-on-surface-variant hover:text-on-surface transition-colors" onclick="previewFile('Product_Launch_Deck.key')" title="Xem trước">
+<span class="material-symbols-outlined text-[18px]">visibility</span>
+</button>
+<button class="p-1.5 rounded hover:bg-surface-container-highest text-on-surface-variant hover:text-on-surface transition-colors" title="Tải xuống">
+<span class="material-symbols-outlined text-[18px]">download</span>
+</button>
+<button class="p-1.5 rounded hover:bg-surface-container-highest text-on-surface-variant hover:text-on-surface transition-colors" title="Đổi tên">
+<span class="material-symbols-outlined text-[18px]">edit</span>
+</button>
+<button class="p-1.5 rounded hover:bg-surface-container-highest text-error transition-colors" title="Xóa">
+<span class="material-symbols-outlined text-[18px]">delete</span>
+</button>
+</div>
+</div>
+<div class="bg-surface-container hover:bg-surface-container-high rounded-xl p-space-md transition-all group flex flex-col justify-between">
+<div>
+<div class="h-36 rounded-lg mb-space-md overflow-hidden relative bg-surface-container-high flex items-center justify-center">
+<span class="material-symbols-outlined text-[48px] text-tertiary">folder_zip</span>
+<span class="absolute top-space-xs right-space-xs bg-surface/80 backdrop-blur text-tertiary text-label-sm px-2 py-0.5 rounded font-mono">ZIP</span>
+</div>
+<h5 class="text-headline-sm font-headline-sm truncate mb-space-xs">User_Testing_Videos.zip</h5>
+<div class="flex items-center justify-between text-label-sm text-on-surface-variant">
+<span>1.2 GB</span>
+<span>3 ngày trước</span>
+</div>
+</div>
+<div class="flex items-center justify-end gap-space-xs pt-space-md mt-space-md border-t border-surface-container-high">
+<button class="p-1.5 rounded hover:bg-surface-container-highest text-on-surface-variant hover:text-on-surface transition-colors" onclick="previewFile('User_Testing_Videos.zip')" title="Xem trước">
+<span class="material-symbols-outlined text-[18px]">visibility</span>
+</button>
+<button class="p-1.5 rounded hover:bg-surface-container-highest text-on-surface-variant hover:text-on-surface transition-colors" title="Tải xuống">
+<span class="material-symbols-outlined text-[18px]">download</span>
+</button>
+<button class="p-1.5 rounded hover:bg-surface-container-highest text-on-surface-variant hover:text-on-surface transition-colors" title="Đổi tên">
+<span class="material-symbols-outlined text-[18px]">edit</span>
+</button>
+<button class="p-1.5 rounded hover:bg-surface-container-highest text-error transition-colors" title="Xóa">
+<span class="material-symbols-outlined text-[18px]">delete</span>
+</button>
+</div>
+</div>
+</div>
+<div class="hidden flex-col bg-surface-container rounded-xl overflow-hidden" id="list-view-container">
+<div class="grid grid-cols-12 gap-space-md px-space-md py-space-sm bg-surface-container-high text-label-md font-semibold text-on-surface-variant">
+<div class="col-span-6">Tên tập tin</div>
+<div class="col-span-2">Kích thước</div>
+<div class="col-span-2">Cập nhật</div>
+<div class="col-span-2 text-right">Thao tác</div>
+</div>
+<div class="divide-y divide-surface-container-high">
+<div class="grid grid-cols-12 gap-space-md px-space-md py-space-sm items-center hover:bg-surface-container-high transition-colors">
+<div class="col-span-6 flex items-center gap-space-sm min-w-0">
+<span class="material-symbols-outlined text-primary">brush</span>
+<span class="truncate font-medium text-on-surface">Design_System_v2.fig</span>
+</div>
+<div class="col-span-2 text-body-sm text-on-surface-variant">24.5 MB</div>
+<div class="col-span-2 text-body-sm text-on-surface-variant">10 phút trước</div>
+<div class="col-span-2 flex items-center justify-end gap-space-xs">
+<button class="p-1 rounded hover:bg-surface-container-highest text-on-surface-variant hover:text-on-surface" onclick="previewFile('Design_System_v2.fig')"><span class="material-symbols-outlined text-[16px]">visibility</span></button>
+<button class="p-1 rounded hover:bg-surface-container-highest text-on-surface-variant hover:text-on-surface"><span class="material-symbols-outlined text-[16px]">download</span></button>
+<button class="p-1 rounded hover:bg-surface-container-highest text-on-surface-variant hover:text-on-surface"><span class="material-symbols-outlined text-[16px]">edit</span></button>
+<button class="p-1 rounded hover:bg-surface-container-highest text-error"><span class="material-symbols-outlined text-[16px]">delete</span></button>
+</div>
+</div>
+<div class="grid grid-cols-12 gap-space-md px-space-md py-space-sm items-center hover:bg-surface-container-high transition-colors">
+<div class="col-span-6 flex items-center gap-space-sm min-w-0">
+<span class="material-symbols-outlined text-error">description</span>
+<span class="truncate font-medium text-on-surface">API_Specs_Final.pdf</span>
+</div>
+<div class="col-span-2 text-body-sm text-on-surface-variant">4.2 MB</div>
+<div class="col-span-2 text-body-sm text-on-surface-variant">2 giờ trước</div>
+<div class="col-span-2 flex items-center justify-end gap-space-xs">
+<button class="p-1 rounded hover:bg-surface-container-highest text-on-surface-variant hover:text-on-surface" onclick="previewFile('API_Specs_Final.pdf')"><span class="material-symbols-outlined text-[16px]">visibility</span></button>
+<button class="p-1 rounded hover:bg-surface-container-highest text-on-surface-variant hover:text-on-surface"><span class="material-symbols-outlined text-[16px]">download</span></button>
+<button class="p-1 rounded hover:bg-surface-container-highest text-on-surface-variant hover:text-on-surface"><span class="material-symbols-outlined text-[16px]">edit</span></button>
+<button class="p-1 rounded hover:bg-surface-container-highest text-error"><span class="material-symbols-outlined text-[16px]">delete</span></button>
+</div>
+</div>
+<div class="grid grid-cols-12 gap-space-md px-space-md py-space-sm items-center hover:bg-surface-container-high transition-colors">
+<div class="col-span-6 flex items-center gap-space-sm min-w-0">
+<span class="material-symbols-outlined text-secondary">slideshow</span>
+<span class="truncate font-medium text-on-surface">Product_Launch_Deck.key</span>
+</div>
+<div class="col-span-2 text-body-sm text-on-surface-variant">18.9 MB</div>
+<div class="col-span-2 text-body-sm text-on-surface-variant">Hôm qua</div>
+<div class="col-span-2 flex items-center justify-end gap-space-xs">
+<button class="p-1 rounded hover:bg-surface-container-highest text-on-surface-variant hover:text-on-surface" onclick="previewFile('Product_Launch_Deck.key')"><span class="material-symbols-outlined text-[16px]">visibility</span></button>
+<button class="p-1 rounded hover:bg-surface-container-highest text-on-surface-variant hover:text-on-surface"><span class="material-symbols-outlined text-[16px]">download</span></button>
+<button class="p-1 rounded hover:bg-surface-container-highest text-on-surface-variant hover:text-on-surface"><span class="material-symbols-outlined text-[16px]">edit</span></button>
+<button class="p-1 rounded hover:bg-surface-container-highest text-error"><span class="material-symbols-outlined text-[16px]">delete</span></button>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="fixed inset-0 bg-surface/80 backdrop-blur-md z-50 flex items-center justify-center p-space-gutter hidden" id="upload-modal">
+<div class="bg-surface-container-low border border-surface-container-high rounded-xl max-w-lg w-full p-space-lg shadow-2xl relative">
+<div class="flex items-center justify-between mb-space-md">
+<h3 class="text-headline-md font-headline-md">Tải lên tập tin</h3>
+<button class="p-1 rounded hover:bg-surface-container-high text-on-surface-variant hover:text-on-surface" onclick="closeUploadModal()">
+<span class="material-symbols-outlined">close</span>
+</button>
+</div>
+<div class="border-2 border-dashed border-outline-variant hover:border-primary rounded-xl p-space-xl text-center cursor-pointer transition-all bg-surface-container/50 mb-space-lg group">
+<div class="w-16 h-16 rounded-full bg-primary/10 text-primary flex items-center justify-center mx-auto mb-space-md group-hover:scale-110 transition-transform">
+<span class="material-symbols-outlined text-[32px]">cloud_upload</span>
+</div>
+<h4 class="text-headline-sm font-headline-sm mb-space-xs">Kéo thả tập tin vào đây</h4>
+<p class="text-body-sm text-on-surface-variant mb-space-md">Hỗ trợ định dạng Figma, PDF, DOCX, Hình ảnh, Video (Tối đa 500MB)</p>
+<button class="bg-surface-container-high hover:bg-surface-bright text-on-surface px-space-md py-space-sm rounded-lg font-semibold text-label-md transition-all">Chọn tập tin từ máy</button>
+</div>
+<div class="space-y-space-md mb-space-lg">
+<div class="text-label-md font-semibold text-on-surface-variant uppercase tracking-wider">Đang tải lên (1)</div>
+<div class="bg-surface-container p-space-md rounded-lg">
+<div class="flex items-center justify-between mb-space-xs">
+<div class="flex items-center gap-space-xs min-w-0">
+<span class="material-symbols-outlined text-primary text-[18px]">description</span>
+<span class="text-body-sm font-medium truncate">Architecture_Diagram.png</span>
+</div>
+<span class="text-label-sm text-primary font-mono">78%</span>
+</div>
+<div class="w-full h-1.5 bg-surface-container-high rounded-full overflow-hidden">
+<div class="bg-primary h-full rounded-full" style="width: 78%;"></div>
+</div>
+</div>
+</div>
+<div class="flex items-center justify-end gap-space-sm">
+<button class="px-space-md py-space-sm rounded-lg font-semibold text-label-md text-on-surface-variant hover:bg-surface-container-high transition-colors" onclick="closeUploadModal()">Hủy</button>
+<button class="bg-primary hover:bg-primary-fixed text-on-primary px-space-md py-space-sm rounded-lg font-semibold text-label-md transition-colors" onclick="closeUploadModal()">Hoàn tất</button>
+</div>
+</div>
+</div>
+<div class="fixed inset-0 bg-surface/90 backdrop-blur-md z-50 flex items-center justify-center p-space-gutter hidden" id="preview-modal">
+<div class="bg-surface-container-low border border-surface-container-high rounded-xl max-w-4xl w-full p-space-lg shadow-2xl relative flex flex-col max-h-[90vh]">
+<div class="flex items-center justify-between pb-space-md border-b border-surface-container-high">
+<h3 class="text-headline-md font-headline-md" id="preview-title">Xem trước tập tin</h3>
+<button class="p-1 rounded hover:bg-surface-container-high text-on-surface-variant hover:text-on-surface" onclick="closePreviewModal()">
+<span class="material-symbols-outlined">close</span>
+</button>
+</div>
+<div class="flex-1 my-space-lg rounded-xl overflow-hidden relative bg-surface-container flex items-center justify-center min-h-[400px]">
+<div class="absolute inset-0 bg-cover bg-center" data-alt="High resolution detailed preview of the selected design asset or document inside the TaskFlow workspace." style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuANp_6smUElkfWjq-l9KDW9XNf6YRILp0ZSz4sAOMIbwGn4DOXUCSdVGDn-OmNr7U8CqG4Xy8G9Y6CvwP5nZIGacO5JOZLm9GHs8-PlRv_LX2lILvUv9u9tRDczgvuXszqka3G8tYEV1pGHf_jiw6vnZC7BxS_xpwESE7w0SmoiYkjTb94k6QwK6xBsRNaCQ6kUAVLtVwQcjIkEAfMvxLdrR2yOPyiLThumXEgVrWM')"></div>
+</div>
+<div class="flex items-center justify-between pt-space-md border-t border-surface-container-high">
+<span class="text-label-md text-on-surface-variant">Kích thước: 24.5 MB • Định dạng: FIG</span>
+<div class="flex items-center gap-space-sm">
+<button class="bg-surface-container-high hover:bg-surface-bright text-on-surface px-space-md py-space-sm rounded-lg font-semibold text-label-md flex items-center gap-space-xs transition-all">
+<span class="material-symbols-outlined text-[18px]">download</span>Tải xuống
+          </button>
+<button class="bg-primary hover:bg-primary-fixed text-on-primary px-space-md py-space-sm rounded-lg font-semibold text-label-md transition-all" onclick="closePreviewModal()">Đóng</button>
+</div>
+</div>
+</div>
+</div>
+</div>
+<script>
+  function switchView(view) {
+    const gridContainer = document.getElementById('grid-view-container');
+    const listContainer = document.getElementById('list-view-container');
+    const gridBtn = document.getElementById('grid-view-btn');
+    const listBtn = document.getElementById('list-view-btn');
+
+    if (view === 'grid') {
+      gridContainer.classList.remove('hidden');
+      gridContainer.classList.add('grid');
+      listContainer.classList.remove('flex');
+      listContainer.classList.add('hidden');
+      gridBtn.classList.add('bg-surface-container-high', 'text-primary');
+      gridBtn.classList.remove('text-on-surface-variant');
+      listBtn.classList.remove('bg-surface-container-high', 'text-primary');
+      listBtn.classList.add('text-on-surface-variant');
+    } else {
+      gridContainer.classList.remove('grid');
+      gridContainer.classList.add('hidden');
+      listContainer.classList.remove('hidden');
+      listContainer.classList.add('flex');
+      listBtn.classList.add('bg-surface-container-high', 'text-primary');
+      listBtn.classList.remove('text-on-surface-variant');
+      gridBtn.classList.remove('bg-surface-container-high', 'text-primary');
+      gridBtn.classList.add('text-on-surface-variant');
+    }
+  }
+
+  function openUploadModal() {
+    document.getElementById('upload-modal').classList.remove('hidden');
+  }
+
+  function closeUploadModal() {
+    document.getElementById('upload-modal').classList.add('hidden');
+  }
+
+  function previewFile(filename) {
+    document.getElementById('preview-title').innerText = filename;
+    document.getElementById('preview-modal').classList.remove('hidden');
+  }
+
+  function closePreviewModal() {
+    document.getElementById('preview-modal').classList.add('hidden');
+  }
+</script></main></div></body></html>

@@ -3,8 +3,10 @@ import { passwordPolicyError } from "@/app/lib/password-policy";
 import { createSupabaseServerClient } from "@/app/lib/supabase/server";
 import { parseJson, requiredString } from "@/app/lib/validation";
 import { consumeAuthRateLimits } from "@/db/auth";
+import { isTrustedMutationRequest } from "@/app/lib/request-security";
 
 export async function POST(request: Request) {
+  if (!isTrustedMutationRequest(request)) return fail("CSRF_REJECTED", "Cross-site request rejected", 403);
   const body = await parseJson(request);
   const email = requiredString(body, "email", 320).toLowerCase();
   const password = requiredString(body, "password", 1024);

@@ -26,6 +26,6 @@ export function buildContentSecurityPolicy(nonce: string, environment = process.
     "frame-src 'none'",
     "frame-ancestors 'none'",
     "manifest-src 'self'",
-    "upgrade-insecure-requests",
+    ...(environment === "development" ? [] : ["upgrade-insecure-requests"]),
   ].join("; ");
 }

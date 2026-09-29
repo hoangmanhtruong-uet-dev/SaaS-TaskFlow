@@ -12,7 +12,6 @@ export async function GET() {
   const rows = await listUserWorkspaces(auth.user.id);
   return ok(rows.map((row) => ({ ...row, archivedAt: row.archivedAt?.toISOString() ?? null })));
 }
-
 export async function POST(request: Request) {
   try {
     const auth = await getApiUser();
@@ -48,4 +47,3 @@ export async function POST(request: Request) {
     return routeError(error);
   }
 }
-

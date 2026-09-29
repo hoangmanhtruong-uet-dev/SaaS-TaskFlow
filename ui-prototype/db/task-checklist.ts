@@ -6,7 +6,10 @@ import { taskChecklistItems, tasks } from "./schema";
 
 export const MAX_CHECKLIST_ITEMS_PER_TASK = 100;
 
+const UUID_REGEX = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+
 async function taskAccess(workspaceId: string, taskId: string, userId: string, permission: "task.read" | "task.update") {
+  if (!UUID_REGEX.test(taskId) || !UUID_REGEX.test(workspaceId)) return null;
   const task = await getDb().select().from(tasks).where(and(eq(tasks.id, taskId), eq(tasks.workspaceId, workspaceId), isNull(tasks.archivedAt))).get();
   if (!task) return null;
   const access = await authorizeProject(workspaceId, task.projectId, userId, permission);

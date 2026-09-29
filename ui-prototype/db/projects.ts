@@ -7,6 +7,23 @@ import { stripeEnv } from "@/app/lib/env";
 import { decodeCursor, encodeCursor } from "./pagination";
 import { createSupabaseAdminClient } from "@/app/lib/supabase/admin";
 
+type ProjectRow = {
+  id: string;
+  workspace_id?: string;
+  workspaceId?: string;
+  name: string;
+  description: string | null;
+  visibility: "WORKSPACE" | "PRIVATE";
+  archived_at?: string | null;
+  archivedAt?: Date | string | null;
+  lead_membership_id?: string | null;
+};
+
+type ProjectTaskRow = {
+  project_id: string;
+  columns: { name?: string | null } | null;
+};
+
 export async function listProjects(workspaceId: string, userId: string, includeArchived = false, cursor?: string | null, limit = 50) {
   const membership = await getActiveMembership(workspaceId, userId);
   if (!membership) return null;
@@ -37,7 +54,7 @@ export async function listProjects(workspaceId: string, userId: string, includeA
   }
 
   const pageRows = rows.slice(0, boundedLimit);
-  const ids = pageRows.map((p: any) => p.id);
+  const ids = pageRows.map((p: ProjectRow) => p.id);
 
   const countsMap = new Map<string, { total: number; done: number }>();
 
@@ -49,10 +66,10 @@ export async function listProjects(workspaceId: string, userId: string, includeA
       .is("archived_at", null);
 
     if (taskRows) {
-      for (const t of taskRows) {
+      for (const t of taskRows as ProjectTaskRow[]) {
         const stats = countsMap.get(t.project_id) ?? { total: 0, done: 0 };
         stats.total += 1;
-        if ((t.columns as any)?.name === "Hoàn thành") {
+        if (t.columns?.name === "Hoàn thành") {
           stats.done += 1;
         }
         countsMap.set(t.project_id, stats);
@@ -60,7 +77,7 @@ export async function listProjects(workspaceId: string, userId: string, includeA
     }
   }
 
-  const items = pageRows.map((project: any) => {
+  const items = pageRows.map((project: ProjectRow) => {
     const stats = countsMap.get(project.id) ?? { total: 0, done: 0 };
     return projectDtoFromDb(project, stats.total, stats.done);
   });
@@ -156,7 +173,7 @@ export async function archiveProject(workspaceId: string, projectId: string, use
   return row ? toProjectDtoSupabase(row) : null;
 }
 
-async function toProjectDtoSupabase(project: any) {
+async function toProjectDtoSupabase(project: ProjectRow) {
   const supabase = createSupabaseAdminClient();
   const { data: taskRows } = await supabase
     .from("tasks")
@@ -165,21 +182,25 @@ async function toProjectDtoSupabase(project: any) {
     .is("archived_at", null);
 
   const total = taskRows?.length ?? 0;
-  const done = taskRows?.filter((t: any) => t.columns?.name === "Hoàn thành").length ?? 0;
+  const done = (taskRows as ProjectTaskRow[] | null)?.filter((t) => t.columns?.name === "Hoàn thành").length ?? 0;
 
   return projectDtoFromDb(project, total, done);
 }
 
-function projectDtoFromDb(project: any, total: number, done: number) {
+function projectDtoFromDb(project: ProjectRow, total: number, done: number) {
   return {
     id: project.id,
     workspaceId: project.workspace_id ?? project.workspaceId,
     name: project.name,
-    description: project.description,
+    description: project.description ?? "",
     visibility: project.visibility,
     taskCount: total,
     progress: total ? Math.round((done / total) * 100) : 0,
-    archivedAt: project.archived_at ? new Date(project.archived_at).toISOString() : null,
+    archivedAt: project.archived_at
+      ? new Date(project.archived_at).toISOString()
+      : project.archivedAt
+        ? new Date(project.archivedAt).toISOString()
+        : null,
   };
 }
 

@@ -51,3 +51,5 @@ dev-server.err.log
 /backups/
 tsconfig.tsbuildinfo
 .supabase/
+.temp/
+linked-project.json

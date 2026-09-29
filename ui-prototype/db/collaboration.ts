@@ -4,6 +4,34 @@ import { recordActivity } from "./audit";
 import { consumeRateLimit } from "./auth";
 import { canManageMemberChange } from "@/app/lib/permissions";
 import { createSupabaseAdminClient } from "@/app/lib/supabase/admin";
+import { hasSeatCapacity } from "./billing";
+
+type MembershipRow = {
+  id: string;
+  role: WorkspaceRole;
+  status: MembershipStatus;
+  created_at: string;
+  profiles: { id: string; name: string | null; email: string };
+};
+type InvitationRow = {
+  id: string;
+  workspace_id: string;
+  email_normalized: string;
+  role: Exclude<WorkspaceRole, "OWNER">;
+  status: InvitationStatus;
+  expires_at: string;
+  created_at: string;
+};
+type MembershipEmailRow = {
+  profiles: { email: string; name: string | null };
+  workspaces: { name: string };
+};
+type ProjectAccessRow = {
+  project_id: string;
+  membership_id: string;
+  access_level: "VIEW" | "COMMENT" | "EDIT";
+  memberships: { profiles: { name: string | null; email: string } };
+};
 
 export async function listMembers(workspaceId: string, userId: string) {
   if (!await authorizeWorkspace(workspaceId, userId, "member.read")) return null;
@@ -15,7 +43,7 @@ export async function listMembers(workspaceId: string, userId: string) {
 
   if (error || !data) return [];
 
-  return data.map((row: any) => ({
+  return (data as unknown as MembershipRow[]).map((row) => ({
     id: row.id,
     userId: row.profiles.id,
     name: row.profiles.name,
@@ -33,9 +61,21 @@ export async function updateMember(workspaceId: string, membershipId: string, ac
   const { data: target } = await supabase.from("memberships").select("*").eq("id", membershipId).eq("workspace_id", workspaceId).maybeSingle();
   if (!actor || !target) return { kind: "not_found" as const };
 
-  if (!canManageMemberChange(actor.role, target.role as any, changes.role, changes.status)) return { kind: "denied" as const };
+  const ownerLeaving = target.role === "OWNER" && target.status === "ACTIVE" &&
+    (changes.role !== undefined || (changes.status !== undefined && changes.status !== "ACTIVE"));
+  if (ownerLeaving) {
+    const { count } = await supabase
+      .from("memberships")
+      .select("id", { count: "exact", head: true })
+      .eq("workspace_id", workspaceId)
+      .eq("role", "OWNER")
+      .eq("status", "ACTIVE");
+    if ((count ?? 0) <= 1) return { kind: "last_owner" as const };
+  }
 
-  const updateData: any = { ...changes, updated_at: new Date().toISOString() };
+  if (!canManageMemberChange(actor.role, target.role as WorkspaceRole, changes.role, changes.status)) return { kind: "denied" as const };
+
+  const updateData: { role?: WorkspaceRole; status?: MembershipStatus; updated_at: string } = { ...changes, updated_at: new Date().toISOString() };
   const { data: updated } = await supabase.from("memberships").update(updateData).eq("id", membershipId).eq("workspace_id", workspaceId).select().maybeSingle();
 
   if (changes.status === "LEFT") {
@@ -55,6 +95,16 @@ export async function leaveWorkspace(workspaceId: string, userId: string) {
   const { data: target } = await supabase.from("memberships").select("*").eq("workspace_id", workspaceId).eq("user_id", userId).eq("status", "ACTIVE").maybeSingle();
   if (!target) return { kind: "not_found" as const };
 
+  if (target.role === "OWNER") {
+    const { count } = await supabase
+      .from("memberships")
+      .select("id", { count: "exact", head: true })
+      .eq("workspace_id", workspaceId)
+      .eq("role", "OWNER")
+      .eq("status", "ACTIVE");
+    if ((count ?? 0) <= 1) return { kind: "last_owner" as const };
+  }
+
   await supabase.from("memberships").update({ status: "LEFT", updated_at: new Date().toISOString() }).eq("id", target.id);
   await supabase.from("project_members").delete().eq("membership_id", target.id);
   await recordActivity(workspaceId, userId, "member.left", "membership", target.id);
@@ -70,6 +120,9 @@ export async function createInvitation(workspaceId: string, actorUserId: string,
   if (!rate.allowed) return { kind: "rate_limited" as const, retryAfterSeconds: rate.retryAfterSeconds };
 
   if (role === "ADMIN" && actor.role !== "OWNER") return { kind: "denied" as const };
+  // Reserve both active members and outstanding invitations so a tenant cannot
+  // exceed its paid seat entitlement through concurrent invitation requests.
+  if (!(await hasSeatCapacity(workspaceId, true))) return { kind: "seat_limit" as const };
   const normalized = email.trim().toLowerCase();
 
   const supabase = createSupabaseAdminClient();
@@ -112,10 +165,11 @@ export async function getMembershipEmailContext(workspaceId: string, membershipI
     .maybeSingle();
 
   if (!data) return null;
+  const row = data as unknown as MembershipEmailRow;
   return {
-    email: (data.profiles as any).email,
-    name: (data.profiles as any).name,
-    workspaceName: (data.workspaces as any).name,
+    email: row.profiles.email,
+    name: row.profiles.name,
+    workspaceName: row.workspaces.name,
   };
 }
 
@@ -131,7 +185,7 @@ export async function listInvitations(workspaceId: string, userId: string) {
   const workspaceName = wsRes.data?.name ?? "Workspace";
   const rows = invRes.data ?? [];
 
-  return rows.map((row: any) => ({
+  return rows.map((row: InvitationRow) => ({
     id: row.id,
     workspaceId: row.workspace_id,
     workspaceName,
@@ -188,6 +242,7 @@ export async function respondToInvitation(token: string, userId: string, email: 
   const supabase = createSupabaseAdminClient();
   const { data: row } = await supabase.from("invitations").select("*").eq("token_hash", tokenHash).maybeSingle();
   if (!row) return { kind: "not_found" as const };
+  if (row.email_normalized !== email.trim().toLowerCase()) return { kind: "wrong_email" as const };
   if (row.status !== "PENDING") return { kind: row.status.toLowerCase() as Lowercase<InvitationStatus> };
 
   if (action === "decline") {
@@ -224,7 +279,7 @@ export async function listProjectAccess(workspaceId: string, projectId: string, 
     .select("project_id, membership_id, access_level, memberships!inner(profiles!inner(name, email))")
     .eq("project_id", projectId);
 
-  return (data ?? []).map((row: any) => ({
+  return (data as unknown as ProjectAccessRow[] | null ?? []).map((row) => ({
     projectId: row.project_id,
     membershipId: row.membership_id,
     accessLevel: row.access_level,

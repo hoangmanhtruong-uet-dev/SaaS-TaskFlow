@@ -8,9 +8,8 @@ import { getMembershipEmailContext, removeMember, updateMember } from "@/db/coll
 
 function response(result: Awaited<ReturnType<typeof updateMember>>) {
   if (result.kind === "ok") return ok(result.membership);
-  if (result.kind === "seat_limit") return fail("SEAT_LIMIT_REACHED", "Workspace đã dùng hết số seat của gói hiện tại.", 402);
-  if (result.kind === "last_owner") return fail("LAST_OWNER", "Không thể thay đổi Owner cuối cùng", 422);
   if (result.kind === "transfer_required") return fail("OWNERSHIP_TRANSFER_REQUIRED", "Dùng quy trình chuyển ownership", 422);
+  if (result.kind === "last_owner") return fail("LAST_OWNER", "Workspace phải còn ít nhất một owner", 409);
   if (result.kind === "denied") return fail("PERMISSION_DENIED", "Bạn không có quyền thay đổi thành viên này", 403);
   return fail("NOT_FOUND", "Membership not found", 404);
 }
@@ -30,8 +29,8 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ wo
     if (result.kind === "ok" && changes.status === "SUSPENDED") {
       const context = await getMembershipEmailContext(workspaceId, membershipId);
       if (context) {
-        const message = membershipSuspendedEmail(context);
-        try { await sendTransactionalEmail({ to: context.email, ...message, idempotencyKey: `membership-suspended-${membershipId}-${result.membership?.updatedAt.toISOString()}` }); }
+        const message = membershipSuspendedEmail({ ...context, name: context.name ?? "Thành viên" });
+        try { await sendTransactionalEmail({ to: context.email, ...message, idempotencyKey: `membership-suspended-${membershipId}-${result.membership?.updated_at ?? ""}` }); }
         catch { /* Authorization stays authoritative if email delivery fails. */ }
       }
     }

@@ -1,0 +1,423 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head><meta charset="utf-8"/><meta content="width=device-width, initial-scale=1.0" name="viewport"/><meta content="web_dashboard" name="shell-type"/><style>@layer base{html,body{margin:0;padding:0;}body{overscroll-behavior:none;}main>:first-child{margin-top:0!important;}main>:last-child{margin-bottom:0!important;}}::-webkit-scrollbar{display:none;}</style><script src="https://cdn.tailwindcss.com"></script><script id="tailwind-config">tailwind.config = {darkMode: "class", theme: {extend: {"colors": {"on-tertiary-fixed": "#131b2e", "primary-fixed": "#6ffbbe", "background": "#0f131c", "outline-variant": "#3c4a42", "on-background": "#dfe2ef", "on-tertiary": "#283044", "secondary-fixed-dim": "#c0c1ff", "error": "#ffb4ab", "tertiary-fixed": "#dae2fd", "error-container": "#93000a", "on-primary-container": "#00422b", "on-tertiary-fixed-variant": "#3f465c", "inverse-on-surface": "#2c303a", "primary": "#4edea3", "surface-variant": "#31353f", "secondary": "#c0c1ff", "on-surface-variant": "#bbcabf", "inverse-surface": "#dfe2ef", "on-error-container": "#ffdad6", "secondary-container": "#3131c0", "surface": "#0f131c", "on-secondary": "#1000a9", "secondary-fixed": "#e1e0ff", "surface-container": "#1c1f29", "tertiary": "#bec6e0", "on-secondary-fixed": "#07006c", "surface-container-lowest": "#0a0e17", "on-primary-fixed-variant": "#005236", "on-error": "#690005", "primary-fixed-dim": "#4edea3", "surface-bright": "#353943", "surface-container-highest": "#31353f", "surface-tint": "#4edea3", "on-secondary-fixed-variant": "#2f2ebe", "on-surface": "#dfe2ef", "on-tertiary-container": "#31394d", "on-primary-fixed": "#002113", "surface-container-low": "#181b25", "on-primary": "#003824", "tertiary-container": "#9ba2bb", "primary-container": "#10b981", "outline": "#86948a", "surface-container-high": "#262a34", "tertiary-fixed-dim": "#bec6e0", "on-secondary-container": "#b0b2ff", "inverse-primary": "#006c49", "surface-dim": "#0f131c"}, "borderRadius": {"DEFAULT": "0.125rem", "lg": "0.25rem", "xl": "0.5rem", "full": "0.75rem"}, "spacing": {"space-xl": "2.5rem", "gutter": "1.5rem", "space-sm": "0.5rem", "space-xs": "0.25rem", "space-md": "1rem", "space-lg": "1.5rem", "margin": "2.0rem"}, "fontFamily": {"headline-xl": ["Inter"], "body-lg": ["Inter"], "headline-lg": ["Inter"], "headline-md": ["Inter"], "headline-sm": ["Inter"], "body-sm": ["Inter"], "label-md": ["Inter"], "label-sm": ["Inter"], "headline-lg-mobile": ["Inter"], "body-md": ["Inter"]}, "fontSize": {"headline-xl": ["36px", {"lineHeight": "44px", "letterSpacing": "-0.02em", "fontWeight": "600"}], "body-lg": ["16px", {"lineHeight": "24px", "fontWeight": "400"}], "headline-lg": ["28px", {"lineHeight": "36px", "letterSpacing": "-0.01em", "fontWeight": "600"}], "headline-md": ["20px", {"lineHeight": "28px", "letterSpacing": "-0.01em", "fontWeight": "600"}], "headline-sm": ["16px", {"lineHeight": "24px", "fontWeight": "600"}], "body-sm": ["13px", {"lineHeight": "18px", "fontWeight": "400"}], "label-md": ["12px", {"lineHeight": "16px", "letterSpacing": "0.01em", "fontWeight": "500"}], "label-sm": ["11px", {"lineHeight": "14px", "letterSpacing": "0.02em", "fontWeight": "500"}], "headline-lg-mobile": ["24px", {"lineHeight": "32px", "letterSpacing": "-0.01em", "fontWeight": "600"}], "headline-md-mobile": ["24px", {"lineHeight": "32px", "letterSpacing": "-0.01em", "fontWeight": "600"}], "body-md": ["14px", {"lineHeight": "20px", "fontWeight": "400"}]}}}};</script><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/></head><body class="bg-surface font-body-md text-on-surface"><aside class="fixed left-0 top-0 h-full w-64 bg-surface-container-low z-50 flex flex-col pt-space-lg pb-space-lg"><div class="px-space-lg mb-space-lg flex items-center gap-space-sm"><img alt="TaskFlow Logo" class="h-8 w-auto object-contain" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDLbA68MwHi1tLdjx6ULiM_9RBCIEVTxPamJxdSw0NhrXjAfcui8ls_j9GhITLw6LFJgAC1nkjljw6Fc0mgIcneRbC8k1H6donOt8Se9duESLPO3j-QF41aTk8iLOgan_OaG-N9VfxNoRX1GjEYac4_EiB-khE90CVgOr2mf6NozxP5kcwVb9ZGQP1ESbWJR84W1XNQn7VK2e4pn0-tMNcyvf1CiGaOS980bZMDCgI"/><span class="text-headline-sm text-primary font-headline-sm">TaskFlow</span></div><nav class="flex-1 px-space-md space-y-space-xs overflow-y-auto" data-active-classes="bg-primary-container text-on-primary-container font-semibold rounded-lg"><a class="flex items-center px-space-md py-space-sm rounded-lg text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-all" data-path="tong-quan" href="#"><span class="material-symbols-outlined mr-space-md text-[20px]">dashboard</span>Tổng quan</a><a class="flex items-center px-space-md py-space-sm rounded-lg text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-all" data-path="tim-kiem" href="#"><span class="material-symbols-outlined mr-space-md text-[20px]">search</span>Tìm kiếm</a><a class="flex items-center px-space-md py-space-sm rounded-lg text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-all" data-path="du-an" href="#"><span class="material-symbols-outlined mr-space-md text-[20px]">folder</span>Dự án</a><a class="flex items-center px-space-md py-space-sm rounded-lg text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-all" data-path="viec-cua-toi" href="#"><span class="material-symbols-outlined mr-space-md text-[20px]">task</span>Việc của tôi</a><a class="flex items-center px-space-md py-space-sm rounded-lg text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-all" data-path="lich" href="#"><span class="material-symbols-outlined mr-space-md text-[20px]">calendar_today</span>Lịch</a><a class="flex items-center px-space-md py-space-sm rounded-lg text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-all" data-path="da-luu-tru" href="#"><span class="material-symbols-outlined mr-space-md text-[20px]">archive</span>Đã lưu trữ</a><a class="flex items-center px-space-md py-space-sm rounded-lg text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-all" data-path="hoat-dong" href="#"><span class="material-symbols-outlined mr-space-md text-[20px]">history</span>Hoạt động</a><a class="flex items-center px-space-md py-space-sm rounded-lg text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-all" data-path="thanh-vien" href="#"><span class="material-symbols-outlined mr-space-md text-[20px]">group</span>Thành viên</a><a class="flex items-center px-space-md py-space-sm rounded-lg text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-all" data-path="cai-dat" href="#"><span class="material-symbols-outlined mr-space-md text-[20px]">settings</span>Cài đặt</a></nav></aside><div class="pl-64"><header class="fixed top-0 left-64 right-0 h-16 bg-surface/80 backdrop-blur-xl z-40 flex items-center justify-between px-space-gutter shadow-[0_1px_8px_rgba(0,0,0,0.04)]"><div class="flex items-center gap-space-md"><span class="text-headline-sm text-on-surface">Dashboard Workspace</span></div><div class="flex items-center gap-space-md"><button class="bg-primary text-on-primary px-space-md py-space-xs rounded-lg flex items-center gap-space-xs font-semibold text-label-md hover:bg-primary-fixed transition-colors"><span class="material-symbols-outlined text-[18px]">add</span>Tạo công việc</button><button class="w-10 h-10 rounded-lg hover:bg-surface-container-high flex items-center justify-center text-on-surface-variant hover:text-on-surface transition-colors"><span class="material-symbols-outlined">notifications</span></button><div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center"><span class="material-symbols-outlined text-on-primary text-[18px]">person</span></div></div></header><main class="relative pt-16 bg-surface min-h-screen px-space-gutter py-space-gutter"><div class="flex flex-col w-full pb-space-xl">
+<!-- Top Hero Bar / Breadcrumb / Header info -->
+<div class="flex flex-col md:flex-row md:items-center justify-between gap-space-md mb-space-xl">
+<div>
+<div class="flex items-center gap-space-xs text-on-surface-variant text-label-md mb-space-xs">
+<span>Dự án</span>
+<span class="material-symbols-outlined text-[14px]">chevron_right</span>
+<span>TaskFlow SaaS</span>
+<span class="material-symbols-outlined text-[14px]">chevron_right</span>
+<span class="text-primary font-semibold">Cài đặt</span>
+</div>
+<h1 class="text-headline-xl text-on-surface font-headline-xl">Thiết lập Dự án</h1>
+<p class="text-body-md text-on-surface-variant mt-space-xs">Quản lý cấu hình, thành viên, quy trình làm việc và các thiết lập nâng cao cho không gian làm việc này.</p>
+</div>
+<div class="flex items-center gap-space-sm">
+<button class="bg-primary text-on-primary px-space-lg py-space-sm rounded-lg font-semibold text-label-md hover:bg-primary-fixed transition-all flex items-center gap-space-xs shadow-sm" onclick="saveChanges()">
+<span class="material-symbols-outlined text-[18px]">save</span>
+        Lưu thay đổi
+      </button>
+</div>
+</div>
+<!-- Main Grid Layout -->
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-space-lg">
+<!-- Left Navigation / Jump Menu -->
+<div class="lg:col-span-3">
+<div class="sticky top-24 bg-surface-container-low p-space-md rounded-xl space-y-space-xs shadow-sm">
+<div class="px-space-sm py-space-xs text-label-sm font-semibold text-on-surface-variant uppercase tracking-wider">Mục cài đặt</div>
+<a class="flex items-center gap-space-md px-space-md py-space-sm rounded-lg bg-primary-container text-on-primary-container font-semibold transition-all" href="#general">
+<span class="material-symbols-outlined text-[18px]" style="font-variation-settings: 'FILL' 1;">tune</span>
+          Cài đặt chung
+        </a>
+<a class="flex items-center gap-space-md px-space-md py-space-sm rounded-lg text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-all" href="#members">
+<span class="material-symbols-outlined text-[18px]">group</span>
+          Thành viên
+        </a>
+<a class="flex items-center gap-space-md px-space-md py-space-sm rounded-lg text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-all" href="#permissions">
+<span class="material-symbols-outlined text-[18px]">lock</span>
+          Quyền hạn
+        </a>
+<a class="flex items-center gap-space-md px-space-md py-space-sm rounded-lg text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-all" href="#workflow">
+<span class="material-symbols-outlined text-[18px]">account_tree</span>
+          Quy trình làm việc
+        </a>
+<a class="flex items-center gap-space-md px-space-md py-space-sm rounded-lg text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-all" href="#notifications">
+<span class="material-symbols-outlined text-[18px]">notifications</span>
+          Thông báo
+        </a>
+<a class="flex items-center gap-space-md px-space-md py-space-sm rounded-lg text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-all" href="#custom-fields">
+<span class="material-symbols-outlined text-[18px]">list_alt</span>
+          Trường tùy chỉnh
+        </a>
+<a class="flex items-center gap-space-md px-space-md py-space-sm rounded-lg text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-all" href="#archive">
+<span class="material-symbols-outlined text-[18px]">archive</span>
+          Lưu trữ dự án
+        </a>
+<div class="pt-space-sm mt-space-sm border-t border-surface-container-high/40">
+<a class="flex items-center gap-space-md px-space-md py-space-sm rounded-lg text-error hover:bg-error-container/20 transition-all font-semibold" href="#danger-zone">
+<span class="material-symbols-outlined text-[18px]">warning</span>
+            Vùng nguy hiểm
+          </a>
+</div>
+</div>
+</div>
+<!-- Right Content Area -->
+<div class="lg:col-span-9 space-y-space-xl">
+<!-- SECTION: GENERAL SETTINGS -->
+<section class="bg-surface-container-low rounded-xl p-space-xl shadow-sm space-y-space-lg" id="general">
+<div class="flex items-center justify-between pb-space-md">
+<div>
+<h2 class="text-headline-md text-on-surface font-headline-md">Cài đặt chung</h2>
+<p class="text-body-sm text-on-surface-variant mt-space-xs">Cập nhật tên dự án, mô tả chi tiết và biểu tượng nhận diện thương hiệu.</p>
+</div>
+<span class="material-symbols-outlined text-primary text-[28px]">tune</span>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-space-lg">
+<div class="space-y-space-xs">
+<label class="block text-label-md font-semibold text-on-surface">Tên dự án</label>
+<input class="w-full bg-surface-container text-on-surface px-space-md py-space-sm rounded-lg focus:outline-none focus:ring-2 focus:ring-primary transition-all text-body-md" type="text" value="TaskFlow SaaS - Core Platform"/>
+<p class="text-label-sm text-on-surface-variant">Tên hiển thị trên toàn bộ hệ thống quản trị.</p>
+</div>
+<div class="space-y-space-xs">
+<label class="block text-label-md font-semibold text-on-surface">Mã định danh (Slug)</label>
+<input class="w-full bg-surface-container text-on-surface px-space-md py-space-sm rounded-lg focus:outline-none focus:ring-2 focus:ring-primary transition-all text-body-md font-mono" type="text" value="taskflow-saas-core"/>
+<p class="text-label-sm text-on-surface-variant">Sử dụng trong URL API và đường dẫn nhanh.</p>
+</div>
+</div>
+<div class="space-y-space-xs">
+<label class="block text-label-md font-semibold text-on-surface">Mô tả dự án</label>
+<textarea class="w-full bg-surface-container text-on-surface p-space-md rounded-lg focus:outline-none focus:ring-2 focus:ring-primary transition-all text-body-md resize-none" rows="3">Nền tảng quản lý công việc và quy trình làm việc tốc độ cao, kết hợp sự chính xác của Linear và tính linh hoạt của Notion.</textarea>
+</div>
+<div class="flex items-center justify-between pt-space-md">
+<div class="flex items-center gap-space-md">
+<div class="w-12 h-12 rounded-xl bg-primary-container flex items-center justify-center text-on-primary-container font-bold text-headline-sm">TF</div>
+<div>
+<div class="text-label-md font-semibold text-on-surface">Biểu tượng dự án</div>
+<div class="text-label-sm text-on-surface-variant">Hỗ trợ PNG, JPG tối đa 2MB</div>
+</div>
+</div>
+<button class="bg-surface-container-high text-on-surface px-space-md py-space-sm rounded-lg text-label-md font-semibold hover:bg-surface-bright transition-all">Tải ảnh lên</button>
+</div>
+</section>
+<!-- SECTION: MEMBERS MANAGEMENT -->
+<section class="bg-surface-container-low rounded-xl p-space-xl shadow-sm space-y-space-lg" id="members">
+<div class="flex items-center justify-between pb-space-md">
+<div>
+<h2 class="text-headline-md text-on-surface font-headline-md">Thành viên tham gia</h2>
+<p class="text-body-sm text-on-surface-variant mt-space-xs">Quản lý quyền truy cập và phân vai trò cho đội ngũ phát triển.</p>
+</div>
+<button class="bg-primary text-on-primary px-space-md py-space-sm rounded-lg text-label-md font-semibold hover:bg-primary-fixed transition-all flex items-center gap-space-xs" onclick="openInviteModal()">
+<span class="material-symbols-outlined text-[18px]">person_add</span>
+            Mời thành viên
+          </button>
+</div>
+<div class="space-y-space-sm">
+<!-- Member Row 1 -->
+<div class="flex items-center justify-between p-space-md rounded-lg bg-surface-container hover:bg-surface-container-high transition-all">
+<div class="flex items-center gap-space-md">
+<div class="w-10 h-10 rounded-full bg-primary-container text-on-primary-container flex items-center justify-center font-bold">NV</div>
+<div>
+<div class="text-headline-sm text-on-surface">Nguyễn Văn A</div>
+<div class="text-body-sm text-on-surface-variant">nguyen.vana@taskflow.io</div>
+</div>
+</div>
+<div class="flex items-center gap-space-md">
+<span class="px-space-sm py-space-xs rounded-full bg-primary/15 text-primary text-label-sm font-semibold">Chủ sở hữu</span>
+<select class="bg-surface-container-low text-on-surface text-label-md px-space-sm py-space-xs rounded-lg focus:outline-none">
+<option selected="">Chủ sở hữu</option>
+<option>Quản trị viên</option>
+<option>Thành viên</option>
+</select>
+</div>
+</div>
+<!-- Member Row 2 -->
+<div class="flex items-center justify-between p-space-md rounded-lg bg-surface-container hover:bg-surface-container-high transition-all">
+<div class="flex items-center gap-space-md">
+<div class="w-10 h-10 rounded-full bg-secondary-container text-on-secondary-container flex items-center justify-center font-bold">TT</div>
+<div>
+<div class="text-headline-sm text-on-surface">Trần Thị B</div>
+<div class="text-body-sm text-on-surface-variant">tran.thib@taskflow.io</div>
+</div>
+</div>
+<div class="flex items-center gap-space-md">
+<span class="px-space-sm py-space-xs rounded-full bg-secondary/15 text-secondary text-label-sm font-semibold">Quản trị viên</span>
+<select class="bg-surface-container-low text-on-surface text-label-md px-space-sm py-space-xs rounded-lg focus:outline-none">
+<option>Chủ sở hữu</option>
+<option selected="">Quản trị viên</option>
+<option>Thành viên</option>
+</select>
+</div>
+</div>
+<!-- Member Row 3 -->
+<div class="flex items-center justify-between p-space-md rounded-lg bg-surface-container hover:bg-surface-container-high transition-all">
+<div class="flex items-center gap-space-md">
+<div class="w-10 h-10 rounded-full bg-surface-container-highest text-on-surface flex items-center justify-center font-bold">LM</div>
+<div>
+<div class="text-headline-sm text-on-surface">Lê Minh C</div>
+<div class="text-body-sm text-on-surface-variant">le.minhc@taskflow.io</div>
+</div>
+</div>
+<div class="flex items-center gap-space-md">
+<span class="px-space-sm py-space-xs rounded-full bg-surface-bright text-on-surface-variant text-label-sm font-semibold">Thành viên</span>
+<select class="bg-surface-container-low text-on-surface text-label-md px-space-sm py-space-xs rounded-lg focus:outline-none">
+<option>Chủ sở hữu</option>
+<option>Quản trị viên</option>
+<option selected="">Thành viên</option>
+</select>
+</div>
+</div>
+</div>
+</section>
+<!-- SECTION: PERMISSIONS -->
+<section class="bg-surface-container-low rounded-xl p-space-xl shadow-sm space-y-space-lg" id="permissions">
+<div class="flex items-center justify-between pb-space-md">
+<div>
+<h2 class="text-headline-md text-on-surface font-headline-md">Phân quyền bảo mật</h2>
+<p class="text-body-sm text-on-surface-variant mt-space-xs">Cấu hình mức độ hiển thị dự án và quyền hạn thao tác dữ liệu.</p>
+</div>
+<span class="material-symbols-outlined text-primary text-[28px]">lock</span>
+</div>
+<div class="space-y-space-md">
+<div class="flex items-center justify-between p-space-md rounded-lg bg-surface-container">
+<div>
+<div class="text-headline-sm text-on-surface">Hiển thị dự án công khai trong tổ chức</div>
+<div class="text-body-sm text-on-surface-variant">Cho phép tất cả thành viên trong Workspace tìm kiếm và xem dự án này.</div>
+</div>
+<label class="relative inline-flex items-center cursor-pointer">
+<input checked="" class="sr-only peer" type="checkbox"/>
+<div class="w-11 h-6 bg-surface-container-high peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
+</label>
+</div>
+<div class="flex items-center justify-between p-space-md rounded-lg bg-surface-container">
+<div>
+<div class="text-headline-sm text-on-surface">Cho phép thành viên mời người ngoài</div>
+<div class="text-body-sm text-on-surface-variant">Cấp quyền cho thành viên gửi lời mời khách (guest) tham gia dự án.</div>
+</div>
+<label class="relative inline-flex items-center cursor-pointer">
+<input class="sr-only peer" type="checkbox"/>
+<div class="w-11 h-6 bg-surface-container-high peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
+</label>
+</div>
+<div class="flex items-center justify-between p-space-md rounded-lg bg-surface-container">
+<div>
+<div class="text-headline-sm text-on-surface">Yêu cầu duyệt trước khi xóa công việc</div>
+<div class="text-body-sm text-on-surface-variant">Tránh việc xóa nhầm các task quan trọng đã hoàn thành hoặc đang thực hiện.</div>
+</div>
+<label class="relative inline-flex items-center cursor-pointer">
+<input checked="" class="sr-only peer" type="checkbox"/>
+<div class="w-11 h-6 bg-surface-container-high peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
+</label>
+</div>
+</div>
+</section>
+<!-- SECTION: WORKFLOW CONFIGURATION -->
+<section class="bg-surface-container-low rounded-xl p-space-xl shadow-sm space-y-space-lg" id="workflow">
+<div class="flex items-center justify-between pb-space-md">
+<div>
+<h2 class="text-headline-md text-on-surface font-headline-md">Quy trình làm việc (Workflow)</h2>
+<p class="text-body-sm text-on-surface-variant mt-space-xs">Tùy chỉnh các trạng thái và quy trình chuyển đổi công việc trên Kanban Board.</p>
+</div>
+<span class="material-symbols-outlined text-primary text-[28px]">account_tree</span>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-4 gap-space-md">
+<div class="bg-surface-container p-space-md rounded-lg space-y-space-sm border-t-4 border-outline">
+<div class="flex items-center justify-between">
+<span class="text-label-md font-semibold text-on-surface">Cần làm (Backlog)</span>
+<span class="material-symbols-outlined text-[16px] text-on-surface-variant cursor-pointer">drag_indicator</span>
+</div>
+<input class="w-full bg-surface-container-low text-on-surface px-space-sm py-space-xs rounded text-body-sm" type="text" value="Backlog"/>
+</div>
+<div class="bg-surface-container p-space-md rounded-lg space-y-space-sm border-t-4 border-secondary">
+<div class="flex items-center justify-between">
+<span class="text-label-md font-semibold text-on-surface">Đang thực hiện</span>
+<span class="material-symbols-outlined text-[16px] text-on-surface-variant cursor-pointer">drag_indicator</span>
+</div>
+<input class="w-full bg-surface-container-low text-on-surface px-space-sm py-space-xs rounded text-body-sm" type="text" value="In Progress"/>
+</div>
+<div class="bg-surface-container p-space-md rounded-lg space-y-space-sm border-t-4 border-tertiary">
+<div class="flex items-center justify-between">
+<span class="text-label-md font-semibold text-on-surface">Đang kiểm duyệt</span>
+<span class="material-symbols-outlined text-[16px] text-on-surface-variant cursor-pointer">drag_indicator</span>
+</div>
+<input class="w-full bg-surface-container-low text-on-surface px-space-sm py-space-xs rounded text-body-sm" type="text" value="In Review"/>
+</div>
+<div class="bg-surface-container p-space-md rounded-lg space-y-space-sm border-t-4 border-primary">
+<div class="flex items-center justify-between">
+<span class="text-label-md font-semibold text-on-surface">Hoàn thành</span>
+<span class="material-symbols-outlined text-[16px] text-on-surface-variant cursor-pointer">drag_indicator</span>
+</div>
+<input class="w-full bg-surface-container-low text-on-surface px-space-sm py-space-xs rounded text-body-sm" type="text" value="Done"/>
+</div>
+</div>
+<div class="pt-space-sm">
+<button class="bg-surface-container text-primary px-space-md py-space-sm rounded-lg text-label-md font-semibold hover:bg-surface-container-high transition-all flex items-center gap-space-xs">
+<span class="material-symbols-outlined text-[18px]">add</span>
+            Thêm trạng thái mới
+          </button>
+</div>
+</section>
+<!-- SECTION: NOTIFICATIONS -->
+<section class="bg-surface-container-low rounded-xl p-space-xl shadow-sm space-y-space-lg" id="notifications">
+<div class="flex items-center justify-between pb-space-md">
+<div>
+<h2 class="text-headline-md text-on-surface font-headline-md">Cấu hình thông báo</h2>
+<p class="text-body-sm text-on-surface-variant mt-space-xs">Tích hợp kênh webhook và thông báo tự động cho dự án.</p>
+</div>
+<span class="material-symbols-outlined text-primary text-[28px]">notifications</span>
+</div>
+<div class="space-y-space-md">
+<div class="flex items-center justify-between p-space-md rounded-lg bg-surface-container">
+<div>
+<div class="text-headline-sm text-on-surface">Thông báo qua Slack Channel</div>
+<div class="text-body-sm text-on-surface-variant">Gửi cập nhật task mới và trạng thái milestone vào #taskflow-alerts.</div>
+</div>
+<label class="relative inline-flex items-center cursor-pointer">
+<input checked="" class="sr-only peer" type="checkbox"/>
+<div class="w-11 h-6 bg-surface-container-high peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
+</label>
+</div>
+<div class="space-y-space-xs pt-space-xs">
+<label class="block text-label-md font-semibold text-on-surface">Webhook URL tích hợp</label>
+<input class="w-full bg-surface-container text-on-surface px-space-md py-space-sm rounded-lg focus:outline-none focus:ring-2 focus:ring-primary transition-all text-body-md font-mono" type="text" value="https://hooks.slack.com/services/T000/B000/XXXXXX"/>
+</div>
+</div>
+</section>
+<!-- SECTION: CUSTOM FIELDS -->
+<section class="bg-surface-container-low rounded-xl p-space-xl shadow-sm space-y-space-lg" id="custom-fields">
+<div class="flex items-center justify-between pb-space-md">
+<div>
+<h2 class="text-headline-md text-on-surface font-headline-md">Trường tùy chỉnh (Custom Fields)</h2>
+<p class="text-body-sm text-on-surface-variant mt-space-xs">Thêm thuộc tính dữ liệu riêng cho các công việc trong dự án này.</p>
+</div>
+<button class="bg-surface-container-high text-on-surface px-space-md py-space-sm rounded-lg text-label-md font-semibold hover:bg-surface-bright transition-all flex items-center gap-space-xs">
+<span class="material-symbols-outlined text-[18px]">add</span>
+            Thêm trường
+          </button>
+</div>
+<div class="space-y-space-sm">
+<div class="flex items-center justify-between p-space-md rounded-lg bg-surface-container">
+<div class="flex items-center gap-space-md">
+<span class="material-symbols-outlined text-primary">tag</span>
+<div>
+<div class="text-headline-sm text-on-surface">Độ ưu tiên khách hàng</div>
+<div class="text-body-sm text-on-surface-variant">Kiểu dữ liệu: Dropdown (P0, P1, P2, P3)</div>
+</div>
+</div>
+<div class="flex items-center gap-space-sm">
+<button class="text-on-surface-variant hover:text-on-surface px-space-sm py-space-xs rounded text-label-md">Sửa</button>
+<button class="text-error hover:text-error/80 px-space-sm py-space-xs rounded text-label-md">Xóa</button>
+</div>
+</div>
+<div class="flex items-center justify-between p-space-md rounded-lg bg-surface-container">
+<div class="flex items-center gap-space-md">
+<span class="material-symbols-outlined text-primary">schedule</span>
+<div>
+<div class="text-headline-sm text-on-surface">Thời gian dự kiến (Story Points)</div>
+<div class="text-body-sm text-on-surface-variant">Kiểu dữ liệu: Số nguyên (1, 2, 3, 5, 8, 13)</div>
+</div>
+</div>
+<div class="flex items-center gap-space-sm">
+<button class="text-on-surface-variant hover:text-on-surface px-space-sm py-space-xs rounded text-label-md">Sửa</button>
+<button class="text-error hover:text-error/80 px-space-sm py-space-xs rounded text-label-md">Xóa</button>
+</div>
+</div>
+</div>
+</section>
+<!-- SECTION: ARCHIVE PROJECT -->
+<section class="bg-surface-container-low rounded-xl p-space-xl shadow-sm space-y-space-lg" id="archive">
+<div class="flex items-center justify-between pb-space-md">
+<div>
+<h2 class="text-headline-md text-on-surface font-headline-md">Lưu trữ dự án</h2>
+<p class="text-body-sm text-on-surface-variant mt-space-xs">Tạm khóa hoạt động dự án, chuyển toàn bộ công việc sang trạng thái chỉ đọc.</p>
+</div>
+<span class="material-symbols-outlined text-tertiary text-[28px]">archive</span>
+</div>
+<div class="flex items-center justify-between p-space-md rounded-lg bg-surface-container">
+<div>
+<div class="text-headline-sm text-on-surface">Lưu trữ không gian làm việc này</div>
+<div class="text-body-sm text-on-surface-variant">Bạn có thể khôi phục lại dự án bất cứ lúc nào từ mục Đã lưu trữ.</div>
+</div>
+<button class="bg-surface-container-high text-on-surface px-space-md py-space-sm rounded-lg text-label-md font-semibold hover:bg-surface-bright transition-all">Lưu trữ dự án</button>
+</div>
+</section>
+<!-- SECTION: DANGER ZONE -->
+<section class="bg-surface-container-low rounded-xl p-space-xl shadow-sm space-y-space-lg border border-error/20" id="danger-zone">
+<div class="flex items-center justify-between pb-space-md">
+<div>
+<h2 class="text-headline-md text-error font-headline-md">Vùng nguy hiểm</h2>
+<p class="text-body-sm text-on-surface-variant mt-space-xs">Hành động này không thể hoàn tác. Vui lòng cân nhắc kỹ trước khi thực hiện.</p>
+</div>
+<span class="material-symbols-outlined text-error text-[28px]">warning</span>
+</div>
+<div class="flex items-center justify-between p-space-md rounded-lg bg-error-container/10 border border-error/30">
+<div>
+<div class="text-headline-sm text-on-surface">Xóa vĩnh viễn dự án này</div>
+<div class="text-body-sm text-on-surface-variant">Xóa toàn bộ công việc, tệp đính kèm, bảng Kanban và dữ liệu liên quan.</div>
+</div>
+<button class="bg-error text-on-error px-space-md py-space-sm rounded-lg text-label-md font-semibold hover:opacity-90 transition-all shadow-sm" onclick="openDeleteModal()">Xóa dự án</button>
+</div>
+</section>
+</div>
+</div>
+<!-- Delete Confirmation Modal (Hidden by default) -->
+<div class="fixed inset-0 z-50 flex items-center justify-center bg-surface/80 backdrop-blur-sm hidden" id="delete-modal">
+<div class="bg-surface-container-low border border-error/30 p-space-xl rounded-xl max-w-md w-full mx-space-md shadow-2xl space-y-space-lg animate-in fade-in zoom-in-95 duration-150">
+<div class="flex items-center gap-space-md text-error">
+<span class="material-symbols-outlined text-[32px]">warning</span>
+<h3 class="text-headline-md font-headline-md">Xác nhận xóa dự án</h3>
+</div>
+<p class="text-body-md text-on-surface-variant">
+        Hành động này sẽ xóa vĩnh viễn <strong class="text-on-surface font-semibold">TaskFlow SaaS - Core Platform</strong> và toàn bộ dữ liệu bên trong. Nhập tên dự án để xác nhận:
+      </p>
+<div class="space-y-space-xs">
+<input class="w-full bg-surface-container text-on-surface px-space-md py-space-sm rounded-lg focus:outline-none focus:ring-2 focus:ring-error transition-all text-body-md" id="confirm-input" placeholder="Nhập tên dự án để xác nhận..." type="text"/>
+</div>
+<div class="flex items-center justify-end gap-space-sm pt-space-md">
+<button class="bg-surface-container text-on-surface px-space-md py-space-sm rounded-lg text-label-md font-semibold hover:bg-surface-container-high transition-all" onclick="closeDeleteModal()">Hủy bỏ</button>
+<button class="bg-error/40 text-on-error/60 cursor-not-allowed px-space-md py-space-sm rounded-lg text-label-md font-semibold transition-all" disabled="" id="confirm-delete-btn">Xóa vĩnh viễn</button>
+</div>
+</div>
+</div>
+<!-- Script for interactivity -->
+<script>
+    function openDeleteModal() {
+      document.getElementById('delete-modal').classList.remove('hidden');
+    }
+    function closeDeleteModal() {
+      document.getElementById('delete-modal').classList.add('hidden');
+    }
+    const confirmInput = document.getElementById('confirm-input');
+    const confirmDeleteBtn = document.getElementById('confirm-delete-btn');
+    
+    if(confirmInput) {
+      confirmInput.addEventListener('input', (e) => {
+        if(e.target.value === 'TaskFlow SaaS - Core Platform') {
+          confirmDeleteBtn.disabled = false;
+          confirmDeleteBtn.classList.remove('bg-error/40', 'text-on-error/60', 'cursor-not-allowed');
+          confirmDeleteBtn.classList.add('bg-error', 'text-on-error', 'hover:opacity-90', 'cursor-pointer');
+        } else {
+          confirmDeleteBtn.disabled = true;
+          confirmDeleteBtn.classList.add('bg-error/40', 'text-on-error/60', 'cursor-not-allowed');
+          confirmDeleteBtn.classList.remove('bg-error', 'text-on-error', 'hover:opacity-90', 'cursor-pointer');
+        }
+      });
+    }
+
+    function saveChanges() {
+      const btn = event.currentTarget;
+      const originalText = btn.innerHTML;
+      btn.innerHTML = '<span class="material-symbols-outlined text-[18px] animate-spin">progress_activity</span> Đang lưu...';
+      setTimeout(() => {
+        btn.innerHTML = '<span class="material-symbols-outlined text-[18px]">check</span> Đã lưu thành công';
+        setTimeout(() => {
+          btn.innerHTML = originalText;
+        }, 2000);
+      }, 800);
+    }
+  </script>
+</div></main></div></body></html>

@@ -1,3 +1,4 @@
+ 
 "use client";
 /* eslint-disable jsx-a11y/label-has-associated-control -- legacy Stitch atlas uses wrapped controls with visible dynamic labels */
 
@@ -13,7 +14,7 @@ import {
   UserCog, UserMinus, UserPlus, Users, WifiOff, X,
 } from "lucide-react";
 import type { ScreenDefinition } from "../lib/screens";
-import { legacyProjects as projects, legacyTasks as tasks } from "../services/mock-data";
+import { legacyProjects as projects, legacyTasks as tasks } from "../services/fallback-data";
 
 type Tone = "green" | "red" | "amber" | "blue" | "gray";
 

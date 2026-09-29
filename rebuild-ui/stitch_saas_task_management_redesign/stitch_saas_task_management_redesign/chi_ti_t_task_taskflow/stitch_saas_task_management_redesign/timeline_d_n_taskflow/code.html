@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head><meta charset="utf-8"/><meta content="width=device-width, initial-scale=1.0" name="viewport"/><meta content="web_dashboard" name="shell-type"/><style>@layer base{html,body{margin:0;padding:0;}body{overscroll-behavior:none;}main>:first-child{margin-top:0!important;}main>:last-child{margin-bottom:0!important;}}::-webkit-scrollbar{display:none;}</style><script src="https://cdn.tailwindcss.com"></script><script id="tailwind-config">tailwind.config = {darkMode: "class", theme: {extend: {"colors": {"on-tertiary-fixed": "#131b2e", "primary-fixed": "#6ffbbe", "background": "#0f131c", "outline-variant": "#3c4a42", "on-background": "#dfe2ef", "on-tertiary": "#283044", "secondary-fixed-dim": "#c0c1ff", "error": "#ffb4ab", "tertiary-fixed": "#dae2fd", "error-container": "#93000a", "on-primary-container": "#00422b", "on-tertiary-fixed-variant": "#3f465c", "inverse-on-surface": "#2c303a", "primary": "#4edea3", "surface-variant": "#31353f", "secondary": "#c0c1ff", "on-surface-variant": "#bbcabf", "inverse-surface": "#dfe2ef", "on-error-container": "#ffdad6", "secondary-container": "#3131c0", "surface": "#0f131c", "on-secondary": "#1000a9", "secondary-fixed": "#e1e0ff", "surface-container": "#1c1f29", "tertiary": "#bec6e0", "on-secondary-fixed": "#07006c", "surface-container-lowest": "#0a0e17", "on-primary-fixed-variant": "#005236", "on-error": "#690005", "primary-fixed-dim": "#4edea3", "surface-bright": "#353943", "surface-container-highest": "#31353f", "surface-tint": "#4edea3", "on-secondary-fixed-variant": "#2f2ebe", "on-surface": "#dfe2ef", "on-tertiary-container": "#31394d", "on-primary-fixed": "#002113", "surface-container-low": "#181b25", "on-primary": "#003824", "tertiary-container": "#9ba2bb", "primary-container": "#10b981", "outline": "#86948a", "surface-container-high": "#262a34", "tertiary-fixed-dim": "#bec6e0", "on-secondary-container": "#b0b2ff", "inverse-primary": "#006c49", "surface-dim": "#0f131c"}, "borderRadius": {"DEFAULT": "0.125rem", "lg": "0.25rem", "xl": "0.5rem", "full": "0.75rem"}, "spacing": {"space-xl": "2.5rem", "gutter": "1.5rem", "space-sm": "0.5rem", "space-xs": "0.25rem", "space-md": "1rem", "space-lg": "1.5rem", "margin": "2.0rem"}, "fontFamily": {"headline-xl": ["Inter"], "body-lg": ["Inter"], "headline-lg": ["Inter"], "headline-md": ["Inter"], "headline-sm": ["Inter"], "body-sm": ["Inter"], "label-md": ["Inter"], "label-sm": ["Inter"], "headline-lg-mobile": ["Inter"], "body-md": ["Inter"]}, "fontSize": {"headline-xl": ["36px", {"lineHeight": "44px", "letterSpacing": "-0.02em", "fontWeight": "600"}], "body-lg": ["16px", {"lineHeight": "24px", "fontWeight": "400"}], "headline-lg": ["28px", {"lineHeight": "36px", "letterSpacing": "-0.01em", "fontWeight": "600"}], "headline-md": ["20px", {"lineHeight": "28px", "letterSpacing": "-0.01em", "fontWeight": "600"}], "headline-sm": ["16px", {"lineHeight": "24px", "fontWeight": "600"}], "body-sm": ["13px", {"lineHeight": "18px", "fontWeight": "400"}], "label-md": ["12px", {"lineHeight": "16px", "letterSpacing": "0.01em", "fontWeight": "500"}], "label-sm": ["11px", {"lineHeight": "14px", "letterSpacing": "0.02em", "fontWeight": "500"}], "headline-lg-mobile": ["24px", {"lineHeight": "32px", "letterSpacing": "-0.01em", "fontWeight": "600"}], "headline-md-mobile": ["24px", {"lineHeight": "32px", "letterSpacing": "-0.01em", "fontWeight": "600"}], "body-md": ["14px", {"lineHeight": "20px", "fontWeight": "400"}]}}}};</script><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/></head><body class="bg-surface font-body-md text-on-surface"><aside class="fixed left-0 top-0 h-full w-64 bg-surface-container-low z-50 flex flex-col pt-space-lg pb-space-lg"><div class="px-space-lg mb-space-lg flex items-center gap-space-sm"><img alt="TaskFlow Logo" class="h-8 w-auto object-contain" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDLbA68MwHi1tLdjx6ULiM_9RBCIEVTxPamJxdSw0NhrXjAfcui8ls_j9GhITLw6LFJgAC1nkjljw6Fc0mgIcneRbC8k1H6donOt8Se9duESLPO3j-QF41aTk8iLOgan_OaG-N9VfxNoRX1GjEYac4_EiB-khE90CVgOr2mf6NozxP5kcwVb9ZGQP1ESbWJR84W1XNQn7VK2e4pn0-tMNcyvf1CiGaOS980bZMDCgI"/><span class="text-headline-sm text-primary font-headline-sm">TaskFlow</span></div><nav class="flex-1 px-space-md space-y-space-xs overflow-y-auto" data-active-classes="bg-primary-container text-on-primary-container font-semibold rounded-lg"><a class="flex items-center px-space-md py-space-sm rounded-lg text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-all" data-path="tong-quan" href="#"><span class="material-symbols-outlined mr-space-md text-[20px]">dashboard</span>Tổng quan</a><a class="flex items-center px-space-md py-space-sm rounded-lg text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-all" data-path="tim-kiem" href="#"><span class="material-symbols-outlined mr-space-md text-[20px]">search</span>Tìm kiếm</a><a class="flex items-center px-space-md py-space-sm rounded-lg text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-all" data-path="du-an" href="#"><span class="material-symbols-outlined mr-space-md text-[20px]">folder</span>Dự án</a><a class="flex items-center px-space-md py-space-sm rounded-lg text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-all" data-path="viec-cua-toi" href="#"><span class="material-symbols-outlined mr-space-md text-[20px]">task</span>Việc của tôi</a><a class="flex items-center px-space-md py-space-sm rounded-lg text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-all" data-path="lich" href="#"><span class="material-symbols-outlined mr-space-md text-[20px]">calendar_today</span>Lịch</a><a class="flex items-center px-space-md py-space-sm rounded-lg text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-all" data-path="da-luu-tru" href="#"><span class="material-symbols-outlined mr-space-md text-[20px]">archive</span>Đã lưu trữ</a><a class="flex items-center px-space-md py-space-sm rounded-lg text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-all" data-path="hoat-dong" href="#"><span class="material-symbols-outlined mr-space-md text-[20px]">history</span>Hoạt động</a><a class="flex items-center px-space-md py-space-sm rounded-lg text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-all" data-path="thanh-vien" href="#"><span class="material-symbols-outlined mr-space-md text-[20px]">group</span>Thành viên</a><a class="flex items-center px-space-md py-space-sm rounded-lg text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-all" data-path="cai-dat" href="#"><span class="material-symbols-outlined mr-space-md text-[20px]">settings</span>Cài đặt</a></nav></aside><div class="pl-64"><header class="fixed top-0 left-64 right-0 h-16 bg-surface/80 backdrop-blur-xl z-40 flex items-center justify-between px-space-gutter shadow-[0_1px_8px_rgba(0,0,0,0.04)]"><div class="flex items-center gap-space-md"><span class="text-headline-sm text-on-surface">Dashboard Workspace</span></div><div class="flex items-center gap-space-md"><button class="bg-primary text-on-primary px-space-md py-space-xs rounded-lg flex items-center gap-space-xs font-semibold text-label-md hover:bg-primary-fixed transition-colors"><span class="material-symbols-outlined text-[18px]">add</span>Tạo công việc</button><button class="w-10 h-10 rounded-lg hover:bg-surface-container-high flex items-center justify-center text-on-surface-variant hover:text-on-surface transition-colors"><span class="material-symbols-outlined">notifications</span></button><div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center"><span class="material-symbols-outlined text-on-primary text-[18px]">person</span></div></div></header><main class="relative pt-16 bg-surface min-h-screen px-space-gutter py-space-gutter"><div class="flex flex-col w-full">
+<!-- Top Subheader / Action Bar -->
+<div class="flex flex-col md:flex-row md:items-center justify-between gap-space-md mb-space-lg bg-surface-container-low p-space-lg rounded-xl">
+<div>
+<div class="flex items-center gap-space-sm mb-space-xs">
+<span class="text-label-sm text-primary uppercase font-label-sm tracking-wider">PROJECT TIMELINE</span>
+<span class="text-on-surface-variant">•</span>
+<span class="text-label-sm text-on-surface-variant">Q1 2025</span>
+</div>
+<h1 class="text-headline-lg text-on-surface font-headline-lg">Core Refactor &amp; API Gateway</h1>
+</div>
+<div class="flex flex-wrap items-center gap-space-sm">
+<!-- View Switcher -->
+<div class="flex items-center bg-surface-container p-1 rounded-lg">
+<button class="px-space-md py-space-xs text-label-md text-on-surface-variant hover:text-on-surface rounded transition-all">Board</button>
+<button class="px-space-md py-space-xs text-label-md text-on-surface-variant hover:text-on-surface rounded transition-all">List</button>
+<button class="px-space-md py-space-xs text-label-md bg-surface-container-high text-primary font-semibold rounded shadow-sm">Timeline</button>
+<button class="px-space-md py-space-xs text-label-md text-on-surface-variant hover:text-on-surface rounded transition-all">Files</button>
+<button class="px-space-md py-space-xs text-label-md text-on-surface-variant hover:text-on-surface rounded transition-all">Settings</button>
+</div>
+<!-- Add Task Button -->
+<button class="bg-primary-container text-on-primary-container px-space-md py-space-sm rounded-lg flex items-center gap-space-xs font-semibold text-label-md hover:bg-primary-fixed transition-colors shadow-sm">
+<span class="material-symbols-outlined text-[18px]">add</span>
+        Thêm công việc
+      </button>
+</div>
+</div>
+<!-- Timeline Controls & Filters -->
+<div class="flex flex-col md:flex-row md:items-center justify-between gap-space-md mb-space-lg bg-surface-container-low p-space-md rounded-xl">
+<div class="flex items-center gap-space-md overflow-x-auto">
+<div class="flex items-center bg-surface-container p-1 rounded-lg">
+<button class="px-space-md py-space-xs text-label-md text-on-surface-variant hover:text-on-surface transition-all">Day</button>
+<button class="px-space-md py-space-xs text-label-md bg-surface-container-high text-primary font-semibold rounded shadow-sm">Week</button>
+<button class="px-space-md py-space-xs text-label-md text-on-surface-variant hover:text-on-surface transition-all">Month</button>
+<button class="px-space-md py-space-xs text-label-md text-on-surface-variant hover:text-on-surface transition-all">Quarter</button>
+</div>
+<div class="h-6 w-[1px] bg-surface-container-high hidden md:block"></div>
+<div class="flex items-center gap-space-sm">
+<button class="flex items-center gap-space-xs px-space-md py-space-xs bg-surface-container text-on-surface-variant hover:text-on-surface rounded-lg text-label-md transition-all">
+<span class="material-symbols-outlined text-[16px]">filter_list</span>
+          Lọc: Tất cả
+        </button>
+<button class="flex items-center gap-space-xs px-space-md py-space-xs bg-surface-container text-on-surface-variant hover:text-on-surface rounded-lg text-label-md transition-all">
+<span class="material-symbols-outlined text-[16px]">person</span>
+          Người thực hiện
+        </button>
+</div>
+</div>
+<div class="flex items-center gap-space-md text-label-sm text-on-surface-variant">
+<div class="flex items-center gap-space-xs">
+<div class="w-3 h-3 rounded bg-primary-container"></div>
+<span>Hoàn thành</span>
+</div>
+<div class="flex items-center gap-space-xs">
+<div class="w-3 h-3 rounded bg-secondary-container"></div>
+<span>Đang thực hiện</span>
+</div>
+<div class="flex items-center gap-space-xs">
+<div class="w-3 h-3 rounded bg-surface-container-high"></div>
+<span>Chưa bắt đầu</span>
+</div>
+</div>
+</div>
+<!-- Gantt Container -->
+<div class="grid grid-cols-1 lg:grid-cols-12 bg-surface-container-low rounded-xl overflow-hidden shadow-xl mb-space-xl">
+<!-- Left Pane: Task List (4 cols) -->
+<div class="lg:col-span-4 bg-surface-container-low flex flex-col">
+<!-- Header -->
+<div class="h-16 px-space-lg flex items-center justify-between bg-surface-container-high text-headline-sm text-on-surface">
+<span>Cấu trúc công việc</span>
+<span class="text-label-sm text-on-surface-variant">12 Tasks</span>
+</div>
+<!-- Task Tree Content -->
+<div class="flex flex-col divide-y divide-surface-container-high/20">
+<!-- Phase 1 -->
+<div class="bg-surface-container/50 px-space-lg py-space-md flex items-center justify-between">
+<div class="flex items-center gap-space-sm">
+<span class="material-symbols-outlined text-primary text-[18px]">expand_more</span>
+<span class="font-semibold text-on-surface text-body-md">Phase 1: Architecture &amp; Auth</span>
+</div>
+<span class="text-label-sm px-space-sm py-0.5 rounded bg-primary-container/20 text-primary">100%</span>
+</div>
+<!-- Phase 1 Tasks -->
+<div class="pl-space-xl pr-space-lg py-space-sm flex items-center justify-between hover:bg-surface-container/30 transition-colors">
+<div class="flex items-center gap-space-sm">
+<span class="material-symbols-outlined text-primary-container text-[16px]">check_circle</span>
+<span class="text-body-sm text-on-surface">System Architecture Design</span>
+</div>
+<div class="w-6 h-6 rounded-full bg-surface-bright flex items-center justify-center text-[10px] text-on-surface font-semibold" title="Assigned to Alex">A</div>
+</div>
+<div class="pl-space-xl pr-space-lg py-space-sm flex items-center justify-between hover:bg-surface-container/30 transition-colors">
+<div class="flex items-center gap-space-sm">
+<span class="material-symbols-outlined text-primary-container text-[16px]">check_circle</span>
+<span class="text-body-sm text-on-surface">OAuth2 &amp; JWT Setup</span>
+</div>
+<div class="w-6 h-6 rounded-full bg-secondary-container flex items-center justify-center text-[10px] text-on-secondary-container font-semibold" title="Assigned to Sarah">S</div>
+</div>
+<div class="pl-space-xl pr-space-lg py-space-sm flex items-center justify-between hover:bg-surface-container/30 transition-colors">
+<div class="flex items-center gap-space-sm">
+<span class="material-symbols-outlined text-primary-container text-[16px]">check_circle</span>
+<span class="text-body-sm text-on-surface">Security Audit &amp; Review</span>
+</div>
+<div class="w-6 h-6 rounded-full bg-tertiary-container flex items-center justify-center text-[10px] text-on-tertiary-container font-semibold" title="Assigned to Mike">M</div>
+</div>
+<!-- Phase 2 -->
+<div class="bg-surface-container/50 px-space-lg py-space-md flex items-center justify-between mt-space-xs">
+<div class="flex items-center gap-space-sm">
+<span class="material-symbols-outlined text-primary text-[18px]">expand_more</span>
+<span class="font-semibold text-on-surface text-body-md">Phase 2: Core Migration</span>
+</div>
+<span class="text-label-sm px-space-sm py-0.5 rounded bg-secondary-container/20 text-secondary">65%</span>
+</div>
+<!-- Phase 2 Tasks -->
+<div class="pl-space-xl pr-space-lg py-space-sm flex items-center justify-between hover:bg-surface-container/30 transition-colors">
+<div class="flex items-center gap-space-sm">
+<span class="material-symbols-outlined text-secondary text-[16px]">radio_button_unchecked</span>
+<span class="text-body-sm text-on-surface">Database Schema Upgrade</span>
+</div>
+<div class="w-6 h-6 rounded-full bg-primary flex items-center justify-center text-[10px] text-on-primary font-semibold" title="Assigned to David">D</div>
+</div>
+<div class="pl-space-xl pr-space-lg py-space-sm flex items-center justify-between hover:bg-surface-container/30 transition-colors">
+<div class="flex items-center gap-space-sm">
+<span class="material-symbols-outlined text-secondary text-[16px]">radio_button_unchecked</span>
+<span class="text-body-sm text-on-surface">API Gateway Routing</span>
+</div>
+<div class="w-6 h-6 rounded-full bg-secondary-container flex items-center justify-center text-[10px] text-on-secondary-container font-semibold" title="Assigned to Sarah">S</div>
+</div>
+<div class="pl-space-xl pr-space-lg py-space-sm flex items-center justify-between hover:bg-surface-container/30 transition-colors">
+<div class="flex items-center gap-space-sm">
+<span class="material-symbols-outlined text-secondary text-[16px]">radio_button_unchecked</span>
+<span class="text-body-sm text-on-surface">Legacy Endpoint Deprecation</span>
+</div>
+<div class="w-6 h-6 rounded-full bg-surface-bright flex items-center justify-center text-[10px] text-on-surface font-semibold" title="Assigned to Alex">A</div>
+</div>
+<div class="pl-space-xl pr-space-lg py-space-sm flex items-center justify-between hover:bg-surface-container/30 transition-colors">
+<div class="flex items-center gap-space-sm">
+<span class="material-symbols-outlined text-secondary text-[16px]">radio_button_unchecked</span>
+<span class="text-body-sm text-on-surface">Data Sync Worker Implementation</span>
+</div>
+<div class="w-6 h-6 rounded-full bg-tertiary-container flex items-center justify-center text-[10px] text-on-tertiary-container font-semibold" title="Assigned to Mike">M</div>
+</div>
+<!-- Phase 3 -->
+<div class="bg-surface-container/50 px-space-lg py-space-md flex items-center justify-between mt-space-xs">
+<div class="flex items-center gap-space-sm">
+<span class="material-symbols-outlined text-primary text-[18px]">expand_more</span>
+<span class="font-semibold text-on-surface text-body-md">Phase 3: Testing &amp; Deployment</span>
+</div>
+<span class="text-label-sm px-space-sm py-0.5 rounded bg-surface-container-high text-on-surface-variant">0%</span>
+</div>
+<!-- Phase 3 Tasks -->
+<div class="pl-space-xl pr-space-lg py-space-sm flex items-center justify-between hover:bg-surface-container/30 transition-colors">
+<div class="flex items-center gap-space-sm">
+<span class="material-symbols-outlined text-outline text-[16px]">radio_button_unchecked</span>
+<span class="text-body-sm text-on-surface-variant">Integration &amp; Load Testing</span>
+</div>
+<div class="w-6 h-6 rounded-full bg-secondary-container flex items-center justify-center text-[10px] text-on-secondary-container font-semibold" title="Assigned to Sarah">S</div>
+</div>
+<div class="pl-space-xl pr-space-lg py-space-sm flex items-center justify-between hover:bg-surface-container/30 transition-colors">
+<div class="flex items-center gap-space-sm">
+<span class="material-symbols-outlined text-outline text-[16px]">radio_button_unchecked</span>
+<span class="text-body-sm text-on-surface-variant">Staging Environment Validation</span>
+</div>
+<div class="w-6 h-6 rounded-full bg-surface-bright flex items-center justify-center text-[10px] text-on-surface font-semibold" title="Assigned to Alex">A</div>
+</div>
+<div class="pl-space-xl pr-space-lg py-space-sm flex items-center justify-between hover:bg-surface-container/30 transition-colors">
+<div class="flex items-center gap-space-sm">
+<span class="material-symbols-outlined text-outline text-[16px]">radio_button_unchecked</span>
+<span class="text-body-sm text-on-surface-variant">Production Rollout &amp; Monitor</span>
+</div>
+<div class="w-6 h-6 rounded-full bg-primary flex items-center justify-center text-[10px] text-on-primary font-semibold" title="Assigned to David">D</div>
+</div>
+</div>
+</div>
+<!-- Right Pane: Gantt Chart Grid (8 cols) -->
+<div class="lg:col-span-8 bg-surface-container overflow-x-auto relative flex flex-col">
+<!-- Date Headers (Months & Weeks) -->
+<div class="min-w-[800px] bg-surface-container-high border-b border-surface-container-highest">
+<div class="grid grid-cols-12 h-8 px-space-md items-center text-label-sm font-semibold text-on-surface-variant text-center border-b border-surface-container/50">
+<div class="col-span-4 text-left pl-space-sm">THÁNG 1, 2025</div>
+<div class="col-span-4 text-left">THÁNG 2, 2025</div>
+<div class="col-span-4 text-left">THÁNG 3, 2025</div>
+</div>
+<div class="grid grid-cols-12 h-8 px-space-md items-center text-[10px] text-on-surface-variant text-center">
+<div class="col-span-1">W1</div>
+<div class="col-span-1">W2</div>
+<div class="col-span-1">W3</div>
+<div class="col-span-1">W4</div>
+<div class="col-span-1">W5</div>
+<div class="col-span-1">W6</div>
+<div class="col-span-1">W7</div>
+<div class="col-span-1">W8</div>
+<div class="col-span-1">W9</div>
+<div class="col-span-1">W10</div>
+<div class="col-span-1">W11</div>
+<div class="col-span-1">W12</div>
+</div>
+</div>
+<!-- Gantt Timeline Body & Grid Lines -->
+<div class="min-w-[800px] relative flex flex-col justify-around py-space-sm flex-1">
+<!-- Today Indicator Marker (Vertical Line) -->
+<div class="absolute top-0 bottom-0 left-[42%] w-[2px] bg-primary z-20 pointer-events-none">
+<div class="absolute -top-1 -left-[18px] bg-primary text-on-primary text-[10px] px-1.5 py-0.5 rounded font-semibold shadow-sm">Hôm nay</div>
+</div>
+<!-- Background grid vertical stripes -->
+<div class="absolute inset-0 grid grid-cols-12 pointer-events-none opacity-20">
+<div class="border-r border-outline-variant"></div>
+<div class="border-r border-outline-variant"></div>
+<div class="border-r border-outline-variant"></div>
+<div class="border-r border-outline-variant"></div>
+<div class="border-r border-outline-variant"></div>
+<div class="border-r border-outline-variant"></div>
+<div class="border-r border-outline-variant"></div>
+<div class="border-r border-outline-variant"></div>
+<div class="border-r border-outline-variant"></div>
+<div class="border-r border-outline-variant"></div>
+<div class="border-r border-outline-variant"></div>
+<div class="border-r border-outline-variant"></div>
+</div>
+<!-- Timeline Rows corresponding to tasks -->
+<div class="space-y-[14px] relative z-10 py-space-sm">
+<!-- Phase 1 Header Row Spacer -->
+<div class="h-9"></div>
+<!-- Task 1 Bar -->
+<div class="h-8 px-2 flex items-center relative group">
+<div class="absolute left-[2%] w-[18%] h-6 bg-primary-container/80 rounded-lg flex items-center px-space-sm shadow-sm hover:bg-primary-container transition-all cursor-pointer">
+<div class="absolute inset-0 bg-primary rounded-lg" style="width: 100%;"></div>
+<span class="relative z-10 text-[11px] text-on-primary font-semibold truncate">Architecture Design</span>
+</div>
+</div>
+<!-- Task 2 Bar -->
+<div class="h-8 px-2 flex items-center relative group">
+<div class="absolute left-[15%] w-[22%] h-6 bg-primary-container/80 rounded-lg flex items-center px-space-sm shadow-sm hover:bg-primary-container transition-all cursor-pointer">
+<div class="absolute inset-0 bg-primary rounded-lg" style="width: 100%;"></div>
+<span class="relative z-10 text-[11px] text-on-primary font-semibold truncate">OAuth2 &amp; JWT Setup</span>
+</div>
+</div>
+<!-- Task 3 Bar -->
+<div class="h-8 px-2 flex items-center relative group">
+<div class="absolute left-[30%] w-[15%] h-6 bg-primary-container/80 rounded-lg flex items-center px-space-sm shadow-sm hover:bg-primary-container transition-all cursor-pointer">
+<div class="absolute inset-0 bg-primary rounded-lg" style="width: 100%;"></div>
+<span class="relative z-10 text-[11px] text-on-primary font-semibold truncate">Security Audit</span>
+</div>
+</div>
+<!-- Phase 2 Header Row Spacer -->
+<div class="h-9"></div>
+<!-- Task 4 Bar -->
+<div class="h-8 px-2 flex items-center relative group">
+<div class="absolute left-[40%] w-[25%] h-6 bg-surface-container-high rounded-lg flex items-center px-space-sm shadow-sm hover:bg-surface-bright transition-all cursor-pointer">
+<div class="absolute inset-0 bg-secondary-container rounded-lg" style="width: 75%;"></div>
+<span class="relative z-10 text-[11px] text-on-secondary-container font-semibold truncate">Database Schema Upgrade</span>
+</div>
+</div>
+<!-- Task 5 Bar -->
+<div class="h-8 px-2 flex items-center relative group">
+<div class="absolute left-[50%] w-[22%] h-6 bg-surface-container-high rounded-lg flex items-center px-space-sm shadow-sm hover:bg-surface-bright transition-all cursor-pointer">
+<div class="absolute inset-0 bg-secondary-container rounded-lg" style="width: 50%;"></div>
+<span class="relative z-10 text-[11px] text-on-secondary-container font-semibold truncate">API Gateway Routing</span>
+</div>
+</div>
+<!-- Task 6 Bar -->
+<div class="h-8 px-2 flex items-center relative group">
+<div class="absolute left-[60%] w-[20%] h-6 bg-surface-container-high rounded-lg flex items-center px-space-sm shadow-sm hover:bg-surface-bright transition-all cursor-pointer">
+<div class="absolute inset-0 bg-secondary-container rounded-lg" style="width: 30%;"></div>
+<span class="relative z-10 text-[11px] text-on-secondary-container font-semibold truncate">Legacy Deprecation</span>
+</div>
+</div>
+<!-- Task 7 Bar -->
+<div class="h-8 px-2 flex items-center relative group">
+<div class="absolute left-[68%] w-[18%] h-6 bg-surface-container-high rounded-lg flex items-center px-space-sm shadow-sm hover:bg-surface-bright transition-all cursor-pointer">
+<div class="absolute inset-0 bg-secondary-container rounded-lg" style="width: 15%;"></div>
+<span class="relative z-10 text-[11px] text-on-secondary-container font-semibold truncate">Data Sync Worker</span>
+</div>
+</div>
+<!-- Phase 3 Header Row Spacer -->
+<div class="h-9"></div>
+<!-- Task 8 Bar -->
+<div class="h-8 px-2 flex items-center relative group">
+<div class="absolute left-[78%] w-[15%] h-6 bg-surface-container-high rounded-lg flex items-center px-space-sm shadow-sm hover:bg-surface-bright transition-all cursor-pointer">
+<span class="relative z-10 text-[11px] text-on-surface-variant font-semibold truncate">Integration &amp; Load</span>
+</div>
+</div>
+<!-- Task 9 Bar -->
+<div class="h-8 px-2 flex items-center relative group">
+<div class="absolute left-[85%] w-[12%] h-6 bg-surface-container-high rounded-lg flex items-center px-space-sm shadow-sm hover:bg-surface-bright transition-all cursor-pointer">
+<span class="relative z-10 text-[11px] text-on-surface-variant font-semibold truncate">Staging Val</span>
+</div>
+</div>
+<!-- Task 10 Bar (Milestone Diamond) -->
+<div class="h-8 px-2 flex items-center relative group">
+<div class="absolute left-[96%] flex items-center gap-space-xs cursor-pointer">
+<div class="w-4 h-4 bg-primary rotate-45 shadow-sm" title="Milestone: Production Launch"></div>
+<span class="text-[11px] text-primary font-semibold whitespace-nowrap">Launch</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Bottom Analytics / Summary Widget -->
+<div class="grid grid-cols-1 md:grid-cols-3 gap-space-lg mb-space-xl">
+<div class="bg-surface-container-low p-space-lg rounded-xl flex items-center justify-between">
+<div>
+<p class="text-label-md text-on-surface-variant mb-space-xs">Tổng tiến độ dự án</p>
+<h3 class="text-headline-lg text-on-surface">54%</h3>
+<p class="text-body-sm text-primary mt-space-xs flex items-center gap-space-xs">
+<span class="material-symbols-outlined text-[16px]">trending_up</span>
+          +12% so với tuần trước
+        </p>
+</div>
+<div class="w-16 h-16 rounded-full bg-surface-container flex items-center justify-center border-4 border-primary">
+<span class="text-label-md font-semibold text-primary">54%</span>
+</div>
+</div>
+<div class="bg-surface-container-low p-space-lg rounded-xl flex items-center justify-between">
+<div>
+<p class="text-label-md text-on-surface-variant mb-space-xs">Công việc hoàn thành</p>
+<h3 class="text-headline-lg text-on-surface">3 / 12</h3>
+<p class="text-body-sm text-on-surface-variant mt-space-xs">9 công việc đang thực hiện</p>
+</div>
+<div class="w-12 h-12 rounded-lg bg-primary-container/20 flex items-center justify-center text-primary">
+<span class="material-symbols-outlined">task_alt</span>
+</div>
+</div>
+<div class="bg-surface-container-low p-space-lg rounded-xl flex items-center justify-between">
+<div>
+<p class="text-label-md text-on-surface-variant mb-space-xs">Thời hạn hoàn thành</p>
+<h3 class="text-headline-lg text-on-surface">31 Th3, 2025</h3>
+<p class="text-body-sm text-secondary mt-space-xs">Đúng tiến độ kế hoạch</p>
+</div>
+<div class="w-12 h-12 rounded-lg bg-secondary-container/20 flex items-center justify-center text-secondary">
+<span class="material-symbols-outlined">schedule</span>
+</div>
+</div>
+</div>
+</div></main></div></body></html>

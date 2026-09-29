@@ -23,9 +23,10 @@ test("tenant repositories scope resource lookup and mutation by workspace", asyn
   }
   const projects = await readFile(new URL("../../db/projects.ts", import.meta.url), "utf8");
   const tasks = await readFile(new URL("../../db/tasks.ts", import.meta.url), "utf8");
-  assert.match(projects, /authorizeProject\(workspaceId, board\.projectId/);
-  assert.match(tasks, /eq\(tasks\.workspaceId, workspaceId\)/);
-  assert.match(tasks, /eq\(columns\.workspaceId, workspaceId\)/);
+  assert.match(projects, /authorizeProject\(workspaceId, board\.project_id/);
+  // The runtime repository uses PostgREST column names, not Drizzle fields.
+  assert.match(tasks, /\.eq\("workspace_id", workspaceId\)/);
+  assert.match(tasks, /\.eq\("column_id", input\.columnId\)/);
 });
 
 test("suspended membership and Guest without project grant stay isolated", () => {

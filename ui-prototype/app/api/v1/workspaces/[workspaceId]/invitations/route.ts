@@ -21,8 +21,7 @@ export async function POST(request: Request, { params }: { params: Promise<{ wor
     const result = await createInvitation(workspaceId, auth.user.id, email, role, new URL(request.url).origin);
     if (result.kind === "denied") return fail("PERMISSION_DENIED", "Bạn không có quyền mời role này", 403);
     if (result.kind === "rate_limited") return fail("RATE_LIMITED", "Bạn đã gửi quá nhiều lời mời", 429, { retryAfterSeconds: result.retryAfterSeconds });
-    if (result.kind === "duplicate") return fail("INVITATION_ALREADY_PENDING", "Email này đã có lời mời đang chờ", 409);
-    if (result.kind === "seat_limit") return fail("SEAT_LIMIT_REACHED", "Workspace đã dùng hết số seat của gói hiện tại.", 402);
+    if (result.kind === "seat_limit") return fail("SEAT_LIMIT_REACHED", "Workspace đã đạt giới hạn thành viên của gói hiện tại", 409);
     const delivery = await processOutbox(1);
     return ok({ id: result.id, token: result.token, inviteUrl: `/invite/${result.token}`, expiresAt: result.expiresAt.toISOString(), emailDelivery: delivery.processed > 0 ? "sent" : "queued" }, 201);
   } catch (error) { return routeError(error); }

@@ -2,8 +2,31 @@ import type { CreateTaskRequest, MoveTaskRequest, UpdateTaskRequest } from "@/ap
 import { authorizeProject, getActiveMembership } from "./authorization";
 import { insertActivity, recordActivity } from "./audit";
 import { canAccessProject, canArchiveTask } from "@/app/lib/permissions";
+import type { ProjectAccessLevel } from "@/app/lib/permissions";
+import type { WorkspaceRole } from "@/app/types/domain";
 import { decodeCursor, encodeCursor } from "./pagination";
 import { createSupabaseAdminClient } from "@/app/lib/supabase/admin";
+
+type NamedRelation = { name?: string | null } | null;
+type TaskRow = {
+  id: string;
+  workspace_id: string;
+  project_id: string;
+  board_id: string;
+  column_id: string;
+  creator_membership_id: string;
+  title: string;
+  description: string | null;
+  priority: "LOW" | "MEDIUM" | "HIGH" | "URGENT";
+  due_at: string | null;
+  version: number;
+  archived_at: string | null;
+  position: number;
+  projects?: NamedRelation;
+  columns?: NamedRelation;
+};
+type TaskAssigneeRow = { task_id: string; membership_id: string };
+type ChecklistRow = { task_id?: string; completed: boolean };
 
 export async function listTasks(
   workspaceId: string,
@@ -56,7 +79,7 @@ export async function listTasks(
   }
 
   const pageRows = rows.slice(0, boundedLimit);
-  const taskIds = pageRows.map((r: any) => r.id);
+  const taskIds = pageRows.map((r: TaskRow) => r.id);
 
   const assigneesMap = new Map<string, string[]>();
   const checklistMap = new Map<string, { total: number; completed: number }>();
@@ -68,14 +91,15 @@ export async function listTasks(
     ]);
 
     if (assigneesRes.data) {
-      for (const row of assigneesRes.data) {
+      for (const row of assigneesRes.data as TaskAssigneeRow[]) {
         const existing = assigneesMap.get(row.task_id) ?? [];
         assigneesMap.set(row.task_id, [...existing, row.membership_id]);
       }
     }
 
     if (checklistRes.data) {
-      for (const item of checklistRes.data) {
+      for (const item of checklistRes.data as ChecklistRow[]) {
+        if (!item.task_id) continue;
         const stats = checklistMap.get(item.task_id) ?? { total: 0, completed: 0 };
         stats.total += 1;
         if (item.completed) stats.completed += 1;
@@ -84,7 +108,7 @@ export async function listTasks(
     }
   }
 
-  const items = pageRows.map((r: any) => {
+  const items = pageRows.map((r: TaskRow) => {
     const projName = r.projects?.name ?? "";
     const colName = r.columns?.name ?? "";
     const assigneeIds = assigneesMap.get(r.id) ?? [];
@@ -100,7 +124,10 @@ export async function listTasks(
   };
 }
 
+const UUID_REGEX = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+
 export async function getTask(workspaceId: string, taskId: string, userId: string) {
+  if (!UUID_REGEX.test(taskId) || !UUID_REGEX.test(workspaceId)) return null;
   const supabase = createSupabaseAdminClient();
   const { data: row, error } = await supabase
     .from("tasks")
@@ -135,7 +162,7 @@ export async function createTask(workspaceId: string, userId: string, input: Cre
     .eq("membership_id", membership.id)
     .maybeSingle();
 
-  if (!canAccessProject({ role: membership.role, visibility: project.visibility, permission: "task.create", accessLevel: projectAccess?.access_level as any })) return null;
+  if (!canAccessProject({ role: membership.role, visibility: project.visibility, permission: "task.create", accessLevel: projectAccess?.access_level as ProjectAccessLevel | null | undefined })) return null;
 
   const { data: board } = await supabase.from("boards").select("id").eq("id", input.boardId).eq("project_id", input.projectId).eq("workspace_id", workspaceId).maybeSingle();
   const { data: column } = await supabase.from("columns").select("id, name").eq("id", input.columnId).eq("workspace_id", workspaceId).maybeSingle();
@@ -159,7 +186,7 @@ export async function createTask(workspaceId: string, userId: string, input: Cre
     const { data: assignee } = await supabase.from("memberships").select("id, user_id, role").eq("id", membershipId).eq("workspace_id", workspaceId).eq("status", "ACTIVE").maybeSingle();
     if (!assignee) return null;
     const { data: assigneeAccess } = await supabase.from("project_members").select("access_level").eq("project_id", project.id).eq("membership_id", assignee.id).maybeSingle();
-    if (!canAccessProject({ role: assignee.role, visibility: project.visibility, permission: "task.read", accessLevel: assigneeAccess?.access_level as any })) return null;
+    if (!canAccessProject({ role: assignee.role as WorkspaceRole, visibility: project.visibility, permission: "task.read", accessLevel: assigneeAccess?.access_level as ProjectAccessLevel | null | undefined })) return null;
     assigneeUsers.push({ membershipId, userId: assignee.user_id });
   }
 
@@ -197,9 +224,10 @@ export async function updateTask(workspaceId: string, taskId: string, userId: st
   const { data: current } = await supabase.from("tasks").select("*").eq("id", taskId).eq("workspace_id", workspaceId).maybeSingle();
   if (!current || !(await authorizeProject(workspaceId, current.project_id, userId, "task.update"))) return { kind: "not_found" as const };
 
-  const { expectedVersion, assigneeIds: _assigneeIds, dueAt, ...rest } = input;
+  const { expectedVersion, assigneeIds: _ignoredAssigneeIds, dueAt, ...rest } = input;
+  void _ignoredAssigneeIds;
 
-  const updateData: any = {
+  const updateData: Record<string, unknown> = {
     ...rest,
     ...(dueAt !== undefined ? { due_at: dueAt ? new Date(dueAt).toISOString() : null } : {}),
     version: current.version + 1,
@@ -264,23 +292,23 @@ export async function archiveTask(workspaceId: string, taskId: string, userId: s
   return getTask(workspaceId, taskId, userId);
 }
 
-async function toTaskDtoSupabase(task: any, projectName: string, columnName: string) {
+async function toTaskDtoSupabase(task: TaskRow, projectName: string, columnName: string) {
   const supabase = createSupabaseAdminClient();
   const [assigneesRes, checklistRes] = await Promise.all([
     supabase.from("task_assignees").select("membership_id").eq("workspace_id", task.workspace_id).eq("task_id", task.id),
     supabase.from("task_checklist_items").select("completed").eq("workspace_id", task.workspace_id).eq("task_id", task.id),
   ]);
 
-  const assigneeIds = assigneesRes.data?.map((r: any) => r.membership_id) ?? [];
+  const assigneeIds = (assigneesRes.data as TaskAssigneeRow[] | null)?.map((r) => r.membership_id) ?? [];
   const items = checklistRes.data ?? [];
   const total = items.length;
-  const completed = items.filter((i: any) => i.completed).length;
+  const completed = (items as ChecklistRow[]).filter((i) => i.completed).length;
 
   return taskDtoFromDb(task, projectName, columnName, assigneeIds, total, completed);
 }
 
-function taskDtoFromDb(task: any, projectName: string, columnName: string, assigneeIds: string[], checklistTotal: number, checklistCompleted: number) {
-  const tone = ({ LOW: "blue", MEDIUM: "amber", HIGH: "red", URGENT: "red" } as const)[task.priority as "LOW" | "MEDIUM" | "HIGH" | "URGENT"];
+function taskDtoFromDb(task: TaskRow, projectName: string, columnName: string, assigneeIds: string[], checklistTotal: number, checklistCompleted: number) {
+  const tone = ({ LOW: "blue", MEDIUM: "amber", HIGH: "red", URGENT: "red" } as const)[task.priority];
   return {
     id: task.id,
     workspaceId: task.workspace_id,
@@ -288,7 +316,7 @@ function taskDtoFromDb(task: any, projectName: string, columnName: string, assig
     boardId: task.board_id,
     columnId: task.column_id,
     title: task.title,
-    description: task.description,
+    description: task.description ?? "",
     priority: task.priority,
     dueAt: task.due_at ? new Date(task.due_at).toISOString() : null,
     assigneeIds,

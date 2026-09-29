@@ -28,7 +28,10 @@ function dto(row: typeof attachments.$inferSelect) {
   return { id: row.id, taskId: row.taskId, fileName: row.fileName, mimeType: row.mimeType, size: row.size, uploadedByUserId: row.uploadedByUserId, createdAt: row.createdAt.toISOString() };
 }
 
+const UUID_REGEX = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+
 async function taskAccess(workspaceId: string, taskId: string, userId: string, write = false) {
+  if (!UUID_REGEX.test(taskId) || !UUID_REGEX.test(workspaceId)) return null;
   const task = await getDb().select({ projectId: tasks.projectId }).from(tasks).where(and(eq(tasks.workspaceId, workspaceId), eq(tasks.id, taskId))).get();
   if (!task) return null;
   return authorizeProject(workspaceId, task.projectId, userId, write ? "task.update" : "task.read");

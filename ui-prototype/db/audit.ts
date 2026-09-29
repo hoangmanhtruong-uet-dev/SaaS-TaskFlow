@@ -2,10 +2,19 @@ import { createSupabaseAdminClient } from "@/app/lib/supabase/admin";
 import { authorizeWorkspace } from "./authorization";
 import { getWorkspaceEntitlements } from "./billing";
 
+type ActivityRow = {
+  id: string;
+  action: string;
+  target_type: string;
+  target_id: string;
+  profiles: { name?: string | null } | null;
+  metadata: Record<string, unknown>;
+  created_at: string;
+};
+
 export async function recordActivity(workspaceId: string, actorUserId: string | null, action: string, targetType: string, targetId: string, metadata: Record<string, unknown> = {}) {
   await insertActivity(null, workspaceId, actorUserId, action, targetType, targetId, metadata);
 }
-
 export async function insertActivity(_db: unknown, workspaceId: string, actorUserId: string | null, action: string, targetType: string, targetId: string, metadata: Record<string, unknown> = {}) {
   try {
     const supabase = createSupabaseAdminClient();
@@ -44,7 +53,7 @@ export async function listActivity(workspaceId: string, userId: string) {
 
   if (error || !data) return [];
 
-  return data.map((event: any) => ({
+  return data.map((event: ActivityRow) => ({
     id: event.id,
     action: event.action,
     targetType: event.target_type,
@@ -54,4 +63,3 @@ export async function listActivity(workspaceId: string, userId: string) {
     createdAt: event.created_at,
   }));
 }
-

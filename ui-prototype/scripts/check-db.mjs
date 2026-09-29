@@ -1,9 +1,5 @@
-import { createClient } from "@supabase/supabase-js";
-
 const supabaseUrl = "https://ufdqvggtluwnpzxksein.supabase.co";
 const serviceKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVmZHF2Z2d0bHV3bnB6eGtzZWluIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc5MDE3NjA0NiwiZXhwIjoyMTA1NzUyMDQ2fQ.oxijUm4-bK4U-6w9E2nYbGmzgRSI062DAIfdOl3KvgM";
-
-const supabase = createClient(supabaseUrl, serviceKey);
 
 // Use REST API to check tables by trying to query them
 const expectedTables = [

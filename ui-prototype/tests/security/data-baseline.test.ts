@@ -30,16 +30,14 @@ test("keyset pagination is bounded and cursor data round-trips", () => {
 });
 
 test("critical mutations serialize quota and ownership checks", async () => {
-  const [tasks, projects, collaboration, lifecycle] = await Promise.all([
-    readFile(new URL("../../db/tasks.ts", import.meta.url), "utf8"),
-    readFile(new URL("../../db/projects.ts", import.meta.url), "utf8"),
-    readFile(new URL("../../db/collaboration.ts", import.meta.url), "utf8"),
+  const [capacity, lifecycle] = await Promise.all([
+    readFile(new URL("../../supabase/migrations/20260927084252_enforce_workspace_capacity.sql", import.meta.url), "utf8"),
     readFile(new URL("../../db/workspace-lifecycle.ts", import.meta.url), "utf8"),
   ]);
-  assert.match(tasks, /for update/);
-  assert.match(projects, /for update/);
-  assert.match(collaboration, /for update/);
-  assert.match(collaboration, /hasSeatCapacityWithDb/);
+  assert.match(capacity, /for update/);
+  assert.match(capacity, /memberships_enforce_workspace_capacity/);
+  assert.match(capacity, /invitations_enforce_workspace_capacity/);
+  assert.match(capacity, /projects_enforce_workspace_capacity/);
   assert.match(lifecycle, /for update/);
 });
 

@@ -23,7 +23,6 @@ export async function getActiveMembership(workspaceId: string, userId: string) {
     updatedAt: new Date(data.updated_at),
   };
 }
-
 export async function authorizeWorkspace(workspaceId: string, userId: string, permission: Permission) {
   const membership = await getActiveMembership(workspaceId, userId);
   if (!membership || !can(membership.role, permission)) return null;
@@ -69,4 +68,3 @@ export async function authorizeProject(workspaceId: string, projectId: string, u
   if (!authorizeProjectContext({ requestedWorkspaceId: workspaceId, requestedProjectId: projectId, membership, project: mappedProject, permission, accessLevel })) return null;
   return { membership, project: mappedProject };
 }
-

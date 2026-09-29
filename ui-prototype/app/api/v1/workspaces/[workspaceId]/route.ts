@@ -48,7 +48,7 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ wo
       if (existing) return fail("SLUG_TAKEN", "Slug đã được sử dụng", 409);
     }
 
-    const updateData: any = {
+    const updateData = {
       ...(name !== undefined ? { name } : {}),
       ...(slug !== undefined ? { slug } : {}),
       updated_at: new Date().toISOString(),

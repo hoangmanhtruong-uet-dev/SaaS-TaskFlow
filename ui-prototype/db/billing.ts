@@ -1,17 +1,10 @@
-import { and, eq, gt, inArray, isNull, lte, or, sql } from "drizzle-orm";
+import { eq, isNull, lte, or, sql } from "drizzle-orm";
 import type Stripe from "stripe";
 import { resolveEntitlements } from "@/app/lib/billing-entitlements";
 import { stripeEnv } from "@/app/lib/env";
 import { authorizeWorkspace } from "./authorization";
 import { getDb } from "./index";
-import {
-  invitations,
-  memberships,
-  projects,
-  stripeEvents,
-  subscriptions,
-  workspaces,
-} from "./schema";
+import { stripeEvents, subscriptions, workspaces } from "./schema";
 
 function expandableId(value: string | { id: string }) {
   return typeof value === "string" ? value : value.id;
@@ -179,10 +172,10 @@ export async function hasSeatCapacity(
   workspaceId: string,
   includePendingInvitations = false,
 ) {
-  return hasSeatCapacityWithDb(null as any, workspaceId, includePendingInvitations);
+  return hasSeatCapacityWithDb(workspaceId, includePendingInvitations);
 }
 
-export async function hasSeatCapacityWithDb(_database: any, workspaceId: string, includePendingInvitations = false) {
+export async function hasSeatCapacityWithDb(workspaceId: string, includePendingInvitations = false) {
   const supabase = createSupabaseAdminClient();
   const { data: subscription } = await supabase.from("subscriptions").select("*").eq("workspace_id", workspaceId).maybeSingle();
   const entitlements = resolveEntitlements({ status: subscription?.status ?? null, quantity: subscription?.quantity ?? null, priceMatches: subscription?.stripe_price_id === stripeEnv().STRIPE_PRICE_PRO_MONTHLY });

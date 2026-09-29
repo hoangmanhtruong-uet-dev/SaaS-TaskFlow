@@ -32,7 +32,7 @@ export async function POST(request: Request) {
       stripeClient().webhooks,
       rawBody,
       signature,
-      stripeEnv().STRIPE_WEBHOOK_SECRET,
+      stripeEnv().STRIPE_WEBHOOK_SECRET ?? "",
     );
   } catch {
     return Response.json(

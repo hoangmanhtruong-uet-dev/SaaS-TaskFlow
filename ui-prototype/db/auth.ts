@@ -1,8 +1,8 @@
-import { and, desc, eq, gt, isNull, sql } from "drizzle-orm";
+import { and, desc, eq, gt, isNull } from "drizzle-orm";
 import { hashOpaqueToken, randomOpaqueToken } from "@/app/lib/security";
 import { clientAddress } from "@/app/lib/request-security";
 import { getDb } from "./index";
-import { authSessions, rateLimits, users } from "./schema";
+import { authSessions, users } from "./schema";
 
 const SESSION_LIFETIME_MS = 30 * 86400000;
 const SESSION_ROTATION_MS = 24 * 60 * 60 * 1000;

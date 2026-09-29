@@ -1,5 +1,16 @@
 import { createSupabaseAdminClient } from "@/app/lib/supabase/admin";
 
+type NotificationRow = {
+  id: string;
+  workspace_id: string;
+  recipient_user_id: string;
+  type: string;
+  title: string;
+  body: string;
+  read_at: string | null;
+  created_at: string;
+};
+
 export async function listNotifications(userId: string, unreadOnly = false) {
   const supabase = createSupabaseAdminClient();
   let query = supabase
@@ -17,7 +28,7 @@ export async function listNotifications(userId: string, unreadOnly = false) {
 
   if (error || !data) return [];
 
-  return data.map((row: any) => ({
+  return data.map((row: NotificationRow) => ({
     id: row.id,
     workspaceId: row.workspace_id,
     recipientUserId: row.recipient_user_id,

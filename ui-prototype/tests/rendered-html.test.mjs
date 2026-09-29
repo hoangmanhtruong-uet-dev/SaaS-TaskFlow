@@ -97,7 +97,7 @@ test("collaboration backend covers invitations, members, audit, and notification
   assert.match(permissionMatrix, /member\.manage/);
   assert.match(permissionMatrix, /invitation\.manage/);
   assert.match(policy, /authorizeProjectContext/);
-  assert.match(collaboration, /LAST_OWNER|last_owner/);
+  assert.match(collaboration, /last_owner/);
   assert.match(collaboration, /SHA-256/);
   assert.match(collaboration, /wrong_email/);
   for (const route of [
@@ -111,7 +111,7 @@ test("collaboration backend covers invitations, members, audit, and notification
 
 test("task collaboration covers comments, mentions, conflict rollback, and reconnect", async () => {
   const comments = await readFile(new URL("db/comments.ts", root), "utf8");
-  const interactions = await readFile(new URL("app/components/task-interactions.tsx", root), "utf8");
+  const interactions = await readFile(new URL("app/components/tasks/kanban-board.tsx", root), "utf8");
   const connection = await readFile(new URL("app/hooks/use-connection-sync.ts", root), "utf8");
   assert.match(comments, /MENTION/);
   assert.match(comments, /projectMembers/);
@@ -128,7 +128,7 @@ test("task collaboration covers comments, mentions, conflict rollback, and recon
 
 test("task detail includes a tenant-scoped interactive checklist", async () => {
   const checklist = await readFile(new URL("db/task-checklist.ts", root), "utf8");
-  const interactions = await readFile(new URL("app/components/task-interactions.tsx", root), "utf8");
+  const interactions = await readFile(new URL("app/components/tasks/task-editor.tsx", root), "utf8");
   assert.match(checklist, /MAX_CHECKLIST_ITEMS_PER_TASK = 100/);
   assert.match(checklist, /task\.checklist_item\.completed/);
   assert.match(interactions, /Tiến độ checklist/);
@@ -141,13 +141,13 @@ test("task detail includes a tenant-scoped interactive checklist", async () => {
 
 test("planning feature batch includes calendar, checklist progress, and deadline reminders", async () => {
   const [calendar, tasks, reminders, cron] = await Promise.all([
-    readFile(new URL("app/components/calendar-view.tsx", root), "utf8"),
+    readFile(new URL("app/components/calendar/CalendarDayGrid.tsx", root), "utf8"),
     readFile(new URL("db/tasks.ts", root), "utf8"),
     readFile(new URL("db/task-reminders.ts", root), "utf8"),
     readFile(new URL("app/api/internal/jobs/workspace-deletion/route.ts", root), "utf8"),
   ]);
   assert.match(calendar, /Lịch công việc/);
-  assert.match(calendar, /calendar-grid/);
+  assert.match(calendar, /dayTasks/);
   assert.match(tasks, /checklistCompleted/);
   assert.match(reminders, /DUE_SOON/);
   assert.match(reminders, /OVERDUE/);
@@ -163,7 +163,7 @@ test("operations layer covers scoped search, archive recovery, and workspace lif
   const taskService = await readFile(new URL("app/services/task-service.ts", root), "utf8");
   assert.match(search, /listTasks/);
   assert.match(search, /50/);
-  assert.match(tasksRepository, /ilike\(tasks\.title/);
+  assert.match(tasksRepository, /\.ilike\("title"/);
   assert.match(tasksRepository, /boundedLimit \+ 1/);
   assert.match(lifecycle, /workspace\.ownership\.transferred/);
   assert.match(lifecycle, /confirmation !== workspace\.name/);

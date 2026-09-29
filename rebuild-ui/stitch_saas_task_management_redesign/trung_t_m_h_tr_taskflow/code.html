@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+
+<html lang="en"><head><meta charset="utf-8"/><meta content="width=device-width, initial-scale=1.0" name="viewport"/><meta content="web_standard" name="shell-type"/><style>@layer base{html,body{margin:0;padding:0;}body{overscroll-behavior:none;}main>:first-child{margin-top:0!important;}main>:last-child{margin-bottom:0!important;}}::-webkit-scrollbar{display:none;}</style><script src="https://cdn.tailwindcss.com"></script><script id="tailwind-config">tailwind.config = {darkMode: "class", theme: { extend: { "colors": { "secondary-fixed-dim": "#c0c1ff", "secondary": "#c0c1ff", "outline": "#86948a", "surface-container-highest": "#31353f", "on-error": "#690005", "on-primary": "#003824", "on-primary-container": "#00422b", "surface-container-lowest": "#0a0e17", "surface-container-low": "#181b25", "primary": "#4edea3", "inverse-primary": "#006c49", "surface-bright": "#353943", "on-secondary": "#1000a9", "on-primary-fixed": "#002113", "primary-fixed": "#6ffbbe", "surface-variant": "#31353f", "inverse-on-surface": "#2c303a", "secondary-fixed": "#e1e0ff", "surface-dim": "#0f131c", "outline-variant": "#3c4a42", "inverse-surface": "#dfe2ef", "surface-tint": "#4edea3", "error-container": "#93000a", "on-tertiary": "#283044", "tertiary": "#bec6e0", "primary-fixed-dim": "#4edea3", "on-surface": "#dfe2ef", "on-surface-variant": "#bbcabf", "on-tertiary-fixed-variant": "#3f465c", "error": "#ffb4ab", "on-tertiary-container": "#31394d", "on-secondary-fixed": "#07006c", "surface": "#0f131c", "secondary-container": "#3131c0", "background": "#0f131c", "on-primary-fixed-variant": "#005236", "tertiary-container": "#9ba2bb", "surface-container-high": "#262a34", "primary-container": "#10b981", "tertiary-fixed-dim": "#bec6e0", "surface-container": "#1c1f29", "tertiary-fixed": "#dae2fd", "on-tertiary-fixed": "#131b2e", "on-secondary-container": "#b0b2ff", "on-background": "#dfe2ef", "on-error-container": "#ffdad6" }, "borderRadius": { "DEFAULT": "0.125rem", "lg": "0.25rem", "xl": "0.5rem", "full": "0.75rem" }, "spacing": { "margin": "2rem", "gutter": "1.5rem", "space-xl": "2.5rem", "space-xs": "0.25rem", "space-lg": "1.5rem", "space-sm": "0.5rem", "space-md": "1rem" }, "fontFamily": { "label-md": ["Inter"], "headline-lg-mobile": ["Inter"], "headline-lg": ["Inter"], "headline-md": ["Inter"], "label-sm": ["Inter"], "headline-sm": ["Inter"], "headline-xl": ["Inter"], "body-md": ["Inter"], "body-lg": ["Inter"], "body-sm": ["Inter"] }, "fontSize": { "label-md": ["12px", { "lineHeight": "16px", "letterSpacing": "0.01em", "fontWeight": "500" }], "headline-lg-mobile": ["24px", { "lineHeight": "32px", "letterSpacing": "-0.01em", "fontWeight": "600" }], "headline-lg": ["28px", { "lineHeight": "36px", "letterSpacing": "-0.01em", "fontWeight": "600" }], "headline-md": ["20px", { "lineHeight": "28px", "letterSpacing": "-0.01em", "fontWeight": "600" }], "label-sm": ["11px", { "lineHeight": "14px", "letterSpacing": "0.02em", "fontWeight": "500" }], "headline-sm": ["16px", { "lineHeight": "24px", "fontWeight": "600" }], "headline-xl": ["36px", { "lineHeight": "44px", "letterSpacing": "-0.02em", "fontWeight": "600" }], "body-md": ["14px", { "lineHeight": "20px", "fontWeight": "400" }], "body-lg": ["16px", { "lineHeight": "24px", "fontWeight": "400" }], "body-sm": ["13px", { "lineHeight": "18px", "fontWeight": "400" }] } } } }</script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/></head><body class="bg-surface font-body text-on-surface"><header class="fixed top-0 w-full z-50 bg-surface/80 backdrop-blur-xl shadow-[0_1px_8px_rgba(0,0,0,0.04)]"><div class="h-16 max-w-7xl mx-auto px-gutter flex items-center justify-between"><div class="flex items-center gap-space-md"><img class="h-8 w-auto object-contain" src="https://lh3.googleusercontent.com/aida/AEtjO1V3t_Szgfw_GRAKCtg8kdPCk5KB3ZOf7s6fLj2Wk71k0dc0GB7Pel4sxqKG7QchqwcDnifSRvQXJE6beXynIjkPuPF5u4z-uxh36a8hF053uDbeEVYoxkcHq5LFRq4zaf8hoxwL51gI9HyLXeXKHCO1gMKRU33_60mjuVzxERRimlGDLRDrFA5cxSa8gLPYJPdlzzMasmz_ZufDOtca-vZXxs2avgU1tvliXbmTk0qD"/><span class="font-headline-md font-bold tracking-tight text-on-surface">TaskFlow</span></div><nav class="hidden md:flex items-center gap-space-lg" data-active-classes="bg-primary-container text-on-primary-container font-bold rounded-lg"><a class="text-body-md text-on-surface-variant hover:text-on-surface transition-colors" data-path="features" href="#">Features</a><a class="text-body-md text-on-surface-variant hover:text-on-surface transition-colors" data-path="pricing" href="#">Pricing</a><a class="text-body-md text-on-surface-variant hover:text-on-surface transition-colors" data-path="solutions" href="#">Solutions</a><a class="text-body-md text-on-surface-variant hover:text-on-surface transition-colors" data-path="resources" href="#">Resources</a><a class="text-body-md text-on-surface-variant hover:text-on-surface transition-colors" data-path="support" href="#">Support</a></nav><div class="flex items-center gap-space-md"><a class="text-body-md text-on-surface-variant hover:text-on-surface transition-colors hidden sm:block" data-path="login" href="#">Login</a><a class="bg-primary text-on-primary font-label-md px-space-md py-space-sm rounded-lg hover:brightness-110 transition-all" data-path="signup" href="#">Start Free</a><div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center"><span class="material-symbols-outlined text-on-primary text-[18px]">person</span></div></div></div></header><main class="w-full pt-16 bg-surface"><div class="flex flex-col w-full text-on-surface">
+<!-- Hero Section with Immersive Search -->
+<section class="relative w-full pt-16 pb-20 px-gutter overflow-hidden bg-surface-container-lowest">
+<div class="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-secondary/5 pointer-events-none"></div>
+<div class="max-w-4xl mx-auto text-center relative z-10 flex flex-col items-center gap-space-lg">
+<div class="inline-flex items-center gap-space-xs px-space-md py-space-xs rounded-full bg-surface-container-high text-primary font-label-md">
+<span class="material-symbols-outlined text-[16px]">support_agent</span>
+<span>TaskFlow Support Center</span>
+</div>
+<h1 class="font-headline-xl text-on-surface tracking-tight">How can we help?</h1>
+<p class="font-body-lg text-on-surface-variant max-w-2xl">Search our documentation, browse popular guides, or connect with our world-class support engineering team.</p>
+<!-- Prominent Search Bar -->
+<div class="w-full max-w-2xl relative mt-space-sm">
+<div class="absolute inset-y-0 left-0 pl-space-md flex items-center pointer-events-none">
+<span class="material-symbols-outlined text-on-surface-variant text-[24px]">search</span>
+</div>
+<input class="w-full pl-12 pr-28 py-4 bg-surface-container-high rounded-xl text-on-surface placeholder:text-on-surface-variant outline-none focus:ring-2 focus:ring-primary transition-all font-body-md shadow-lg" placeholder="Search articles, docs, or error codes (e.g., 'API rate limit', 'SSO setup')..." type="text"/>
+<div class="absolute inset-y-0 right-2 flex items-center">
+<kbd class="px-space-sm py-1 bg-surface rounded text-label-sm text-on-surface-variant border border-outline-variant">⌘K</kbd>
+</div>
+</div>
+<div class="flex flex-wrap items-center justify-center gap-space-sm text-body-sm text-on-surface-variant mt-space-sm">
+<span>Popular searches:</span>
+<a class="text-primary hover:underline" href="#">Webhook setup</a>
+<span>•</span>
+<a class="text-primary hover:underline" href="#">Billing portal</a>
+<span>•</span>
+<a class="text-primary hover:underline" href="#">Team permissions</a>
+</div>
+</div>
+</section>
+<!-- Help Categories Grid -->
+<section class="max-w-7xl mx-auto px-gutter py-space-xl w-full">
+<div class="flex flex-col md:flex-row md:items-end justify-between mb-space-xl gap-space-md">
+<div>
+<span class="font-label-md text-primary uppercase tracking-wider">Knowledge Base</span>
+<h2 class="font-headline-lg text-on-surface mt-space-xs">Browse by category</h2>
+</div>
+<p class="text-body-md text-on-surface-variant max-w-md">Everything you need to master TaskFlow workflows, automation, and team administration.</p>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-space-lg">
+<!-- Category 1 -->
+<a class="group p-space-lg rounded-xl bg-surface-container-low hover:bg-surface-container transition-all duration-300 shadow-sm flex flex-col justify-between" href="#">
+<div>
+<div class="w-12 h-12 rounded-xl bg-primary-container/20 text-primary flex items-center justify-center mb-space-md group-hover:scale-110 transition-transform">
+<span class="material-symbols-outlined text-[24px]" style="font-variation-settings: 'FILL' 1;">rocket_launch</span>
+</div>
+<h3 class="font-headline-sm text-on-surface group-hover:text-primary transition-colors">Getting Started</h3>
+<p class="text-body-sm text-on-surface-variant mt-space-xs">Quickstart guides, workspace creation, and user onboarding fundamentals.</p>
+</div>
+<div class="flex items-center gap-space-xs text-primary font-label-md mt-space-lg">
+<span>14 articles</span>
+<span class="material-symbols-outlined text-[16px] group-hover:translate-x-1 transition-transform">arrow_forward</span>
+</div>
+</a>
+<!-- Category 2 -->
+<a class="group p-space-lg rounded-xl bg-surface-container-low hover:bg-surface-container transition-all duration-300 shadow-sm flex flex-col justify-between" href="#">
+<div>
+<div class="w-12 h-12 rounded-xl bg-primary-container/20 text-primary flex items-center justify-center mb-space-md group-hover:scale-110 transition-transform">
+<span class="material-symbols-outlined text-[24px]" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+</div>
+<h3 class="font-headline-sm text-on-surface group-hover:text-primary transition-colors">Tasks &amp; Workflows</h3>
+<p class="text-body-sm text-on-surface-variant mt-space-xs">Mastering high-velocity task management, custom views, and shortcuts.</p>
+</div>
+<div class="flex items-center gap-space-xs text-primary font-label-md mt-space-lg">
+<span>28 articles</span>
+<span class="material-symbols-outlined text-[16px] group-hover:translate-x-1 transition-transform">arrow_forward</span>
+</div>
+</a>
+<!-- Category 3 -->
+<a class="group p-space-lg rounded-xl bg-surface-container-low hover:bg-surface-container transition-all duration-300 shadow-sm flex flex-col justify-between" href="#">
+<div>
+<div class="w-12 h-12 rounded-xl bg-primary-container/20 text-primary flex items-center justify-center mb-space-md group-hover:scale-110 transition-transform">
+<span class="material-symbols-outlined text-[24px]" style="font-variation-settings: 'FILL' 1;">folder</span>
+</div>
+<h3 class="font-headline-sm text-on-surface group-hover:text-primary transition-colors">Projects &amp; Roadmaps</h3>
+<p class="text-body-sm text-on-surface-variant mt-space-xs">Structuring initiatives, milestones, cross-functional dependencies, and updates.</p>
+</div>
+<div class="flex items-center gap-space-xs text-primary font-label-md mt-space-lg">
+<span>19 articles</span>
+<span class="material-symbols-outlined text-[16px] group-hover:translate-x-1 transition-transform">arrow_forward</span>
+</div>
+</a>
+<!-- Category 4 -->
+<a class="group p-space-lg rounded-xl bg-surface-container-low hover:bg-surface-container transition-all duration-300 shadow-sm flex flex-col justify-between" href="#">
+<div>
+<div class="w-12 h-12 rounded-xl bg-primary-container/20 text-primary flex items-center justify-center mb-space-md group-hover:scale-110 transition-transform">
+<span class="material-symbols-outlined text-[24px]" style="font-variation-settings: 'FILL' 1;">payments</span>
+</div>
+<h3 class="font-headline-sm text-on-surface group-hover:text-primary transition-colors">Billing &amp; Plans</h3>
+<p class="text-body-sm text-on-surface-variant mt-space-xs">Managing subscription tiers, seat licenses, invoices, and payment methods.</p>
+</div>
+<div class="flex items-center gap-space-xs text-primary font-label-md mt-space-lg">
+<span>9 articles</span>
+<span class="material-symbols-outlined text-[16px] group-hover:translate-x-1 transition-transform">arrow_forward</span>
+</div>
+</a>
+<!-- Category 5 -->
+<a class="group p-space-lg rounded-xl bg-surface-container-low hover:bg-surface-container transition-all duration-300 shadow-sm flex flex-col justify-between" href="#">
+<div>
+<div class="w-12 h-12 rounded-xl bg-primary-container/20 text-primary flex items-center justify-center mb-space-md group-hover:scale-110 transition-transform">
+<span class="material-symbols-outlined text-[24px]" style="font-variation-settings: 'FILL' 1;">security</span>
+</div>
+<h3 class="font-headline-sm text-on-surface group-hover:text-primary transition-colors">Security &amp; Compliance</h3>
+<p class="text-body-sm text-on-surface-variant mt-space-xs">SSO configurations, audit logs, SOC2 reports, and permission matrices.</p>
+</div>
+<div class="flex items-center gap-space-xs text-primary font-label-md mt-space-lg">
+<span>12 articles</span>
+<span class="material-symbols-outlined text-[16px] group-hover:translate-x-1 transition-transform">arrow_forward</span>
+</div>
+</a>
+<!-- Category 6 -->
+<a class="group p-space-lg rounded-xl bg-surface-container-low hover:bg-surface-container transition-all duration-300 shadow-sm flex flex-col justify-between" href="#">
+<div>
+<div class="w-12 h-12 rounded-xl bg-primary-container/20 text-primary flex items-center justify-center mb-space-md group-hover:scale-110 transition-transform">
+<span class="material-symbols-outlined text-[24px]" style="font-variation-settings: 'FILL' 1;">manage_accounts</span>
+</div>
+<h3 class="font-headline-sm text-on-surface group-hover:text-primary transition-colors">Account Settings</h3>
+<p class="text-body-sm text-on-surface-variant mt-space-xs">Profile customization, notification preferences, and API token generation.</p>
+</div>
+<div class="flex items-center gap-space-xs text-primary font-label-md mt-space-lg">
+<span>8 articles</span>
+<span class="material-symbols-outlined text-[16px] group-hover:translate-x-1 transition-transform">arrow_forward</span>
+</div>
+</a>
+</div>
+</section>
+<!-- Popular Articles Section -->
+<section class="bg-surface-container-low py-space-xl px-gutter my-space-xl">
+<div class="max-w-7xl mx-auto">
+<div class="flex flex-col md:flex-row md:items-end justify-between mb-space-xl gap-space-md">
+<div>
+<span class="font-label-md text-primary uppercase tracking-wider">Trending Guides</span>
+<h2 class="font-headline-lg text-on-surface mt-space-xs">Most popular articles</h2>
+</div>
+<a class="text-primary font-label-md flex items-center gap-space-xs hover:underline" href="#">
+<span>View all documentation</span>
+<span class="material-symbols-outlined text-[16px]">arrow_forward</span>
+</a>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-space-lg">
+<a class="p-space-lg rounded-xl bg-surface hover:bg-surface-container-high transition-colors flex flex-col justify-between gap-space-md" href="#">
+<div class="flex flex-col gap-space-xs">
+<span class="text-label-sm text-primary">Getting Started</span>
+<h4 class="font-headline-sm text-on-surface">Keyboard shortcuts masterclass</h4>
+<p class="text-body-sm text-on-surface-variant line-clamp-2">Speed up your daily task navigation with these essential keyboard shortcuts.</p>
+</div>
+<div class="flex items-center justify-between text-label-sm text-on-surface-variant pt-space-md border-t border-outline-variant/30">
+<span>3 min read</span>
+<span class="material-symbols-outlined text-[16px]">bookmark</span>
+</div>
+</a>
+<a class="p-space-lg rounded-xl bg-surface hover:bg-surface-container-high transition-colors flex flex-col justify-between gap-space-md" href="#">
+<div class="flex flex-col gap-space-xs">
+<span class="text-label-sm text-primary">Integrations</span>
+<h4 class="font-headline-sm text-on-surface">Connecting GitHub &amp; GitLab pull requests</h4>
+<p class="text-body-sm text-on-surface-variant line-clamp-2">Automate task status updates directly from your code repositories.</p>
+</div>
+<div class="flex items-center justify-between text-label-sm text-on-surface-variant pt-space-md border-t border-outline-variant/30">
+<span>5 min read</span>
+<span class="material-symbols-outlined text-[16px]">bookmark</span>
+</div>
+</a>
+<a class="p-space-lg rounded-xl bg-surface hover:bg-surface-container-high transition-colors flex flex-col justify-between gap-space-md" href="#">
+<div class="flex flex-col gap-space-xs">
+<span class="text-label-sm text-primary">Security</span>
+<h4 class="font-headline-sm text-on-surface">Enforcing SAML Single Sign-On (SSO)</h4>
+<p class="text-body-sm text-on-surface-variant line-clamp-2">Secure your enterprise workspace with Okta, Azure AD, or Google Workspace.</p>
+</div>
+<div class="flex items-center justify-between text-label-sm text-on-surface-variant pt-space-md border-t border-outline-variant/30">
+<span>7 min read</span>
+<span class="material-symbols-outlined text-[16px]">bookmark</span>
+</div>
+</a>
+<a class="p-space-lg rounded-xl bg-surface hover:bg-surface-container-high transition-colors flex flex-col justify-between gap-space-md" href="#">
+<div class="flex flex-col gap-space-xs">
+<span class="text-label-sm text-primary">Workflows</span>
+<h4 class="font-headline-sm text-on-surface">Building custom automation triggers</h4>
+<p class="text-body-sm text-on-surface-variant line-clamp-2">Trigger webhooks and custom actions when task states change across boards.</p>
+</div>
+<div class="flex items-center justify-between text-label-sm text-on-surface-variant pt-space-md border-t border-outline-variant/30">
+<span>4 min read</span>
+<span class="material-symbols-outlined text-[16px]">bookmark</span>
+</div>
+</a>
+</div>
+</div>
+</section>
+<!-- FAQ Section -->
+<section class="max-w-4xl mx-auto px-gutter py-space-xl w-full">
+<div class="text-center mb-space-xl">
+<span class="font-label-md text-primary uppercase tracking-wider">Got Questions?</span>
+<h2 class="font-headline-lg text-on-surface mt-space-xs">Frequently Asked Questions</h2>
+<p class="font-body-md text-on-surface-variant mt-space-xs">Quick answers to common questions about TaskFlow subscriptions and features.</p>
+</div>
+<div class="flex flex-col gap-space-md">
+<!-- FAQ Item 1 -->
+<details class="group p-space-lg rounded-xl bg-surface-container-low transition-all">
+<summary class="flex items-center justify-between cursor-pointer font-headline-sm text-on-surface list-none">
+<span>How does seat-based pricing work when adding team members mid-billing cycle?</span>
+<span class="material-symbols-outlined transition-transform group-open:rotate-180">expand_more</span>
+</summary>
+<p class="text-body-md text-on-surface-variant mt-space-md pt-space-md border-t border-outline-variant/20">
+          TaskFlow uses prorated billing. When you invite a new team member, you are only charged for the remaining days left in your current billing cycle. The exact prorated amount is calculated automatically at checkout.
+        </p>
+</details>
+<!-- FAQ Item 2 -->
+<details class="group p-space-lg rounded-xl bg-surface-container-low transition-all">
+<summary class="flex items-center justify-between cursor-pointer font-headline-sm text-on-surface list-none">
+<span>Can I migrate my issues and tasks from Jira or Linear?</span>
+<span class="material-symbols-outlined transition-transform group-open:rotate-180">expand_more</span>
+</summary>
+<p class="text-body-md text-on-surface-variant mt-space-md pt-space-md border-t border-outline-variant/20">
+          Yes! We provide one-click importers for Jira, Linear, Asana, and GitHub Issues. Navigate to Workspace Settings &gt; Import &amp; Export to start your migration securely in under 5 minutes.
+        </p>
+</details>
+<!-- FAQ Item 3 -->
+<details class="group p-space-lg rounded-xl bg-surface-container-low transition-all">
+<summary class="flex items-center justify-between cursor-pointer font-headline-sm text-on-surface list-none">
+<span>What security standards and compliance certifications does TaskFlow meet?</span>
+<span class="material-symbols-outlined transition-transform group-open:rotate-180">expand_more</span>
+</summary>
+<p class="text-body-md text-on-surface-variant mt-space-md pt-space-md border-t border-outline-variant/20">
+          TaskFlow is SOC 2 Type II certified, GDPR compliant, and HIPAA ready for Enterprise tier customers. All data is encrypted at rest (AES-256) and in transit (TLS 1.3).
+        </p>
+</details>
+<!-- FAQ Item 4 -->
+<details class="group p-space-lg rounded-xl bg-surface-container-low transition-all">
+<summary class="flex items-center justify-between cursor-pointer font-headline-sm text-on-surface list-none">
+<span>How do I contact support if I encounter a bug?</span>
+<span class="material-symbols-outlined transition-transform group-open:rotate-180">expand_more</span>
+</summary>
+<p class="text-body-md text-on-surface-variant mt-space-md pt-space-md border-t border-outline-variant/20">
+          You can reach our engineering support team 24/7 by clicking the "Contact Support" button below or using the in-app command palette (`⌘K`) and typing "Send feedback to support".
+        </p>
+</details>
+</div>
+</section>
+<!-- Contact Support CTA Banner -->
+<section class="max-w-7xl mx-auto px-gutter py-space-xl w-full">
+<div class="relative rounded-2xl bg-gradient-to-r from-surface-container-low via-surface-container to-surface-container-low p-space-xl overflow-hidden shadow-xl text-center flex flex-col items-center gap-space-lg">
+<div class="absolute -right-20 -top-20 w-64 h-64 bg-primary/10 rounded-full blur-3xl pointer-events-none"></div>
+<div class="absolute -left-20 -bottom-20 w-64 h-64 bg-secondary/10 rounded-full blur-3xl pointer-events-none"></div>
+<div class="w-16 h-16 rounded-2xl bg-primary text-on-primary flex items-center justify-center shadow-lg">
+<span class="material-symbols-outlined text-[32px]">support_agent</span>
+</div>
+<div class="max-w-xl flex flex-col gap-space-xs">
+<h2 class="font-headline-lg text-on-surface">Still need assistance?</h2>
+<p class="font-body-md text-on-surface-variant">Our support engineers respond in under 2 hours on average for Pro and Enterprise subscribers.</p>
+</div>
+<div class="flex flex-wrap items-center justify-center gap-space-md mt-space-sm">
+<button class="bg-primary text-on-primary font-label-md px-space-xl py-4 rounded-xl hover:brightness-110 transition-all shadow-lg flex items-center gap-space-sm cursor-pointer">
+<span class="material-symbols-outlined text-[20px]">chat</span>
+<span>Contact Support</span>
+</button>
+<a class="px-space-xl py-4 rounded-xl bg-surface-container-high text-on-surface font-label-md hover:bg-surface-bright transition-all" href="#">
+          Explore Community Forum
+        </a>
+</div>
+</div>
+</section>
+</div></main><footer class="w-full bg-surface-container-low py-space-xl"><div class="max-w-7xl mx-auto px-gutter grid grid-cols-1 md:grid-cols-4 gap-space-xl mb-space-xl"><div class="flex flex-col gap-space-md"><div class="flex items-center gap-space-sm"><img class="h-6 w-auto object-contain" src="https://lh3.googleusercontent.com/aida/AEtjO1V3t_Szgfw_GRAKCtg8kdPCk5KB3ZOf7s6fLj2Wk71k0dc0GB7Pel4sxqKG7QchqwcDnifSRvQXJE6beXynIjkPuPF5u4z-uxh36a8hF053uDbeEVYoxkcHq5LFRq4zaf8hoxwL51gI9HyLXeXKHCO1gMKRU33_60mjuVzxERRimlGDLRDrFA5cxSa8gLPYJPdlzzMasmz_ZufDOtca-vZXxs2avgU1tvliXbmTk0qD"/><span class="font-headline-sm font-bold text-on-surface">TaskFlow</span></div><p class="text-body-sm text-on-surface-variant">The high-velocity precision workflow tool for modern engineering and product teams.</p></div><div class="flex flex-col gap-space-sm"><span class="font-label-md text-on-surface uppercase tracking-wider">Product</span><a class="text-body-sm text-on-surface-variant hover:text-on-surface transition-colors" href="#">Features</a><a class="text-body-sm text-on-surface-variant hover:text-on-surface transition-colors" href="#">Pricing</a><a class="text-body-sm text-on-surface-variant hover:text-on-surface transition-colors" href="#">Integrations</a><a class="text-body-sm text-on-surface-variant hover:text-on-surface transition-colors" href="#">Changelog</a></div><div class="flex flex-col gap-space-sm"><span class="font-label-md text-on-surface uppercase tracking-wider">Resources</span><a class="text-body-sm text-on-surface-variant hover:text-on-surface transition-colors" href="#">Documentation</a><a class="text-body-sm text-on-surface-variant hover:text-on-surface transition-colors" href="#">API Reference</a><a class="text-body-sm text-on-surface-variant hover:text-on-surface transition-colors" href="#">Community</a><a class="text-body-sm text-on-surface-variant hover:text-on-surface transition-colors" href="#">Status</a></div><div class="flex flex-col gap-space-sm"><span class="font-label-md text-on-surface uppercase tracking-wider">Company</span><a class="text-body-sm text-on-surface-variant hover:text-on-surface transition-colors" href="#">About Us</a><a class="text-body-sm text-on-surface-variant hover:text-on-surface transition-colors" href="#">Careers</a><a class="text-body-sm text-on-surface-variant hover:text-on-surface transition-colors" href="#">Privacy Policy</a><a class="text-body-sm text-on-surface-variant hover:text-on-surface transition-colors" href="#">Terms of Service</a></div></div><div class="max-w-7xl mx-auto px-gutter pt-space-lg border-t border-outline-variant flex flex-col sm:flex-row items-center justify-between text-body-sm text-on-surface-variant"><span>© 2024 TaskFlow Inc. All rights reserved.</span><div class="flex gap-space-md mt-space-md sm:mt-0"><span class="material-symbols-outlined text-[20px] hover:text-on-surface cursor-pointer">public</span><span class="material-symbols-outlined text-[20px] hover:text-on-surface cursor-pointer">code</span><span class="material-symbols-outlined text-[20px] hover:text-on-surface cursor-pointer">terminal</span></div></div></footer></body></html>
