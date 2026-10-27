@@ -1,43 +1,49 @@
-# TaskFlow
+# TaskFlow — Ứng dụng Next.js
 
-Production-oriented workspace and task management SaaS built with Next.js 16,
-Supabase Auth/Postgres, Drizzle ORM, Resend, and Stripe.
+Đây là source code ứng dụng TaskFlow (Next.js 16, React 19, Supabase, Drizzle ORM, PayOS).
 
-## Prerequisites
+> [!WARNING]
+> **Trạng thái: NO-GO.** Ứng dụng chưa đủ điều kiện go-live; nhiều màn hình authenticated còn mock, luồng PayOS chưa hoàn chỉnh và CI đang đỏ.
+> Đọc báo cáo đầy đủ tại [`../AUDIT_REPORT.md`](../AUDIT_REPORT.md) và hướng dẫn tổng quan tại [`../README.md`](../README.md).
 
-- Node.js `>=22.13.0`
-
-## Quick Start
+## Chạy local
 
 ```bash
-npm install
+npm ci
+cp .env.example .env.local
+# Điền biến môi trường thật (xem ../README.md mục 5)
 npm run dev
-npm run build
 ```
 
-Copy `.env.example` to `.env.local`, configure the local Supabase credentials,
-then run the commands above. Versioned production migrations live in
-`supabase/migrations`; the legacy SQLite files remain only as migration-history
-and security-test fixtures.
+Yêu cầu Node.js `>= 22.13.0`.
 
-## Supabase Authentication
+## Kiểm tra chất lượng
 
-TaskFlow uses Supabase Auth with email/password and Google OAuth. `proxy.ts`
-refreshes SSR cookies with `getClaims()`, while protected server routes call
-`getUser()` for a fresh identity check. OAuth and email confirmation use the
-PKCE callback routes under `/auth`; all return paths are restricted to safe
-same-origin relative URLs. Workspace membership and project permissions remain
-separate authorization checks in the database and API layer.
+```bash
+npx tsc --noEmit
+npm run lint
+npm test
+npm run test:security
+npm run test:architecture
+npm run test:migrations
+npm run env:check
+npm audit --omit=dev --audit-level=high
+```
 
-## Useful Commands
+## Database
 
-- `npm run dev`: start local development
-- `npm run build`: verify the Next.js production build
-- `npm test`: build the starter and verify its rendered loading skeleton
-- `npm run db:generate`: generate Drizzle migrations after schema changes
+- Schema nguồn: `db/schema.ts`
+- Migration nguồn: `supabase/migrations/*.sql` (17 file)
+- Local: `npm run supabase:start` và `npm run supabase:reset`
+- Staging/production: `npx supabase db push --db-url "$SUPABASE_DB_URL"` sau khi backup
 
-## Learn More
+## Lưu ý cấu hình
 
-- [Next.js Documentation](https://nextjs.org/docs)
-- [Supabase SSR Auth](https://supabase.com/docs/guides/auth/server-side/creating-a-client)
-- [Drizzle PostgreSQL Guide](https://orm.drizzle.team/docs/get-started-postgresql)
+`.env.example` hiện còn biến `STRIPE_*` và thiếu `PAYOS_*`, `CLOUDINARY_*`. Đây là sai lệch đã được ghi nhận trong audit; cần cập nhật trước khi onboarding hoặc deploy.
+
+## Tài liệu
+
+- [`../AUDIT_REPORT.md`](../AUDIT_REPORT.md) — kết quả audit và blocker go-live
+- [`../README.md`](../README.md) — hướng dẫn cài đặt, kiến trúc, deploy
+- [`docs/GO_LIVE_STATUS.md`](./docs/GO_LIVE_STATUS.md) — nhật ký go-live nội bộ
+- [`docs/PRODUCTION_MOCK_AUDIT.md`](./docs/PRODUCTION_MOCK_AUDIT.md) — kiểm kê mock
